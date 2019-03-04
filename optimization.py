@@ -16,6 +16,18 @@ def normalized_laplacian(W):
     return np.eye(N - 1) - D_minus12@W@D_minus12
 
 
+def buildW(flat_w_sup, N):
+    W = np.zeros((N, N))
+    shift = 0
+    for i in range(N):
+        W[i, i:] = flat_w_sup[shift:shift+N-i]
+        shift += N-i
+    W = W+W.T
+    for i in range(N):
+        W[i, i] /= 2
+    return W
+
+
 def O_LU(W, U):
     """W is a matrix NxN"""
     L = laplacian(W)
@@ -27,32 +39,10 @@ def O_Lambda(lambda_, U):
 
 
 def loss_function(Wsup_and_lambda, U, N):
-    Wsup = Wsup_and_lambda[:-N]
-    W = np.zeros((N, N))
-    shift = 0
-    for i in range(N):
-        W[i, i:] = Wsup[shift:shift+N-i]
-        shift += N-i
-    W = W+W.T
-    for i in range(N):
-        W[i, i] /= 2
+    flat_w_sup = Wsup_and_lambda[:-N]
+    W = buildW(flat_w_sup, N)
     lambda_ = Wsup_and_lambda[-N:]
-    print(W)
     return np.linalg.norm(O_LU(W, U) - O_Lambda(lambda_, U))
-
-
-N = 4
-xx = np.linspace(0, 2 * np.pi, N, endpoint=False)
-assert len(xx) == N, len(xx)
-yy = np.sin(xx) / np.sqrt(np.pi)
-
-pointset = np.zeros((N, 2))
-pointset[:, 0] = np.cos(xx)
-pointset[:, 1] = np.sin(xx)
-
-vect = spatial.distance.cdist(pointset[0].reshape((1, 2)), pointset)
-weights = np.exp(-vect / np.mean(vect))
-W0 = circulant(weights)
 
 
 def harmonics(N):
@@ -72,39 +62,40 @@ def harmonics(N):
     return U
 
 
-U = harmonics(N)
+def main():
+    N = 4
+    thetas = np.linspace(0, 2 * np.pi, N, endpoint=False)
+    assert len(thetas) == N, len(thetas)
+    pointset = np.zeros((N, 2))
+    pointset[:, 0] = np.cos(thetas)
+    pointset[:, 1] = np.sin(thetas)
+    vect = spatial.distance.cdist(pointset[0].reshape((1, 2)), pointset)
+    weights = np.exp(-vect / np.mean(vect))
+    W0 = circulant(weights)
+    print(W0)
+    U = harmonics(N)
+    w = np.ndarray(0)
+    for i in range(np.alen(W0)):
+        w = np.append(w, W0[i, i:])
+    assert len(w) == N*(N+1)/2
+    lambdas = np.ones(N)
+    X0 = np.concatenate([w, lambdas])
+    lb = np.zeros(len(w) + N)
+    ub = np.ones(len(w) + N) * np.inf
+    bounds = scipy.optimize.Bounds(lb=lb, ub=ub)
+    A = np.zeros(len(w) + N)
+    A[len(w):] = 1
+    b = 1
+    cons = [{"type": "eq", "fun": lambda x: A @ x - b}]  # Ax == b
+    result = minimize(loss_function, X0, args=(U, N), bounds=bounds,
+                      constraints=cons)
+    Wsup_and_lambda = result.x
+    flat_w_sup = Wsup_and_lambda[:-N]
+    W = buildW(flat_w_sup, N)
+    lambda_ = Wsup_and_lambda[-N:]
+    print(W)
+    print(lambda_)
 
-w = np.ndarray(0)
-for i in range(np.alen(W0)):
-    w = np.append(w, W0[i, i:])
 
-assert len(w) == N*(N+1)/2
-lambdas = np.ones(N)
-X0 = np.concatenate([w, lambdas])
-
-lb = np.zeros(len(w) + N)
-ub = np.ones(len(w) + N) * np.inf
-bounds = scipy.optimize.Bounds(lb=lb, ub=ub)
-
-A = np.zeros(len(w) + N)
-A[len(w):] = 1
-b = 1
-
-cons = [{"type": "eq", "fun": lambda x: A @ x - b}]  # Ax == b
-
-
-result = minimize(loss_function, X0, args=(U, N), bounds=bounds,
-                  constraints=cons)
-Wsup_and_lambda = result.x
-Wsup = Wsup_and_lambda[:-N]
-W = np.zeros((N, N))
-shift = 0
-for i in range(N):
-    W[i, i:] = Wsup[shift:shift+N-i]
-    shift += N-i
-W = W+W.T
-for i in range(N):
-    W[i, i] /= 2
-lambda_ = Wsup_and_lambda[-N:]
-print(W)
-print(lambda_)
+if __name__ == '__main__':
+    main()
