@@ -1,0 +1,172 @@
+\documentclass[12pt,titlepage]{article}
+
+
+\usepackage{nomencl}
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{a4paper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{color}
+\usepackage[tt]{titlepic}
+\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{lastpage}
+\usepackage{bm}
+
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+
+\usepackage[section]{placeins}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage[justification=centering]{caption}
+\usepackage{sidecap}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage[squaren, Gray, cdot]{SIunits}
+\graphicspath{{image/}} %chemin par défaut pour aller chercher les images 
+\usepackage{url}
+
+% FOR DEFINITIONS (https://www.sharelatex.com/learn/Theorems_and_proofs)
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem*{definition*}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem*{prop*}{Proposition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{example}{Example}
+
+% Custom Defines
+\usepackage[comma,numbers,sort&compress]{natbib}
+\bibliographystyle{plainnat}
+\usepackage[pdfstartview=FitH,
+            breaklinks=true,
+            bookmarksopen=true,
+            bookmarksnumbered=true,
+            colorlinks=true,
+            linkcolor=black,
+            citecolor=black
+            ]{hyperref}
+\newcommand{\rmd}{\textrm{d}}
+\newcommand{\bi}[1]{{\ensuremath{\boldsymbol{#1}}}}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+
+\topmargin=-0.45in      %
+%\evensidemargin=0in     %
+\oddsidemargin=-0.1in      %
+\textwidth=6.8in        %
+\textheight=9.2in       %
+%\headsep=0.25in         %
+\headheight=30.9pt
+
+\begin{document}
+
+% ========== TITLE PAGE ===================================================
+
+\begin{titlepage}
+\newcommand{\HRule}{\rule{\linewidth}{1mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+\includegraphics[width=8cm]{Figs/Cover/polimi.png}\\[1.5cm]
+\includegraphics[width=8cm]{Figs/Cover/EPFL.jpg}\\[1.5cm]
+%	HEADING SECTIONS
+\textsc{\LARGE Master Thesis in Computational Science and Engineering}\\[1.cm]
+
+%	TITLE SECTION
+\HRule \\[0.4cm]
+{ \huge \bfseries About the convergence of the Graph Laplacian}\\[0.4cm] 
+\HRule \\[1.5cm]     
+
+%	AUTHOR SECTION
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{}\\
+Martino \textsc{Milani}\\
+\end{flushleft}
+\end{minipage}
+~
+%	DATE SECTION
+{\large \today }\\[2cm] % Date, change the \today to a set date if you want to be precise
+\vfill % Fill the rest of the page with whitespace
+\end{titlepage}
+%\onehalfspacing
+
+% ========== HEADER =======================================================
+\pagestyle{headings} \pagenumbering{arabic} \setcounter{page}{1}
+\addtolength{\headheight}{\baselineskip}
+\lhead{\textbf{Martino Milani}}
+\chead{Master Thesis}
+\renewcommand{\headrulewidth}{0.4pt}
+
+
+\begin{abstract}
+Problem definition: find a convergence result for the Graph Laplacian on a graph approximating a sphere (WHICH GRAPH? Because for a full graph with $W(i,j)=e^{||x_i-x_j||^2}$ we already have it) to the Laplace-Beltrami operator on the sphere, given a deterministic sampling (HealPix).
+
+
+\end{abstract}
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+%\listoffigures
+%\listoftables
+%\pagebreak
+
+\input{1.LiteratureReview.tex}
+\pagebreak
+
+
+\iffalse
+\clearpage
+\appendix
+\fi
+
+\bibliography{references.bib} 
+
+\nocite{*}
+
+\pagebreak
+
+
+
+\end{document}
