@@ -3,6 +3,8 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy import spatial
 from scipy.linalg import circulant
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def laplacian(W):
@@ -41,7 +43,7 @@ def loss_function(Wsup_and_lambda, U, N):
     flat_w_sup = Wsup_and_lambda[:-N]
     W = buildW(flat_w_sup, N)
     lambda_ = Wsup_and_lambda[-N:]
-    return np.linalg.norm(O_LU(W, U) - O_Lambda(lambda_, U))
+    return np.linalg.norm(O_LU(W, U) - O_Lambda(lambda_, U), ord='fro')
 
 
 def harmonics(N):
@@ -64,7 +66,7 @@ def harmonics(N):
 def main():
 
     # number of vertices on the ring graph
-    N = 4
+    N = 14
 
     # building the pointset
     thetas = np.linspace(0, 2 * np.pi, N, endpoint=False)
@@ -107,8 +109,6 @@ def main():
     b = 1
     cons = [{"type": "eq", "fun": lambda x: A @ x - b}]  # Ax == b
 
-
-
     # performing the minimization step
     result = minimize(loss_function, X0, args=(U, N), bounds=bounds,
                       constraints=cons)
@@ -125,6 +125,10 @@ def main():
     print("Final lambdas:\n", lambda_)
     print("Initial Loss = ", loss_function(X0, U, N))
     print("Final Loss = ", loss_function(Wsup_and_lambda, U, N))
+    sns.heatmap(W0)
+    plt.show()
+    sns.heatmap(W)
+    plt.show()
 
 
 if __name__ == '__main__':
