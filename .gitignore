@@ -12,6 +12,8 @@ __pycache__/
 # IPython checkpoints
 .ipynb_checkpoints/
 
+matplotlibrc
+
 *.aux
 *.fls
 *.toc
