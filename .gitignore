@@ -2,6 +2,9 @@
 papers/**
 **/.DS_Store
 
+# images
+*.eps
+
 *~
 .DS_Store
 
@@ -13,6 +16,8 @@ __pycache__/
 .ipynb_checkpoints/
 
 matplotlibrc
+
+# LATEX
 
 *.aux
 *.fls
@@ -41,3 +46,4 @@ matplotlibrc
 *.hd
 *.thm
 *.rpi
+*.pdf
