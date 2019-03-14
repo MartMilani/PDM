@@ -138,7 +138,7 @@ Which is the closest $U$ from $U_{G}$ such that it remains orthonormal?
 
 \subsection{Weeks 2-3 (26 Feb - 12 Mar)}
 
-\subsubsection*{$\mathbf{\arg \min ||LU-U\Lambda||}$}
+\subsubsection*{Nath's problem $\mathbf{\arg \min ||LU-U\Lambda||}$}
 I implemented Nathana\"el's problem in the file 04\_optimization.py on a sampled ring, in order to have the possibility to refer to theorem \ref{theo:eigenvectors on the ring} that I correctly implemented in the notebook 02\_Experience1.py. Theorem \ref{theo:eigenvectors on the ring} tells us that in some cases (uniform sampling) it is possible to have as G-eigenvectors the sampled $\mathcal{M}$-eigenvectors, but with different eigenvalues! This means (as we understood with Micha\"el on Tuesday 12 March) that if we want to engineer a graph filter $F_G(f_{(P)}) = Uh(\Lambda_G)U^Tf_{(P)}$ such that is acts on the graph-spectrum of the sampled signal $f(P)$ as the continuous $\mathcal{M}$-filter $F_\mathcal M(f)_{(x)} =  \mathcal F^{-1}\left(\sum_i h_{\mathcal M}(\lambda_{\mathcal M, i}) Y_i(\omega)\right)(x)$ acts on the $\mathcal M$-spectrum of the continuous signal $f(x)$ we need to \textit{identify the graph eigenvalues with the corresponding $\mathcal M$-eigenvalues to make sure that $h_G(\lambda_{i,G}) = h_{\mathcal M}(\lambda_{i,\mathcal M}) $}.\\
 We observed that the result of the optimization for uniform sampling and for non-uniform sampling. Results are the in PDM/codes/04\_optimization/04\_figs. We see a good correspondence between $\Lambda^\star$ and the eigenvalues of the optimal Laplacian $L^\star$. However, we do not observe a good correspondence between the eigenvectors and the sampled spherical harmonics. However, it is really hard to interpret the scalar product between the vectors of the sampled spherical harmonics and the eigenvectors when the sampling is not uniform!\\
 \textbf{TO DO}: to compare the graph eigenvectors with the sampled spherical harmonics we did a scalar product of the vectors. However, we need to do a proper NUDFT (Non Uniform Discrete Fourier Transform https://en.wikipedia.org/wiki/Non-uniform\_discrete\_Fourier\_transform), that is a proper discretization of the integral $\int_{\mathcal S_1} u_i(x) Y_j(x) dx$ where $u(x)$ is the continuous graph eigenvector (\textbf{QUESTION}: what does this mean?) and $Y_j$ is the $j$-th spherical harmonic. The scalar product in $\mathbb R^N$ of the sampled signals corresponds to the scalar product in $L_2(\mathcal S_1)$ and thus to a DFT only for band-limited signals and in case of uniform sampling, since the vectors of the sampled harmonics are orthonormal!
@@ -169,14 +169,83 @@ On the sphere the NASA provides us with the function \lstinline {anafast} that i
 For a signal $f: \mathcal M \rightarrow \mathbb R$ define $\mathbf{\hat f}_G = U^T f(P)$ and  $\mathbf{\hat f}_\mathcal M = SHT(f)$.
 The question is the following: is there a graph Fourier basis $U: U^TU=I$ such that $\mathbf{\hat f}_G = \mathbf{\hat f}_\mathcal M \forall f$?
 
-If this is true, I have a graph such that the G-spectrum is equal to the $\mathcal M$-spectrum. \textbf{However, the answer to this question is NO}. 
-In the setting of band limited signals $\mathcal F = \{f: \mathcal M \rightarrow \mathbb R: SHT(f)_i = 0\quad \forall i \geq N \}$  if the matrix $Y_P$ is full rank we have that $U$ has to be equal to $Y$ since $\hat f_G = U^Tf(P)$ and $\hat f_\mathcal M = Y_P^{-1}f(P)$. Even if we relax the request asking
-
-$$(\mathbf{\hat f}_{G})_i = ()\mathbf{\hat f}_{\mathcal M})_i \forall i \leq n<N \forall f$$
+If this is true, I have a graph such that the G-spectrum is equal to the $\mathcal M$-spectrum. However, nothing is said about the eigenspaces. \textbf{In any case, the answer to this question is NO}. 
+In the setting of band limited signals $\mathcal F = \{f: \mathcal M \rightarrow \mathbb R: SHT(f)_i = 0\quad \forall i \geq N \}$  if the matrix $Y_P$ is full rank we have that $U$ has to be equal to $Y$ since $\mathbf{\hat f_G} = U^Tf(P)$ and $\mathbf{\hat f_\mathcal M} = Y_P^{-1}f(P)$. Even if we relax the request asking
+ 
+$$(\mathbf{\hat f}_{G})_i = (\mathbf{\hat f}_{\mathcal M})_i \quad\forall i \leq n<N \quad \forall f$$
 
 still this is impossible since from this it must follow that the first $n$ columns of $Y^{-1}_P$ are orthonormal, not true for a general sampling $P$.
 
 
 \subsubsection*{The second question}
-Is it possible to find a graph such that the G-eigenspaces are aligned with the $\mathcal M$-eigenspaces? \textbf{Problem: in general we can't know if they are aligned!} On a non-uniform sampled signal there's no way of reconstructing the spectrum, we can only approximate it with a NUDFT. \textbf{Let's now limit ourself to the usual class of band-limited signals}. We need to compute the projection of the signal $f$ that was sampled on the spherical harmonics in an exact manner! Is this possible for such a class of signals? Maybe there exists a matrix $B: \forall f,g \in \mathcal F:\quad  \mathbf f(P)\cdot\mathbf g(P) = \mathbf f(P)^TB\mathbf g(P)$. If there's such a matrix, then the question becomes algebraic and we can answer it. Still it is not clear what does it mean to have eigenspaces aligned, and I'm not sure the question is well posed.
-A procedure of proving that this is impossible by absurd could be the following: following that for a signal in the class $\mathcal F$ has a transform $Y_P^{-1}$, we have that $u_0 = Y_P \mathbf e_0$, $u_1 = Y_P(\alpha_1^1 \mathbf e_1 + \alpha_2^1 \mathbf e_2)$, $u_2 = Y_P(\alpha_1^2 \mathbf e_1 + \alpha_2^2 \mathbf e_2)$, $u_3 = Y_P(\alpha_1^3 \mathbf e_1 + \alpha_2^3 \mathbf e_2+ \alpha_3^3 \mathbf e_3)$, $u_4 = Y_P(\alpha_1^4 \mathbf e_1 + \alpha_2^4 \mathbf e_2+ \alpha_3^4 \mathbf e_3)$, $u_5 = Y_P(\alpha_1^5 \mathbf e_1 + \alpha_2^5 \mathbf e_2+ \alpha_3^5 \mathbf e_3)$, and so on.
+Is it possible to find a graph such that the G-eigenspaces are aligned with the $\mathcal M$-eigenspaces? \textbf{Problem: It is a badly formulated question! It doesn't mean much if we do not specify it better.} The formulation 
+
+\[Y^TU = 
+\left[ {\begin{array}{ccccc}
+	B_{1\times 1} & 0 & 0 & 0 & ...\\
+	0 & B_{3\times 3} & 0 & 0 & ...\\
+	0 & 0 & B_{5\times 5} & 0 & ...\\
+	0 & 0 & 0 & B_{7\times 7} & ...\\
+	... & ... & ... & ... & ...\\
+	\end{array} } \right]
+\]
+
+is not clear since we are projecting the graph eigenvectors on the sampled spherical harmonics in $\mathbb R^N$, but this corresponds to nothing!! What we want is a concept of "alignment" in the continuous domain: so, a better formulation could be the following:
+
+
+\[SHT(U) = 
+\left[ {\begin{array}{ccccc}
+	B_{1\times 1} & 0 & 0 & 0 & ...\\
+	0 & B_{3\times 3} & 0 & 0 & ...\\
+	0 & 0 & B_{5\times 5} & 0 & ...\\
+	0 & 0 & 0 & B_{7\times 7} & ...\\
+	... & ... & ... & ... & ...\\
+	\end{array} } \right]
+\]
+
+But again here we have a problem: when we write $SHT(U)$ we are imagining the eigenvectors $\mathbf u_i\in \mathbb R^N$ as traces of a continuous signal $u_i(x): \mathcal M \rightarrow \mathbb R$ and what we want is actually the $SHT(u_i(x))$. The problem is that on a uniform sampling we are limited by the Shannon theorem, that means we can reconstruct the spectrum of $u_i(x)$ only up to a certain frequency, and on a non-uniform sampling we do not know anything at all! On a non-uniform sampled signal there's no way of reconstructing the spectrum, we can only approximate it with a NUDFT. 
+\paragraph{Let's now limit ourself to the usual class of band-limited signals.} We know that
+
+$$f(x) = \sum_{i=0}^N \alpha_i Y_i(x)$$
+
+If we suppose that the graph eigenvectors $\mathbf u_j \in \mathbb R^N$ are the trace on the vertices of a "continuous graph eigenvector" $u_j(x) \in \mathcal F$ then we know that 
+
+$$u_j(x) = \sum_{i=0}^N \alpha^j_i Y_i(x)$$
+
+and 
+
+$$SHT(u_i) = Y_P^{-1}u_j(P) = Y_P^{-1}\mathbf u_j$$
+
+so the question becomes
+\begin{equation}
+SHT(U) = Y_P^{-1}U = \begin{bmatrix}
+		B_{1\times 1} & 0 & 0 & 0 & ...\\
+		0 & B_{3\times 3} & 0 & 0 & ...\\
+		0 & 0 & B_{5\times 5} & 0 & ...\\
+		0 & 0 & 0 & B_{7\times 7} & ...\\
+		... & ... & ... & ... & ...
+		\end{bmatrix} \label{eq:SHT(U)}
+\end{equation}
+
+
+A procedure of proving that this is impossible by absurd could be the following: multiplying eq \ref{eq:SHT(U)} by $Y_P$ we have that
+
+$$
+U = Y_P\begin{bmatrix}
+B_{1\times 1} & 0 & 0 & 0 & ...\\
+0 & B_{3\times 3} & 0 & 0 & ...\\
+0 & 0 & B_{5\times 5} & 0 & ...\\
+0 & 0 & 0 & B_{7\times 7} & ...\\
+... & ... & ... & ... & ...
+\end{bmatrix}
+$$
+ that rewritten column by columns becomes:
+
+ $u_0 = \alpha_1\mathbf Y_0$\\
+ $u_1 = \alpha_1^1 \mathbf Y_1 + \alpha_2^1 \mathbf Y_2+ \alpha_3^1 \mathbf Y_3$\\
+ $u_2 = \alpha_1^2 \mathbf Y_1 + \alpha_2^2 \mathbf Y_2+ \alpha_3^2 \mathbf Y_3$\\
+ $u_3 = \alpha_1^3 \mathbf Y_1 + \alpha_2^3 \mathbf Y_2+ \alpha_3^3 \mathbf Y_3$\\
+ ...\\
+ 
+ and so on. I think that the answer to this question is again a no-no: since we must impose $UU^T=I$, this means that we have to find an orthogonal basis of each eigenspace 
+ $\text{span}\{\mathbf Y_0\} = \text{span}\{\mathbf u_0\},  \text{span}\{\mathbf Y_1, \mathbf Y_2, \mathbf Y_3\} = \text{span}\{\mathbf u_1, \mathbf u_2, \mathbf u_3\}, \text{span}\{\mathbf Y_4, \mathbf Y_5, \mathbf Y_6, \mathbf Y_7, \mathbf Y_8\}=\text{span}\{\mathbf u_4, \mathbf u_5, \mathbf u_6, \mathbf u_7, \mathbf u_8\}$, etc. etc. (no problem) but the problem comes in when we must impose the $\mathbb R^N$-orthogonality between the different basis of the eigenspaces! This cannot be assured in general. \textbf{TO DO: if you're not convinced by the impossibility of this, find a counter example just with the first two eigenspaces ($|P|=4 \implies \mathbf u_i, \mathbf Y_i \in \mathbb R^4, i=0,1,2,3$)}
