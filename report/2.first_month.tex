@@ -161,7 +161,7 @@ If the matrix $Y_P$ of the sampled spherical harmonics is full rank, for these s
 $$\forall f \in \mathcal F \quad SHT(f) = \mathbf{\hat f} = Y_P^{-1} f_{(P)}$$
 
 However, for a general signal on the manifold, the $SHT(f)$ is given by the Type 2 - Non Uniform Discrete Fourier Transform (Type 2 NUDFT). From my understanding, it provides an approximation of the transform since a non-uniform sampling is capable of catching all the frequencies, but once we cut the Fourier series we do not have a Shannon Theorem (perfect reconstruction of band-limited signals).\\
-The NUDFT requires to set as a parameter the maximum 
+The NUDFT requires to set as a parameter the maximum frequency we want to project our signal on.
 
 On the sphere the NASA provides us with the function \lstinline {anafast} that implements a Type2-NUDFT on the HEALPix sampling out of the box. This program performs harmonic analysis of the HEALPix maps up to a user specified maximum spherical harmonic order $l_{max}$.
 

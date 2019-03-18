@@ -20,6 +20,11 @@ else:
     from urllib import urlretrieve
 
 
+def tn(npix):
+    alpha = 0.0
+    return 4*(1/npix)**(1/(4+alpha))
+
+
 def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32):
     """Return an unnormalized weight matrix for a graph using the HEALPIX sampling.
 
@@ -100,8 +105,11 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32):
 
     # Compute similarities / edge weights.
     kernel_width = np.mean(distances)
-    weights = np.exp(-distances / (2 * kernel_width))
 
+    ### MARTINO'S MODIFICATION:
+    ### old line: weights = np.exp(-distances / (2 * kernel_width))
+    print('WARNING: MARTINO\'S MODIFIED CODE IS RUNNING')
+    weights = np.exp(-distances / tn(npix))
     # Similarity proposed by Renata & Pascal, ICCV 2017.
     # weights = 1 / distances
 
@@ -112,6 +120,39 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32):
     # if use_4:
     #     W = (W+W.T)/2
 
+    return W
+
+
+def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi'):
+    """Return an unnormalized full weight matrix for a graph using the HEALPIX sampling.
+    The order of the pixels is the RING order scheme in healpy
+    Parameters
+    ----------
+    nside : int
+        The healpix nside parameter, must be a power of 2, less than 2**30.
+    dtype : data-type, optional
+        The desired data type of the weight matrix.
+    """
+    from scipy import spatial
+    indexes = range(nside**2 * 12)
+    # Get the coordinates.
+    x, y, z = hp.pix2vec(nside, indexes, nest=True)  # NESTED ordered
+    coords = np.vstack([x, y, z]).transpose()
+    coords = np.asarray(coords, dtype=dtype)
+    # Compute Euclidean distances between neighbors.
+    # neighbors = hp.pixelfunc.get_all_neighbours(nside, indexes)  # original line
+    distances = spatial.distance.cdist(coords, coords)**2
+
+    # Compute similarities / edge weights.
+    if std == 'kernel_width':
+        kernel_width = np.mean(distances)
+        W = np.exp(-distances / (2 * kernel_width))
+    elif std == 'BelkinNyiogi':
+        npix = 12*(nside**2)
+        W = np.exp(-distances / tn(npix))
+
+    for i in range(np.alen(W)):
+        W[i, i] = 0.
     return W
 
 
@@ -153,6 +194,34 @@ def healpix_graph(nside=16,
     else:
         W = healpix_weightmatrix(
             nside=nside, nest=nest, indexes=indexes, dtype=dtype)
+    # 3) building the graph
+    G = graphs.Graph(
+        W,
+        lap_type=lap_type,
+        coords=coords)
+    return G
+
+
+def full_healpix_graph(nside=16,
+                       nest=True,
+                       lap_type='normalized',
+                       indexes=None,
+                       dtype=np.float32,
+                       std='BelkinNyiogi'):
+    """Build a healpix graph using the pygsp from NSIDE."""
+    from pygsp import graphs
+
+    if indexes is None:
+        indexes = range(nside**2 * 12)
+
+    # 1) get the coordinates
+    npix = hp.nside2npix(nside)  # number of pixels: 12 * nside**2
+    pix = range(npix)
+    x, y, z = hp.pix2vec(nside, pix, nest=nest)
+    coords = np.vstack([x, y, z]).transpose()[indexes]
+    # 2) computing the weight matrix
+    W = full_healpix_weightmatrix(
+        nside=nside, dtype=dtype, std=std)
     # 3) building the graph
     G = graphs.Graph(
         W,
