@@ -10,7 +10,6 @@ import zipfile
 
 import numpy as np
 from scipy import sparse
-import matplotlib.pyplot as plt
 import healpy as hp
 
 
@@ -25,7 +24,8 @@ def tn(npix):
     return 4*(1/npix)**(1/(4+alpha))
 
 
-def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32):
+def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
+                         std_dev="BelkinNyiogi"):
     """Return an unnormalized weight matrix for a graph using the HEALPIX sampling.
 
     Parameters
@@ -104,12 +104,11 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32):
     # slower: np.linalg.norm(coords[row_index] - coords[col_index], axis=1)**2
 
     # Compute similarities / edge weights.
-    kernel_width = np.mean(distances)
-
-    ### MARTINO'S MODIFICATION:
-    ### old line: weights = np.exp(-distances / (2 * kernel_width))
-    print('WARNING: MARTINO\'S MODIFIED CODE IS RUNNING')
-    weights = np.exp(-distances / tn(npix))
+    if std_dev == 'BelkinNyiogi':
+        weights = np.exp(-distances / tn(npix))
+    elif std_dev == 'kernel_width':
+        kernel_width = np.mean(distances)
+        weights = np.exp(-distances / (2 * kernel_width))
     # Similarity proposed by Renata & Pascal, ICCV 2017.
     # weights = 1 / distances
 
@@ -175,7 +174,8 @@ def healpix_graph(nside=16,
                   lap_type='normalized',
                   indexes=None,
                   use_4=False,
-                  dtype=np.float32):
+                  dtype=np.float32,
+                  std_dev='BelkinNyiogi'):
     """Build a healpix graph using the pygsp from NSIDE."""
     from pygsp import graphs
 
@@ -193,7 +193,7 @@ def healpix_graph(nside=16,
         W = build_matrix_4_neighboors(nside, indexes, nest=nest, dtype=dtype)
     else:
         W = healpix_weightmatrix(
-            nside=nside, nest=nest, indexes=indexes, dtype=dtype)
+            nside=nside, nest=nest, indexes=indexes, dtype=dtype, std_dev=std_dev)
     # 3) building the graph
     G = graphs.Graph(
         W,
@@ -422,12 +422,13 @@ def download(url, target_dir, filename=None):
 def url_filename(url):
     return url.split('/')[-1].split('#')[0].split('?')[0]
 
+
 def check_md5(file_name, orginal_md5):
     # Open,close, read file and calculate MD5 on its contents
     with open(file_name, 'rb') as f:
         hasher = hashlib.md5()  # Make empty hasher to update piecemeal
         while True:
-            block = f.read(64 * (1 << 20)) # Read 64 MB at a time; big, but not memory busting
+            block = f.read(64 * (1 << 20))  # Read 64 MB at a time; big, but not memory busting
             if not block:  # Reached EOF
                 break
             hasher.update(block)  # Update with new block
@@ -440,9 +441,11 @@ def check_md5(file_name, orginal_md5):
         print('MD5 verification failed!')
         return False
 
+
 def unzip(file, targetdir):
-    with zipfile.ZipFile(file,"r") as zip_ref:
+    with zipfile.ZipFile(file, "r") as zip_ref:
         zip_ref.extractall(targetdir)
+
 
 class HiddenPrints:
     def __enter__(self):
@@ -498,8 +501,10 @@ def test_learning_rates(params, ntrain, lr_min=1e-6, lr_max=1e-1, num_epochs=20,
 
     if exponential:
         decay = np.power(lr_max/lr_min, 1/n_steps, dtype=np.float32)
+
         def scheduler(step):
             return lr_min * decay ** step
+
         params['scheduler'] = lambda step: scheduler(tf.to_float(step))
     else:
         def scheduler(step):
