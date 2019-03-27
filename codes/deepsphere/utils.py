@@ -20,7 +20,7 @@ else:
 
 
 def tn(npix):
-    alpha = 0.0
+    alpha = 0.01
     return 4*(1/npix)**(1/(4+alpha))
 
 
