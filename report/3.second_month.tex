@@ -3,15 +3,32 @@
 
 In this paper they present two results: a pointwise probabilistic convergence of \textbf{the extension of the graph Laplacian} $\hat L_n^t$ 
 
-$$C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n}\hat L_n^t f(\bf x) \xrightarrow{n\to\infty}\triangle_\mathcal M f(\bf x)$$
+$$\forall f \in C^\infty(\mathcal M)\quad  C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) \xrightarrow{n\to\infty}\triangle_\mathcal M f(\bf x)$$
 
 and a uniform (pointwise convergence of the operator) one
 
-$$\sup_{x\in\mathcal M, f\in \mathcal F_C}\left| C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n}\hat L_n^t f(\bf x) - \triangle_\mathcal M f(\bf x) \right|\xrightarrow{n\to\infty}0$$
+$$\sup_{x\in\mathcal M, f\in \mathcal F_C}\left| C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) - \triangle_\mathcal M f(\bf x) \right|\xrightarrow{n\to\infty}0
+, \quad \mathcal F_C = \left\{f\in C^\infty(\mathcal M), f^{(i)}(x)\leq M, i=1,2,3\right\}$$
 
-here nothing is said about convergence of the spectra, plus there's nothing written about the relationship between $\mathbf{Eig}\hat L_n^t$ (the eigenfunctions and eigenvalues of the extension of the graph Laplacian) and $\mathbf {Eig} \mathbf {L}_n^t$ (the eigenvectors and eigenvalues of the matrix Laplacian).
+here nothing is said about convergence of the spectra, plus there's nothing written about the relationship between $\mathbf{Eig} L_n^t$ (the eigenfunctions and eigenvalues of the extension of the graph Laplacian) and $\mathbf {Eig} \mathbf {L}_n^t$ (the eigenvectors and eigenvalues of the matrix Laplacian).
 
-Theorem 1 is proven by simple analysis arguments and by Hoeffding's formula (probability). Theorem 2 is proven with arguments of Functional Analysis: Ascoli-Arzelà, compact convergence in Sobolev spaces, etc.etc... However, the proof is far from being clear! 
+Theorem 1 is proven by simple analysis arguments and by Hoeffding's formula (probability). 
+First, by the simple law of large numbers, we have that for a fixed $t>0$, a fixed function $f$ and a fixed point $p\in\mathcal M$
+\begin{equation}\label{eq:pointwise convergence of laplacian discrete approximation}
+\lim_{n\to\infty}\frac{1}{t}\frac{1}{ (4\pi t)^{\frac{k}{2}}}L_n^tf(p)= L^tf(p)
+\end{equation}
+
+
+
+where 
+
+$$L^tf(p)=  \frac{1}{t}\frac{1}{ (4\pi t)^{\frac{k}{2}}} \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(x)-f(p)\right)d\mu(x)$$
+
+To prove the convergence of $L^t$ to $\triangle_\mathcal M$, then we need three steps, that we can recycle completely. They use the fact that thanks to the exponential map the heat kernel centered on $p$ on any manifold can be approximated by a Gaussian in the ambient Euclidean space in a small neighborhood of $p$, and the relationship between Euclidean distances and geodesic distances.
+
+\textbf{In order to adapt this proof to our needs, we just need to find an alternative to the law of large numbers (LLN) used to prove \ref{eq:pointwise convergence of laplacian discrete approximation}}
+
+Theorem 2 is proven with arguments of Functional Analysis: Ascoli-Arzelà, compact convergence in Sobolev spaces, etc.etc...
 
 \subsection{Consistency of Spectral Clustering}
  $$ \mathbf{Eig} \mathbf{L}^t_n \xrightarrow[a.s.]{n\to\infty} \mathbf{Eig} L^t $$
@@ -74,54 +91,31 @@ Really hard. Uniform operator convergence does not hold, however spectral conver
 
 Getting inspired from the work flow presented above, we try to replicate the first theorem obtained in \textbf{Towards a theoretical foundation of Laplacian-based manifold methods} but not in the case of random Laplacians, but in the case of deterministic ones where the sampling is given by the HEALPix scheme. This analysis will be a preparatory work to further studies, since as we pointed out so far, form this kind of convergence nothing is said about the convergence of eigenvalues and eigenvectors. However, this study could maybe tell us something about the equivariance of the graph with respect to the action of the rotation group $SO(3)$.
 
-\subsection*{Direct proof of convergence}
-\begin{itemize}
-	\item We can use the Theorem of porte-manteau to prove that $\sum_{i}f(x_{i})\rightarrow\int f(x)\text{d}x$.
-	We need to prove that for any surface, the number of point in the surface will converge toward something that is proportional to the suface.
-	\item Let us use a different argument. We know by construction that the
-	HEALPix sampling cut the sphere into equal areas. Let us note the
-	surface of one level $S_{N_{side}}$, and the maximum distance to
-	the center point of one surface\textbf{ $d_{N_{side}}$} . Let us
-	write the indicator function of the point ${\bf x}$ that belong to
-	the surface $\sigma_{i}$: 
-	\[
-	\mathbb{I}_{\sigma_{i}}({\bf x})=\begin{cases}
-	1 & \text{if }x\in\sigma_{i}\\
-	0 & \text{otherwise.}
-	\end{cases}
-	\]
-	Let us assume that the function $f$ is $L$ lipschitz, we have
-	\[
-	\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}f({\bf x}_{i})\leq\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\frac{1}{2}Ld_{N_{side}}S_{N_{side}}.
-	\]
-	Hence we have:
-	\[
-	\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\sum_{i}\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}\sum_{i}f({\bf x}_{i})\leq\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\sum_{i}\frac{1}{2}Ld_{N_{side}}S_{N_{side}}
-	\]
-	and 
-	\[
-	\left|S_{N_{side}}\sum_{i}f({\bf x}_{i})-\int f({\bf x})\text{d}{\bf x}\right|\le\frac{1}{2}Ld_{N_{side}}S_{tot}
-	\]
-	where $S_{tot}$ is the the total suface of the sphere. Not that inequality
-	directly replace the Hoeffdings inequality in Belkin and Niogi. Now
-	we need to characterize $d_{N_{side}}$ with respect of $N_{side}$
-	and $L$ with respect of $m$ and $\ell$. The rest of the proof should
-	be similar...
-\end{itemize}
 
-\subsection*{Non-uniform sampling}
+We remind that \textbf{in order to adapt this proof to our needs, we just need to find an alternative to the law of large numbers (LLN) used to prove eq. (\ref{eq:pointwise convergence of laplacian discrete approximation}}). We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_{N_{side}}$, and the maximum distance to the center point of one surface\textbf{ $d_{N_{side}}$}.
+Let us assume that the function $f$ is $L$ Lipschitz, we have
+\[
+\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}f({\bf x}_{i})\leq\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\frac{1}{2}Ld_{N_{side}}S_{N_{side}}.
+\]
+Hence we have:
+\[
+\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\sum_{i}\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}\sum_{i}f({\bf x}_{i})\leq\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\sum_{i}\frac{1}{2}Ld_{N_{side}}S_{N_{side}}
+\]
+and 
+\[
+\left|S_{N_{side}}\sum_{i}f({\bf x}_{i})-\int f({\bf x})\text{d}{\bf x}\right|\le\frac{1}{2}Ld_{N_{side}}S_{tot}
+\]
+where $S_{tot}$ is the the total surface of the sphere. Now we need to characterize $d_{N_{side}}$ with respect of $N_{side}$ and $L$ with respect of $m$ and $\ell$. 
 
-\subsubsection*{Case 1: random}
-
-Just use the theorem of Belkin and Niogi
-
-\subsubsection*{Case 2: deterministic}
-
-Use the porte-manteau theorem
-
-\subsection*{KNN HEALPix graph}
-
-I believe there is no convergence because we will always have irregularities
-in the special points... Can we prove it? Probably... Use the fact
-tha the graph is made of 12 similar parts.
-
+Now, we found the following code, part of Healpix\_cxx 2.15a \cite{Healpix_cc} that illustrates how to calculate the maximum distance between a pixel and the corner of the corresponding patch. The class \lstinline|vec3| implements a 3D cartesian vector, the function \lstinline|vec3.set_z_phi(double, double)| creates a unit vector from a z coordinate and an azimuthal angle. Both \lstinline|va| and \lstinline|vb| converge towards the point $(2/3, 0)$, making $$d_{N_{side}}\rightarrow0$$
+\begin{lstlisting}[language=c++]
+	double Healpix_Base::max_pixrad() const
+	{
+		vec3 va,vb;
+		va.set_z_phi (2./3., pi/(4*nside_));
+		double t1 = 1.-1./nside_;
+		t1*=t1;
+		vb.set_z_phi (1-t1/3, 0);
+		return v_angle(va,vb);
+	}
+\end{lstlisting}
