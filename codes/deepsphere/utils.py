@@ -59,6 +59,8 @@ def full_healpix_geodesic_matrix(nside=16, dtype=np.float32, std='BelkinNyiogi')
     elif std == 'BelkinNyiogi':
         npix = 12*(nside**2)
         W = np.exp(-squared_distances / tn(npix))
+    elif isinstance(std, float):
+        W = np.exp(-squared_distances / std)
 
     for i in range(np.alen(W)):
         W[i, i] = 0.
@@ -141,15 +143,17 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
         row_index = [inverse_map[el] for el in row_index[keep]]
 
     # Compute Euclidean distances between neighbors.
-    distances = np.sum((coords[row_index] - coords[col_index])**2, axis=1)
+    distances_squared = np.sum((coords[row_index] - coords[col_index])**2, axis=1)
     # slower: np.linalg.norm(coords[row_index] - coords[col_index], axis=1)**2
 
     # Compute similarities / edge weights.
     if std_dev == 'BelkinNyiogi':
-        weights = np.exp(-distances / tn(npix))
+        weights = np.exp(-distances_squared / tn(npix))
     elif std_dev == 'kernel_width':
-        kernel_width = np.mean(distances)
-        weights = np.exp(-distances / (2 * kernel_width))
+        kernel_width = np.mean(distances_squared)
+        weights = np.exp(-distances_squared / (2 * kernel_width))
+    elif isinstance(std_dev, float):
+        W = np.exp(-distances_squared / std_dev)
     # Similarity proposed by Renata & Pascal, ICCV 2017.
     # weights = 1 / distances
 
@@ -163,7 +167,7 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
     return W
 
 
-def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi'):
+def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi', plot=False, max_plot=0.1):
     """Return an unnormalized full weight matrix for a graph using the HEALPIX sampling.
     The order of the pixels is the RING order scheme in healpy
     Parameters
@@ -182,7 +186,9 @@ def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi'):
     # Compute Euclidean distances between neighbors.
     # neighbors = hp.pixelfunc.get_all_neighbours(nside, indexes)  # original line
     distances_squared = spatial.distance.cdist(coords, coords)**2
-
+    if plot:
+        import matplotlib.pyplot as plt
+        plt.hist(np.ravel(distances_squared[distances_squared<max_plot]), 1000);
     # Compute similarities / edge weights.
     if std == 'kernel_width':
         kernel_width = np.mean(distances_squared)
@@ -190,6 +196,8 @@ def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi'):
     elif std == 'BelkinNyiogi':
         npix = 12*(nside**2)
         W = np.exp(-distances_squared / tn(npix))
+    elif isinstance(std, float):
+        W = np.exp(-distances_squared / std)
 
     for i in range(np.alen(W)):
         W[i, i] = 0.
