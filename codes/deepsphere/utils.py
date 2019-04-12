@@ -68,7 +68,7 @@ def full_healpix_geodesic_matrix(nside=16, dtype=np.float32, std='BelkinNyiogi')
 
 
 def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
-                         std_dev="BelkinNyiogi"):
+                         std="BelkinNyiogi"):
     """Return an unnormalized weight matrix for a graph using the HEALPIX sampling.
 
     Parameters
@@ -147,13 +147,13 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
     # slower: np.linalg.norm(coords[row_index] - coords[col_index], axis=1)**2
 
     # Compute similarities / edge weights.
-    if std_dev == 'BelkinNyiogi':
+    if std == 'BelkinNyiogi':
         weights = np.exp(-distances_squared / tn(npix))
-    elif std_dev == 'kernel_width':
+    elif std == 'kernel_width':
         kernel_width = np.mean(distances_squared)
         weights = np.exp(-distances_squared / (2 * kernel_width))
-    elif isinstance(std_dev, float):
-        W = np.exp(-distances_squared / std_dev)
+    elif isinstance(std, float) or isinstance(std, int):
+        weights = np.exp(-distances_squared / std)
     # Similarity proposed by Renata & Pascal, ICCV 2017.
     # weights = 1 / distances
 
@@ -196,7 +196,7 @@ def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi', pl
     elif std == 'BelkinNyiogi':
         npix = 12*(nside**2)
         W = np.exp(-distances_squared / tn(npix))
-    elif isinstance(std, float):
+    elif isinstance(std, float) or isinstance(std, int):
         W = np.exp(-distances_squared / std)
 
     for i in range(np.alen(W)):
@@ -224,7 +224,7 @@ def healpix_graph(nside=16,
                   indexes=None,
                   use_4=False,
                   dtype=np.float32,
-                  std_dev='BelkinNyiogi'):
+                  std='BelkinNyiogi'):
     """Build a healpix graph using the pygsp from NSIDE."""
     from pygsp import graphs
 
@@ -242,7 +242,7 @@ def healpix_graph(nside=16,
         W = build_matrix_4_neighboors(nside, indexes, nest=nest, dtype=dtype)
     else:
         W = healpix_weightmatrix(
-            nside=nside, nest=nest, indexes=indexes, dtype=dtype, std_dev=std_dev)
+            nside=nside, nest=nest, indexes=indexes, dtype=dtype, std=std)
     # 3) building the graph
     G = graphs.Graph(
         W,
