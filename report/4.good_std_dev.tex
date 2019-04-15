@@ -1,3 +1,5 @@
+%!TEX root = 0.main.tex
+
 \section{How to build a better graph}
 Current state of the art: DeepSphere graph
 
@@ -5,17 +7,20 @@ Problems: we don't see the convergence expected.
 Why? Because the sigma of the gaussian kernel decreases too slowly, and the number of neighbors must increase as we decrease sigma. as we can show hereunder.
 
 \paragraph{Standard deviation of the Gaussian kernel $t$}
-Intuition: with a big sigma, the kernel is very wide and the graph can not distinguish the high frequencies. In other words, if we build a radius graph with $d=\bar d$ and connect all the neighbors of a node with the same weights $w$, all the variations on those nodes are indistinguishable. thus, above a certain frequency where the variations reach a wavelength $\omega \leq \bar d$, any graph operator would be blind to such frequencies. Thus, if we want our graph Laplacian to be able to distinguish such frequencies, we need our weight to change significantly in a short radius, that means \textbf{setting a sigma of the order of magnitude of the nearest neighbors of a node}
+Intuition: with a big $t$, the kernel is very wide and the graph can not distinguish the high frequencies. In other words, if we build a radius graph with $d=\bar d$ and connect all the neighbors of a node with the same weights $w$, all the variations on those nodes are indistinguishable. thus, above a certain frequency where the variations reach a wavelength $\omega \leq \bar d$, any graph operator would be blind to such frequencies (indeed, any reordering of the signal on the neighbors would lead to the same result). Thus, if we want our graph Laplacian to be able to distinguish such frequencies, we need our weight to change significantly in a short radius, that means \textbf{setting a $t$ of the order of magnitude of the nearest neighbors of a node}
 
 \paragraph{Number of neighbors}
 For what it concerns the sparsification of the graph, the intuition is the following: remember that we want our graph Laplacian to approximate the operator $L^t$
-$$f(y) \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}-\frac{1}{n}\sum_ie^{-\frac{||x_i-y||}{4t}}f(x_i) \approx \frac{1}{ (4\pi t)^{\frac{k+2}{2}}}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x) $$
+$$\frac{1}{n}\left(\sum_i e^{-\frac{||x_i-y||}{4t}}(f(y)-f(x_i)) \right) \approx \frac{1}{ 4\pi}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x) $$
 
-Sparsifing the graph means approximating some weights $w_{i,j}=e^{-\frac{||x_i-x_j||}{4t}} \approx 0$. For this to be accurate we need those weights to be close to 0. A method to be sure that the approximation isn't too bad is the following: \textbf{instead of fixing the number of neighbors, fixing a threshold $k$ on $w_{i,j}=e^{-\frac{||x_i-x_j||}{4t}}$ such that 
+However, with a full graph the operation of filtering with a polynomial of the graph Laplacian would cost $\mathcal O (n^2)$, same order of magnitude of the method proposed in \cite{bibid}. We want a method to sparsify the graph such that the number of non-null entries of the Laplacian is linear $\mathcal O (n)$, making the filtering operation $f\rightarrow \mathcal P(L)f$ linear in the number of pixels. Deferrard et al. \cite{bibid} fixed the number of neighbors to 7/8. However, their results do not show the expected spectral convergence.
+Sparsifing the graph means approximating some weights $w_{i,j}=e^{-\frac{||x_i-x_j||}{4t}} \approx 0$. For this to be accurate we need those weights to be close to 0. A method to be sure that the approximation isn't too bad is the following: \textbf{instead of fixing the number of neighbors, fixing a threshold $k$ on $w_{i,j}=e^{-\frac{||x_i-x_j||}{4t}}$ such that} 
 	
-$$w_{i,j} = e^{-\frac{||x_i-x_j||}{4t}} if e^{-\frac{||x_i-x_j||}{4t}} \geq k, 
-                 0 if e^{-\frac{||x_i-x_j||}{4t}} \leq k$$
+$$w_{i,j} = \begin{cases}
+e^{-\frac{||x_i-x_j||}{4t}}\quad& \text{if } e^{-\frac{||x_i-x_j||}{4t}} \geq k\\
+0 \quad & \text{if } e^{-\frac{||x_i-x_j||}{4t}} < k
+\end{cases}$$
 
 By setting $k = 0.01$ here's the result
 
-We see that to keep the threshold fixed we need to increase the number of neighbors as $N_{side}$ gets bigger.
+We see that to keep the threshold fixed we need to increase the number of neighbors as $N_{side}$ gets bigger. Again, the intuition is the following: to have spectral convergence (a strong type of convergence) we need more and more global information and more precise.

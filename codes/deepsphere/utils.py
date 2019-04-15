@@ -152,6 +152,7 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
     elif std == 'kernel_width':
         kernel_width = np.mean(distances_squared)
         weights = np.exp(-distances_squared / (2 * kernel_width))
+        print('kernel width used: ', kernel_width)
     elif isinstance(std, float) or isinstance(std, int):
         weights = np.exp(-distances_squared / std)
     # Similarity proposed by Renata & Pascal, ICCV 2017.
