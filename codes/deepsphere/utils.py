@@ -189,7 +189,7 @@ def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi', pl
     distances_squared = spatial.distance.cdist(coords, coords)**2
     if plot:
         import matplotlib.pyplot as plt
-        plt.hist(np.ravel(distances_squared[distances_squared<max_plot]), 1000);
+        plt.hist(np.ravel(distances_squared[distances_squared<max_plot]), 100);
     # Compute similarities / edge weights.
     if std == 'kernel_width':
         kernel_width = np.mean(distances_squared)
