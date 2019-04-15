@@ -1,7 +1,8 @@
 \section{The Belkin's trinity}
 \subsection{Towards a theoretical foundation of Laplacian-based manifold methods}
 
-In this paper they present two results: a pointwise probabilistic convergence of \textbf{the extension of the graph Laplacian} $\hat L_n^t$ 
+In this paper they present two results: a pointwise probabilistic convergence of \textbf{the extension of the graph Laplacian} 
+$$L_n^t:\quad(L_n^tf)(y) = f(y)\sum_i e^\frac{||x_i-y||}{4t}-\sum_ie^\frac{||x_i-y||}{4t}f(x_i)$$
 
 $$\forall f \in C^\infty(\mathcal M)\quad  C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) \xrightarrow{n\to\infty}\triangle_\mathcal M f(\bf x)$$
 
@@ -15,14 +16,17 @@ here nothing is said about convergence of the spectra, plus there's nothing writ
 Theorem 1 is proven by simple analysis arguments and by Hoeffding's formula (probability). 
 First, by the simple law of large numbers, we have that for a fixed $t>0$, a fixed function $f$ and a fixed point $p\in\mathcal M$
 \begin{equation}\label{eq:pointwise convergence of laplacian discrete approximation}
-\lim_{n\to\infty}\frac{1}{t}\frac{1}{ (4\pi t)^{\frac{k}{2}}}L_n^tf(p)= L^tf(p)
+\lim_{n\to\infty}\frac{1}{tn}\frac{1}{ (4\pi t)^{\frac{k}{2}}}L_n^tf(p)= L^tf(p)
 \end{equation}
 
 
 
 where 
 
-$$L^tf(p)=  \frac{1}{t}\frac{1}{ (4\pi t)^{\frac{k}{2}}} \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(x)-f(p)\right)d\mu(x)$$
+\begin{equation}\label{eq:L^t}
+	L^tf(p) :=  \frac{1}{ (4\pi t)^{\frac{k+2}{2}}} \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(x)-f(p)\right)d\mu(x)
+\end{equation}
+
 
 To prove the convergence of $L^t$ to $\triangle_\mathcal M$, then we need three steps, that we can recycle completely. They use the fact that thanks to the exponential map the heat kernel centered on $p$ on any manifold can be approximated by a Gaussian in the ambient Euclidean space in a small neighborhood of $p$, and the relationship between Euclidean distances and geodesic distances.
 
@@ -119,3 +123,20 @@ Now, we found the following code, part of Healpix\_cxx 2.15a \cite{Healpix_cc} t
 		return v_angle(va,vb);
 	}
 \end{lstlisting}
+$\mathcal S_{N_{side}} = \{x_i\}  \text{ set of points of the HEALPix sampling scheme for a fixed }N_{side}$,\\$c_i = \text{farthest corner of the area patch associated to the pixel }x_i$, we have that 
+$$\hat d=\max_{x_i\in \mathcal S_{N_{side}}}d(x_i, c_i) \leq ||v_a-v_b||\rightarrow 0$$
+where $v_a = (2/3, \pi/N_{side})$, $v_b = (1-t_1/3, 0)$ and $t_1=(1-1/N_{side})^2$.
+
+Thanks to this result, we have the following two point wise convergences
+
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||}{4t}}d\mu(x)$$
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}f(x_i)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||}{4t}}f(x)d\mu(x)$$
+
+Remembering the definition of the extension of the graph Laplacian
+$$L_n^tf(y)=f(y) \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}-\frac{1}{n}\sum_ie^{-\frac{||x_i-y||}{4t}}f(x_i)$$
+ we have the following point wise convergence:
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
+Remembering the definition (\ref{eq:L^t}) of the operator $L^t$ we can rewrite the above equality as
+
+$$\lim_{n\to\infty}\frac{1}{tn}\frac{1}{ (4\pi t)^{\frac{k}{2}}}L_n^tf(p)= \frac{1}{t^{\frac{k+2}{2}}}\frac{1}{ (4\pi)^{\frac{k+2}{2}}}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x)=$$
+$$= \frac{1}{ (4\pi t)^{\frac{k+2}{2}}}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x) = L^tf(y)$$

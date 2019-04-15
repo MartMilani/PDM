@@ -92,25 +92,25 @@ Done:
 
 Next:
 * study how to optimally set sigma
-	* better plot (log?) or a quantitative measure for alignment (we're now too good to see a difference)
+  * better plot (log?) or a quantitative measure for alignment (we're now too good to see a difference) --- DONE ----
 	* for a fixed Nside, what is the impact of sigma?
 		* Is there a trade-off between approximating low and high frequencies?
-				NOT REALLY
+				---- NOT REALLY ----
 		* Small sigma can capture high frequencies, large sigma approximates the integral better.
-			WHY A LARGE SIGMA SHOULD APPROXIMATE THE INTEGRAL BETTER? I DON'T AGREE
+			---- WHY A LARGE SIGMA SHOULD APPROXIMATE THE INTEGRAL BETTER? I DON'T AGREE ----
 	* setting sigma as a function of Nside, does it now converge as we increase Nside?
-		* should the number of neighbors (or, number of neighbors closer than 4 sigma) increase as Nside increases? YES
+		* should the number of neighbors (or, number of neighbors closer than 4 sigma) increase as Nside increases? ---- YES ----
 		* if it can stay constant, what was the issue with our initial graph construction? Simply not enough neighbors? (we had 8)
-				TRIED WITH 14 (more or less double as before) AND GET THE SAME SHIT -> IT CAN'T STAY CONSTANT
-	* Can we theoretically motivate an optimal sigma, for a given finite and deterministic sampling? NO IDEA WHERE TO START.
+				---- TRIED WITH 14 (more or less double as before) AND GET THE SAME SHIT -> IT CAN'T STAY CONSTANT ----
+	* Can we theoretically motivate an optimal sigma, for a given finite and deterministic sampling? ---- NO IDEA WHERE TO START ----
 		* B&N might not be the optimal framework to think about that, as all the results are asymptotic.
 * study the connection with finite elements / differences
 	* hard to integrate the knowledge that we know the manifold
 	* see if mesh-free methods might be more appropriate (ask Nobile for a reference)
 	* start on the circle: the matrices from finite elements and finite differences are the same as the graph Laplacian
 	* what happens with a non-uniform sampling of the circle?
-* finish the B&N pointwise convergence proof
+* finish the B&N pointwise convergence proof ---- DONE ----
 	* done, we only need to understand the formula for the radius of the pixels
-	* if no answer from author, we can ask Cardoso (he also knows the healpix authors)
+	* if no answer from author, we can ask Cardoso (he also knows the healpix authors) ---- STILL WAITING FOR ANSWER, WRITTEN ALSO TO HEALPIX.JPL.NASA.GOV ----
 * play with the platonic solids: those are the sole 5 samplings that are regular
 	* postponed for now
