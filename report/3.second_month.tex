@@ -4,14 +4,30 @@
 \subsection{Towards a theoretical foundation of Laplacian-based manifold methods}
 
 In this paper they present two results: a pointwise probabilistic convergence of \textbf{the extension of the graph Laplacian} 
-$$L_n^t:\quad(L_n^tf)(y) = f(y)\sum_i e^\frac{||x_i-y||}{4t}-\sum_ie^\frac{||x_i-y||}{4t}f(x_i)$$
+\begin{definition}{Graph Laplacian}
+	$$ \left(\mathbf L_n^t\right)_{ij}=\begin{cases}
+	-w_{ij}, & i\neq j\\
+	\sum_{k}w_{ik}, & i=j
+	\end{cases}$$
+\end{definition}
+\begin{definition}{Point cloud Laplace operator}
+	$$L_n^t:\quad(L_n^tf)(y) = \frac{1}{n}f(y)\sum_i e^\frac{||x_i-y||}{4t}-\frac{1}{n}\sum_ie^\frac{||x_i-y||}{4t}f(x_i)$$
+\end{definition}
+\begin{definition}{Functional approximation to the Laplace-Beltrami operator} \label{eq:L^t}
+	$$L^tf(p) :=  \frac{1}{ (4\pi t)^{\frac{k+2}{2}}} \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(x)-f(p)\right)d\mu(x)$$
+\end{definition}
 
-$$\forall f \in C^\infty(\mathcal M)\quad  C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) \xrightarrow{n\to\infty}\triangle_\mathcal M f(\bf x)$$
+\begin{theorem}{Pointwise convergence}
+	$$\forall f \in C^\infty(\mathcal M)\quad  C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) \xrightarrow{n\to\infty}\triangle_\mathcal M f(\bf x)$$
+\end{theorem}
+
 
 and a uniform (pointwise convergence of the operator) one
+\begin{theorem}{uniform convergence}
+	$$\sup_{x\in\mathcal M, f\in \mathcal F_C}\left| C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) - \triangle_\mathcal M f(\bf x) \right|\xrightarrow{n\to\infty}0
+	, \quad \mathcal F_C = \left\{f\in C^\infty(\mathcal M), f^{(i)}(x)\leq M, i=1,2,3\right\}$$
+\end{theorem}
 
-$$\sup_{x\in\mathcal M, f\in \mathcal F_C}\left| C\frac{(4\pi t_n)^{-\frac{k+2}{2}}}{n} L_n^t f(\bf x) - \triangle_\mathcal M f(\bf x) \right|\xrightarrow{n\to\infty}0
-, \quad \mathcal F_C = \left\{f\in C^\infty(\mathcal M), f^{(i)}(x)\leq M, i=1,2,3\right\}$$
 
 here nothing is said about convergence of the spectra, plus there's nothing written about the relationship between $\mathbf{Eig} L_n^t$ (the eigenfunctions and eigenvalues of the extension of the graph Laplacian) and $\mathbf {Eig} \mathbf {L}_n^t$ (the eigenvectors and eigenvalues of the matrix Laplacian).
 
@@ -22,12 +38,6 @@ First, by the simple law of large numbers, we have that for a fixed $t>0$, a fix
 \end{equation}
 
 
-
-where 
-
-\begin{equation}\label{eq:L^t}
-	L^tf(p) :=  \frac{1}{ (4\pi t)^{\frac{k+2}{2}}} \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(x)-f(p)\right)d\mu(x)
-\end{equation}
 
 
 To prove the convergence of $L^t$ to $\triangle_\mathcal M$, then we need three steps, that we can recycle completely. They use the fact that thanks to the exponential map the heat kernel centered on $p$ on any manifold can be approximated by a Gaussian in the ambient Euclidean space in a small neighborhood of $p$, and the relationship between Euclidean distances and geodesic distances.
