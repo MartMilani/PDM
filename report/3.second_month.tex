@@ -126,7 +126,12 @@ $n$ defines the number of vertices in the graph, $N$ defines the parameter $N_{s
 \begin{definition}{Functional approximation to the Laplace-Beltrami operator} \label{eq: my L^t}
 	$$L^t:\quad L^tf(y) := \int_{\mathcal S_2}e^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
 \end{definition}
-
+\begin{figure}[h!]
+	\label{fig:Belkin proof}
+	\caption{Old proof we need to modify}
+	\centering
+	\includegraphics[width=0.9\textwidth]{Figs/03/oldproof.png}
+\end{figure}
 \paragraph{Step 1: replacing the LLN}
 
 We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_{N_{side}}$, and the maximum distance to the center point of one surface\textbf{ $d_{N_{side}}$}.
@@ -188,7 +193,7 @@ $$\forall f \text{ Lipschitz, } \forall x\in\mathcal S_2 \quad \left|\frac{1}{4\
 	$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| A_i  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
 	$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ n \mathcal L_{\phi^t_y} \max_{i=1,...n} (d_i|A_i|)  \right]$$
 	
-	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$. If we assume $\max_{i=1,...n} (d_i|A_i|) \leq \frac{C}{N^3}$
+	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$ and where we used for the last inequality the arguments used in Step 1. If we assume $\max_{i=1,...n} (d_i|A_i|) \leq \frac{C}{N^3}$ (meaning $\max_{i=1,...n} d_i \leq \frac{C}{\sqrt{n}}$ and $\max_{i=1,...n} |A_i| \leq \frac{C}{n}$)
 	and remember that for HEALPix $n=12N^2$
 	
 	$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N} \right]$$
