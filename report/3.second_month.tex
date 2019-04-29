@@ -108,7 +108,7 @@ Really hard. Uniform operator convergence does not hold, however spectral conver
 Getting inspired from the work flow presented above, we try to replicate the first theorem obtained in \textbf{Towards a theoretical foundation of Laplacian-based manifold methods} but not in the case of random Laplacians, but in the case of deterministic ones where the sampling is given by the HEALPix scheme. This analysis will be a preparatory work to further studies, since as we pointed out so far, from this kind of convergence nothing is said about the convergence of eigenvalues and eigenvectors. However, this study could maybe tell us something about the equivariance of the graph with respect to the action of the rotation group $SO(3)$.
 
 
-We remind that \textbf{in order to adapt this proof to our needs, we need to find an alternative to the law of large numbers (LLN) used to prove eq. (\ref{eq:pointwise convergence of laplacian discrete approximation}}) and then we need another inequality to substitute Hoeffding's inequality. 
+We remind that \textbf{in order to adapt this proof to our needs, we need to find an another inequality to substitute Hoeffding's inequality.}
 
 
 \paragraph{Definitions}
@@ -126,44 +126,48 @@ $n$ defines the number of vertices in the graph, $N$ defines the parameter $N_{s
 \begin{definition}{Functional approximation to the Laplace-Beltrami operator} \label{eq: my L^t}
 	$$L^t:\quad L^tf(y) := \int_{\mathcal S_2}e^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
 \end{definition}
-\begin{figure}[h!]
-	\label{fig:Belkin proof}
-	\caption{Old proof we need to modify}
-	\centering
-	\fbox{\includegraphics[width=0.9\textwidth]{Figs/03/oldproof.png}}
-\end{figure}
-\paragraph{Step 1: replacing the LLN}
 
-We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_{N_{side}}$, and the maximum distance to the center point of one surface\textbf{ $d_{N_{side}}$}.
+\paragraph{Step 1: keeping $t$ fixed.}
+
+Here we want to prove that 
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) = \frac{1}{|\mathcal S_2|} L^tf(y)$$
+
+This will be an easy but introductory result to the main result proved in Step 2.
+
+\begin{proof}
+We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_N$, and the maximum distance to the center point of one surface\textbf{ $d_{N}$}.
 Let us assume that the function $f$ is $L$ Lipschitz, we have
 \[
-\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}f({\bf x}_{i})\leq\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\frac{1}{2}Ld_{N_{side}}S_{N_{side}}.
+\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\frac{1}{2}Ld_{N}S_{N}\leq S_{N}f({\bf x}_{i})\leq\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\frac{1}{2}Ld_{N}S_{N}.
 \]
 Hence we have:
 \[
-\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\sum_{i}\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}\sum_{i}f({\bf x}_{i})\leq\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\sum_{i}\frac{1}{2}Ld_{N_{side}}S_{N_{side}}
+\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\sum_{i}\frac{1}{2}Ld_{N}S_{N}\leq S_{N}\sum_{i}f({\bf x}_{i})\leq\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\sum_{i}\frac{1}{2}Ld_{N}S_{N}
 \]
 and 
 \[
-\left|S_{N_{side}}\sum_{i}f({\bf x}_{i})-\int f({\bf x})\text{d}{\bf x}\right|\le\frac{1}{2}Ld_{N_{side}}S_{tot}
+\left|S_{N}\sum_{i}f({\bf x}_{i})-\int f({\bf x})\text{d}{\bf x}\right|\le\frac{1}{2}Ld_{N}S_{tot}
 \]
-where $S_{tot}$ is the the total surface of the sphere. Now we need to characterize $d_{N_{side}}$ with respect of $N_{side}$ and $L$ with respect of $m$ and $\ell$. 
+where $S_{tot}$ is the the total surface of the sphere. Now we need to characterize $d_{N}$ with respect of $N$ and $L$ with respect of $m$ and $\ell$. 
 
-Now, we found the following code, part of Healpix\_cxx 2.15a \cite{Healpix_cc} that illustrates how to calculate the maximum distance between a pixel and the corner of the corresponding patch. The class \lstinline|vec3| implements a 3D cartesian vector, the function \lstinline|vec3.set_z_phi(double, double)| creates a unit vector from a z coordinate and an azimuthal angle. Both \lstinline|va| and \lstinline|vb| converge towards the point $(2/3, 0)$, making $$d_{N_{side}}\rightarrow0$$
-\begin{lstlisting}[language=c++]
+
+\begin{tcolorbox}
+	Now, we found the following code, part of Healpix\_cxx 2.15a \cite{Healpix_cc} that illustrates how to calculate the maximum distance between a pixel and the corner of the corresponding patch. The class \lstinline|vec3| implements a 3D cartesian vector, the function \lstinline|vec3.set_z_phi(double, double)| creates a unit vector from a z coordinate and an azimuthal angle. Both \lstinline|va| and \lstinline|vb| converge towards the point $(2/3, 0)$, making $$d_{N}\rightarrow0$$
+	\begin{lstlisting}[language=c++]
 	double Healpix_Base::max_pixrad() const
 	{
-		vec3 va,vb;
-		va.set_z_phi (2./3., pi/(4*nside_));
-		double t1 = 1.-1./nside_;
-		t1*=t1;
-		vb.set_z_phi (1-t1/3, 0);
-		return v_angle(va,vb);
+	vec3 va,vb;
+	va.set_z_phi (2./3., pi/(4*nside_));
+	double t1 = 1.-1./nside_;
+	t1*=t1;
+	vb.set_z_phi (1-t1/3, 0);
+	return v_angle(va,vb);
 	}
-\end{lstlisting}
-$\mathcal S_{N_{side}} = \{x_i\}  \text{ set of points of the HEALPix sampling scheme for a fixed }N_{side}$,\\$c_i = \text{farthest corner of the area patch associated to the pixel }x_i$, we have that 
-$$\hat d=\max_{x_i\in \mathcal S_{N_{side}}}d(x_i, c_i) \leq ||v_a-v_b||\rightarrow 0$$
-where $v_a = (2/3, \pi/N_{side})$, $v_b = (1-t_1/3, 0)$ and $t_1=(1-1/N_{side})^2$.
+	\end{lstlisting}
+	$\mathcal S_{N} = \{x_i\}  \text{ set of points of the HEALPix sampling scheme for a fixed }N$,\\$c_i = \text{farthest corner of the area patch associated to the pixel }x_i$, we have that 
+	$$\hat d=\max_{x_i\in \mathcal S_{N}}d(x_i, c_i) \leq ||v_a-v_b||\rightarrow 0$$
+	where $v_a = (2/3, \pi/N)$, $v_b = (1-t_1/3, 0)$ and $t_1=(1-1/N)^2$.
+\end{tcolorbox} 
 
 Thanks to this result, we have the following two point wise convergences
 
@@ -172,7 +176,14 @@ $$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1
 
 Remembering the definition of the extension of the graph Laplacian we have the following point wise convergence:
 $$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) = \frac{1}{|\mathcal S_2|} L^tf(y)$$
+\end{proof}
 \paragraph{Step 2: replacing Hoeffding's inequality}
+\begin{figure}[h!]
+	\label{fig:Belkin proof}
+	\caption{Old proof we need to modify}
+	\centering
+	\fbox{\includegraphics[width=0.9\textwidth]{Figs/03/oldproof.png}}
+\end{figure}
 In the previous paragraph we already proved that \textit{keeping t fixed} $L_n^tf(x)\rightarrow L^tf(x)$. We now want to prove the following thing:
 $$\left|\frac{1}{4\pi t^2}\left(L_n^tf(x) - \frac{1}{|\mathcal S_2|}L^tf(x)\right)\right|\xrightarrow[n\to \infty]{t\to 0}0$$
 \textit{for $t\to0$ and $n\to\infty$ at the same time}. In other words, we want to prove that there exists a sequence $(t_n), \lim_{n\to\infty}t_n=0$ such that 
