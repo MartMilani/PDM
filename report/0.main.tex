@@ -113,7 +113,7 @@
 
 %	TITLE SECTION
 \HRule \\[0.4cm]
-{ \huge \bfseries About the convergence of the Graph Laplacian}\\[0.4cm] 
+{ \huge \bfseries About the convergence of the Graph Laplacian on a 2-sphere}\\[0.4cm] 
 \HRule \\[1.5cm]     
 
 %	AUTHOR SECTION
@@ -139,7 +139,13 @@ Martino \textsc{Milani}\\
 
 
 \begin{abstract}
-Problem definition: find a convergence result for the Graph Laplacian on a graph approximating a sphere (WHICH GRAPH? Because for a full graph with $W(i,j)=e^{||x_i-x_j||^2}$ we already have it) to the Laplace-Beltrami operator on the sphere, given a deterministic sampling (HealPix).
+
+A fundamental problem in signal processing is to design computationally efficient algorithms to filter signals. In many applications, the signals to filter lie on a sphere. Meaningful examples of data of this kind are weather data on the Earth, or images of the sky. It is then important to design filtering algorithms that are computationally efficient and capable of exploiting the rotational symmetry of the problem. In these applications, given a continuous signal $f: \mathcal S_2 \rightarrow \mathbb R$ on a 2-sphere $\mathcal S_2 \subset  \mathbb R^3$, we can only know the vector of its sampled values $\mathbf f \in \mathbb R^N:\quad (\mathbf f)_i = f(\mathbf x_i)$  in a finite set of points $\mathcal P \subset \mathcal S_2,\quad \mathcal P = \{\mathbf x_i\}_{I=0}^{N-1}$ where our sensors are located. Deferrard et al. in [1] construct a sparse graph $G$ on the vertex set $\mathcal P$ and then use a polynomial of the corresponding graph Laplacian matrix $\mathbf L  \in \mathbb R^{N\times N} $ to perform a computationally efficient - $\mathcal O (N)$ - filtering of the sampled signal $\mathbf f$. In order to study how well this algorithm respects the symmetry of the problem - i.e it is equivariant to the rotation group SO(3) - it is important to guarantee that the spectrum of $\mathbf L$  and spectrum of the Laplace-Beltrami operator $\triangle_\mathcal M$ are somewhat "close".
+
+We study the spectral properties of such graph Laplacian matrix in the special case of [1] where the sampling $\mathcal P$ is the so called HEALPix sampling (acronym for \textbf Hierarchical \textbf Equal \textbf Area iso\textbf Latitude \textbf {Pix}elization) and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral properties than the one presented in [1].
+
+On going research is now focused in alternative ways of building the matrix $\mathbf L$ and in finding a quantitative bound on the spectral approximation $\textbf{Eig}\ \mathbf L \approx \textbf{Eig}\triangle_{\mathcal S_2}$.
+
 
 
 \end{abstract}

@@ -105,10 +105,30 @@ Really hard. Uniform operator convergence does not hold, however spectral conver
 
 \section{Pointwise convergence in the HEALPix case}
 
-Getting inspired from the work flow presented above, we try to replicate the first theorem obtained in \textbf{Towards a theoretical foundation of Laplacian-based manifold methods} but not in the case of random Laplacians, but in the case of deterministic ones where the sampling is given by the HEALPix scheme. This analysis will be a preparatory work to further studies, since as we pointed out so far, form this kind of convergence nothing is said about the convergence of eigenvalues and eigenvectors. However, this study could maybe tell us something about the equivariance of the graph with respect to the action of the rotation group $SO(3)$.
+Getting inspired from the work flow presented above, we try to replicate the first theorem obtained in \textbf{Towards a theoretical foundation of Laplacian-based manifold methods} but not in the case of random Laplacians, but in the case of deterministic ones where the sampling is given by the HEALPix scheme. This analysis will be a preparatory work to further studies, since as we pointed out so far, from this kind of convergence nothing is said about the convergence of eigenvalues and eigenvectors. However, this study could maybe tell us something about the equivariance of the graph with respect to the action of the rotation group $SO(3)$.
 
 
-We remind that \textbf{in order to adapt this proof to our needs, we just need to find an alternative to the law of large numbers (LLN) used to prove eq. (\ref{eq:pointwise convergence of laplacian discrete approximation}}). We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_{N_{side}}$, and the maximum distance to the center point of one surface\textbf{ $d_{N_{side}}$}.
+We remind that \textbf{in order to adapt this proof to our needs, we need to find an alternative to the law of large numbers (LLN) used to prove eq. (\ref{eq:pointwise convergence of laplacian discrete approximation}}) and then we need another inequality to substitute Hoeffding's inequality. 
+
+
+\paragraph{Definitions}
+
+\begin{definition}{Graph Laplacian}
+	$$ \left(\mathbf L_n^t\right)_{ij}=\begin{cases}
+	-w_{ij}, & i\neq j\\
+	\sum_{k}w_{ik}, & i=j
+	\end{cases}$$
+\end{definition}
+\begin{definition}{Point cloud Laplace operator}
+	$$L_n^t:\quad(L_n^tf)(y) = \frac{1}{n}\left[ \sum_i e^\frac{||x_i-y||}{4t}\left(f(y)-f(x_i)\right)\right]$$
+\end{definition}
+\begin{definition}{Functional approximation to the Laplace-Beltrami operator} \label{eq: my L^t}
+	$$L^tf(y) := \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
+\end{definition}
+
+\paragraph{Step 1: replacing the LLN}
+
+We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_{N_{side}}$, and the maximum distance to the center point of one surface\textbf{ $d_{N_{side}}$}.
 Let us assume that the function $f$ is $L$ Lipschitz, we have
 \[
 \int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\frac{1}{2}Ld_{N_{side}}S_{N_{side}}\leq S_{N_{side}}f({\bf x}_{i})\leq\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\frac{1}{2}Ld_{N_{side}}S_{N_{side}}.
@@ -141,14 +161,80 @@ where $v_a = (2/3, \pi/N_{side})$, $v_b = (1-t_1/3, 0)$ and $t_1=(1-1/N_{side})^
 
 Thanks to this result, we have the following two point wise convergences
 
-$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||}{4t}}d\mu(x)$$
-$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}f(x_i)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||}{4t}}f(x)d\mu(x)$$
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}d\mu(x)$$
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}f(x_i)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}f(x)d\mu(x)$$
 
-Remembering the definition of the extension of the graph Laplacian
-$$L_n^tf(y)=f(y) \frac{1}{n}\sum_i e^{-\frac{||x_i-y||}{4t}}-\frac{1}{n}\sum_ie^{-\frac{||x_i-y||}{4t}}f(x_i)$$
- we have the following point wise convergence:
-$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
-Remembering the definition (\ref{eq:L^t}) of the operator $L^t$ we can rewrite the above equality as
+Remembering the definition of the extension of the graph Laplacian we have the following point wise convergence:
+$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) = \frac{1}{|\mathcal S_2|} L^tf(y)$$
+\paragraph{Step 2: replacing Hoeffding's inequality}
+We define for simplicity of notation
+$$\phi^t(x;y) := e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)$$
+$$K^t(x,y) :=  e^{-\frac{||x-y||^2}{4t}}$$
 
-$$\lim_{n\to\infty}\frac{1}{tn}\frac{1}{ (4\pi t)^{\frac{k}{2}}}L_n^tf(p)= \frac{1}{t^{\frac{k+2}{2}}}\frac{1}{ (4\pi)^{\frac{k+2}{2}}}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x)=$$
-$$= \frac{1}{ (4\pi t)^{\frac{k+2}{2}}}\int_\mathcal M e^{-\frac{||x-y||}{4t}}\left(f(y)-f(x)\right)d\mu(x) = L^tf(y)$$
+we proceed by writing
+$$||L_n^tf-\frac{1}{|\mathcal S_2|}L^tf||_\infty = \max _{y\in \mathcal S_2} \left|L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right|=$$
+$$= \max _{y\in \mathcal S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{\mathcal S_2} \phi^t(x;y)d\mu(x) \right|$$
+$$\leq \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{1}{n}  \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{|\mathcal S_2|}{n}  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| A_i  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ n \mathcal L_{\phi^t_y} \max_{i=1,...n} (d_i|A_i|)  \right]$$
+
+where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$. If we assume $\max_{i=1,...n} (d_i|A_i|) \leq \frac{C}{N_{side}^3}$
+and remember that for HEALPix $n=12N_{side}^2$
+
+$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N_{side}} \right]$$
+
+Let's now find the explicit dependence $t\rightarrow \mathcal L_{\phi^t_y}$
+
+$\mathcal L_{\phi^t_y} = ||\partial_x\phi^t(x;y)||_\infty = ||\partial_x\left(K^t(x;y)f(x)\right)||_\infty = ||\partial_x K^t(x;y)f(x) + K^t(x;y)\partial_x f(x)||_\infty \leq$
+
+$ \leq ||\partial_x K^t(x;y)f(x)||_\infty + ||K^t(x;y)\partial_x f(x)||_\infty \leq  ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||K^t(x;y)||_\infty||\partial_x f(x)||_\infty = $
+
+$ = ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||\partial_x f(x)||_\infty = \mathcal L_{K^t_y} ||f||_\infty + ||\partial_xf||_\infty = \mathcal L_{K^t_y} ||f||_\infty + \mathcal L_f$
+
+where $\mathcal L_{K^t_y}$ is the Lipschitz constant of $x\rightarrow K^t(x;y)$. We can observe that such constant does not depend on $y$. Thus
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+$\mathcal L_{K^t_y} = \norm{\partial_x e^{-\frac{x^2}{4t}}}_\infty = \norm{\frac{x}{2t}e^{-\frac{x^2}{4t}}}_\infty = \left. \frac{x}{2t}e^{-\frac{x^2}{4t}}\right|_{x=\sqrt{2t}}=(2et)^{-\frac{1}{2}}\propto t ^ {-\frac{1}{2}}$
+
+So we can continue
+
+$$ \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N_{side}} \right]\leq$$
+$$ \leq \frac{1}{|\mathcal S_2|} \left[   \frac{12C}{N_{side}} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\right]\leq$$
+$$  \leq \frac{1}{|\mathcal S_2|} \frac{12C\norm{f}_\infty}{N_{side}(2et)^\frac{1}{2}} +   \frac{1}{|\mathcal S_2|} \frac{12C}{N_{side}}\mathcal L_f$$
+
+So we have that, rescaling:
+
+$$\left.\norm{\frac{1}{t}\frac{1}{(4\pi t)^{\frac{k}{2}}}\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty\right|_{k=2}\leq$$
+$$\leq \frac{1}{4\pi t^2}\norm{\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty \leq$$
+$$ \leq \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right]$$
+
+we want $\begin{cases}
+t \rightarrow 0\\
+N \rightarrow \infty\\
+Nt^\frac{5}{2} \rightarrow \infty\\
+Nt^2 \rightarrow \infty
+\end{cases}$ 
+
+This is true if $\begin{cases}
+t(N) = N^\beta, &\beta\in(-\frac{2}{5}, 0) \\
+t(N) = N^\beta, &\beta\in(-\frac{1}{2}, 0)
+\end{cases} \implies t(N) = N^\beta, \quad \beta\in(-\frac{2}{5}, 0)$
+
+Indeed 
+
+$Nt^\frac{5}{2}=N^{\frac{5}{2}\beta+1}\rightarrow \infty$ since $\frac{5}{2}\beta+1>0 \iff \beta>-\frac{2}{5}$
+
+$Nt^2=N^{2\beta+1}\rightarrow \infty$ since $2\beta+1>0 \iff \beta>-\frac{1}{2}$
+
+So, for $t=N^\beta$ with $\beta\in(-\frac{2}{5}, 0)$ we have that 
+
+$$\begin{cases}
+t(N)\xrightarrow{N\to\infty}0\\
+\norm{\frac{1}{4\pi t^2}L_n^tf-\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t^2}L^tf}_\infty  \xrightarrow{N\to\infty}0
+\end{cases}$$
+from which we conclude that
+$$\forall y\in\mathcal S_2 \quad \lim_{N\to\infty}\frac{1}{4\pi t^2} L_n^tf(y) =  \lim_{N\to\infty}\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t^2} L^tf(y) = \frac{1}{|\mathcal S_2|^2}\triangle_{\mathcal S_2}f(y) $$
+
+where the last equality is thanks to $\frac{1}{4\pi t^2} L^tf(y) \rightarrow \frac{1}{|\mathcal S_2|}\triangle_{\mathcal S_2}f(y)$  \cite[Towards a theoretical  blablabla]{} 

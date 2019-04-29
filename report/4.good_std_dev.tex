@@ -55,7 +55,21 @@ e^{-\frac{||x_i-x_j||}{4t}}\quad& \text{if } e^{-\frac{||x_i-x_j||}{4t}} \geq k\
 0 \quad & \text{if } e^{-\frac{||x_i-x_j||}{4t}} < k
 \end{cases}$$
 
-By setting $k = 0.01$ here's the result
+By setting $k = 0.01$ here's the results:
+
+\begin{center}
+	\begin{tabular}{ c|c} 
+
+		$N_{side}$ & Number of neighbors \\ 
+	
+		1 & 11 \\ 
+		2 & 16 \\ 
+		4 & 37 \\ 
+		8 & 43 \\ 
+		16 & 52 \\ 
+
+\end{tabular}
+\end{center}
 
 \begin{figure}[h]
 	\label{fig:DeepSphere_thresholded}
@@ -67,3 +81,7 @@ By setting $k = 0.01$ here's the result
 
 We see that to keep the threshold fixed we need to increase the number of neighbors as $N_{side}$ gets bigger. Again, the intuition is the following: to have spectral convergence (a strong type of convergence) we need more and more global information and more precise. 
 \textbf{TO DO: LINK THIS INTUITION WITH THE PROOF OF CONVERGENCE}
+
+\clearpage
+
+
