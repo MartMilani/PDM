@@ -113,6 +113,7 @@ We remind that \textbf{in order to adapt this proof to our needs, we need to fin
 
 \paragraph{Definitions}
 
+$n$ defines the number of vertices in the graph, $N$ defines the parameter $N_{side}$
 \begin{definition}{Graph Laplacian}
 	$$ \left(\mathbf L_n^t\right)_{ij}=\begin{cases}
 	-w_{ij}, & i\neq j\\
@@ -120,10 +121,10 @@ We remind that \textbf{in order to adapt this proof to our needs, we need to fin
 	\end{cases}$$
 \end{definition}
 \begin{definition}{Point cloud Laplace operator}
-	$$L_n^t:\quad(L_n^tf)(y) = \frac{1}{n}\left[ \sum_i e^\frac{||x_i-y||}{4t}\left(f(y)-f(x_i)\right)\right]$$
+	$$L_n^t:\quad(L_n^tf)(y) = \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^\frac{||x_i-y||}{4t}\left(f(y)-f(x_i)\right)\right]$$
 \end{definition}
 \begin{definition}{Functional approximation to the Laplace-Beltrami operator} \label{eq: my L^t}
-	$$L^tf(y) := \int_\mathcal Me^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
+	$$L^t:\quad L^tf(y) := \int_{\mathcal S_2}e^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
 \end{definition}
 
 \paragraph{Step 1: replacing the LLN}
@@ -167,74 +168,83 @@ $$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1
 Remembering the definition of the extension of the graph Laplacian we have the following point wise convergence:
 $$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) = \frac{1}{|\mathcal S_2|} L^tf(y)$$
 \paragraph{Step 2: replacing Hoeffding's inequality}
-We define for simplicity of notation
-$$\phi^t(x;y) := e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)$$
-$$K^t(x,y) :=  e^{-\frac{||x-y||^2}{4t}}$$
+In the previous paragraph we already proved that \textit{keeping t fixed} $L_n^tf(x)\rightarrow L^tf(x)$. We now want to prove the following thing:
+$$\left|\frac{1}{4\pi t^2}\left(L_n^tf(x) - \frac{1}{|\mathcal S_2|}L^tf(x)\right)\right|\xrightarrow[n\to \infty]{t\to 0}0$$
+\textit{for $t\to0$ and $n\to\infty$ at the same time}. In other words, we want to prove that there exists a sequence $(t_n), \lim_{n\to\infty}t_n=0$ such that 
+$$\forall f \text{ Lipschitz, } \forall x\in\mathcal S_2 \quad \left|\frac{1}{4\pi t_n^2}\left(L_n^{t_n}f(x) -\frac{1}{|\mathcal S_2|} L^{t_n}f(x)\right)\right|\xrightarrow{n\to \infty}0$$
 
-we proceed by writing
-$$||L_n^tf-\frac{1}{|\mathcal S_2|}L^tf||_\infty = \max _{y\in \mathcal S_2} \left|L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right|=$$
-$$= \max _{y\in \mathcal S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{\mathcal S_2} \phi^t(x;y)d\mu(x) \right|$$
-$$\leq \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{1}{n}  \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
-$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{|\mathcal S_2|}{n}  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
-$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| A_i  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
-$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ n \mathcal L_{\phi^t_y} \max_{i=1,...n} (d_i|A_i|)  \right]$$
+\begin{proof}
+	
+	We define for simplicity of notation
+	$$\phi^t(x;y) := e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)$$
+	$$K^t(x,y) :=  e^{-\frac{||x-y||^2}{4t}}$$
+	$$N := N_{side}$$
+	
+	we start by writing the following chain of inequalities
+	$$||L_n^tf-\frac{1}{|\mathcal S_2|}L^tf||_\infty = \max _{y\in \mathcal S_2} \left|L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right|=$$
+	$$= \max _{y\in \mathcal S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{\mathcal S_2} \phi^t(x;y)d\mu(x) \right|$$
+	$$\leq \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{1}{n}  \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+	$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{|\mathcal S_2|}{n}  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+	$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| A_i  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+	$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ n \mathcal L_{\phi^t_y} \max_{i=1,...n} (d_i|A_i|)  \right]$$
+	
+	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$. If we assume $\max_{i=1,...n} (d_i|A_i|) \leq \frac{C}{N^3}$
+	and remember that for HEALPix $n=12N^2$
+	
+	$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N} \right]$$
+	
+	Let's now find the explicit dependence $t\rightarrow \mathcal L_{\phi^t_y}$
+	
+	$\mathcal L_{\phi^t_y} = ||\partial_x\phi^t(x;y)||_\infty = ||\partial_x\left(K^t(x;y)f(x)\right)||_\infty = ||\partial_x K^t(x;y)f(x) + K^t(x;y)\partial_x f(x)||_\infty \leq$
+	
+	$ \leq ||\partial_x K^t(x;y)f(x)||_\infty + ||K^t(x;y)\partial_x f(x)||_\infty \leq  ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||K^t(x;y)||_\infty||\partial_x f(x)||_\infty = $
+	
+	$ = ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||\partial_x f(x)||_\infty = \mathcal L_{K^t_y} ||f||_\infty + ||\partial_xf||_\infty = \mathcal L_{K^t_y} ||f||_\infty + \mathcal L_f$
+	
+	where $\mathcal L_{K^t_y}$ is the Lipschitz constant of $x\rightarrow K^t(x;y)$. We can observe that such constant does not depend on $y$. Thus
+	
+	$\mathcal L_{K^t_y} = \norm{\partial_x e^{-\frac{x^2}{4t}}}_\infty = \norm{\frac{x}{2t}e^{-\frac{x^2}{4t}}}_\infty = \left. \frac{x}{2t}e^{-\frac{x^2}{4t}}\right|_{x=\sqrt{2t}}=(2et)^{-\frac{1}{2}}\propto t ^ {-\frac{1}{2}}$
+	
+	So we can continue
+	
+	$$ \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N} \right]\leq$$
+	$$ \leq \frac{1}{|\mathcal S_2|} \left[   \frac{12C}{N} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\right]\leq$$
+	$$  \leq \frac{1}{|\mathcal S_2|} \frac{12C\norm{f}_\infty}{N(2et)^\frac{1}{2}} +   \frac{1}{|\mathcal S_2|} \frac{12C}{N}\mathcal L_f$$
+	
+	So we have that, rescaling by a factor $\frac{1}{t}\frac{1}{(4\pi t)^{\frac{k}{2}}}$
+	
+	$$\left.\norm{\frac{1}{t}\frac{1}{(4\pi t)^{\frac{k}{2}}}\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty\right|_{k=2}\leq$$
+	$$\leq \frac{1}{4\pi t^2}\norm{\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty \leq$$
+	$$ \leq \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right]$$
+	
+	we want $\begin{cases}
+	t \rightarrow 0\\
+	N \rightarrow \infty\\
+	Nt^\frac{5}{2} \rightarrow \infty\\
+	Nt^2 \rightarrow \infty
+	\end{cases}$ in order for $ \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right] \xrightarrow[t\to 0 ]{N\to\infty}0$
+	
+	This is true if $\begin{cases}
+	t(N) = N^\beta, &\beta\in(-\frac{2}{5}, 0) \\
+	t(N) = N^\beta, &\beta\in(-\frac{1}{2}, 0)
+	\end{cases} \implies t(N) = N^\beta, \quad \beta\in(-\frac{2}{5}, 0)$
+	
+	Indeed 
+	
+	$Nt^\frac{5}{2}=N^{\frac{5}{2}\beta+1}\xrightarrow{N \to \infty} \infty$ since $\frac{5}{2}\beta+1>0 \iff \beta>-\frac{2}{5}$
+	
+	$Nt^2=N^{2\beta+1}\xrightarrow {N \to \infty} \infty$ since $2\beta+1>0 \iff \beta>-\frac{1}{2}$
+	
+	So, for $t=N^\beta$ with $\beta\in(-\frac{2}{5}, 0)$ we have that 
+	
+	$$\begin{cases}
+	(t_N)\xrightarrow{N\to\infty}0\\
+	\norm{\frac{1}{4\pi t_N^2}L_n^{t_N}f-\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t_N^2}L^{t_N}f}_\infty  \xrightarrow{N\to\infty}0
+	\end{cases}$$
 
-where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$. If we assume $\max_{i=1,...n} (d_i|A_i|) \leq \frac{C}{N_{side}^3}$
-and remember that for HEALPix $n=12N_{side}^2$
-
-$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N_{side}} \right]$$
-
-Let's now find the explicit dependence $t\rightarrow \mathcal L_{\phi^t_y}$
-
-$\mathcal L_{\phi^t_y} = ||\partial_x\phi^t(x;y)||_\infty = ||\partial_x\left(K^t(x;y)f(x)\right)||_\infty = ||\partial_x K^t(x;y)f(x) + K^t(x;y)\partial_x f(x)||_\infty \leq$
-
-$ \leq ||\partial_x K^t(x;y)f(x)||_\infty + ||K^t(x;y)\partial_x f(x)||_\infty \leq  ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||K^t(x;y)||_\infty||\partial_x f(x)||_\infty = $
-
-$ = ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||\partial_x f(x)||_\infty = \mathcal L_{K^t_y} ||f||_\infty + ||\partial_xf||_\infty = \mathcal L_{K^t_y} ||f||_\infty + \mathcal L_f$
-
-where $\mathcal L_{K^t_y}$ is the Lipschitz constant of $x\rightarrow K^t(x;y)$. We can observe that such constant does not depend on $y$. Thus
-
-\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
-
-$\mathcal L_{K^t_y} = \norm{\partial_x e^{-\frac{x^2}{4t}}}_\infty = \norm{\frac{x}{2t}e^{-\frac{x^2}{4t}}}_\infty = \left. \frac{x}{2t}e^{-\frac{x^2}{4t}}\right|_{x=\sqrt{2t}}=(2et)^{-\frac{1}{2}}\propto t ^ {-\frac{1}{2}}$
-
-So we can continue
-
-$$ \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N_{side}} \right]\leq$$
-$$ \leq \frac{1}{|\mathcal S_2|} \left[   \frac{12C}{N_{side}} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\right]\leq$$
-$$  \leq \frac{1}{|\mathcal S_2|} \frac{12C\norm{f}_\infty}{N_{side}(2et)^\frac{1}{2}} +   \frac{1}{|\mathcal S_2|} \frac{12C}{N_{side}}\mathcal L_f$$
-
-So we have that, rescaling:
-
-$$\left.\norm{\frac{1}{t}\frac{1}{(4\pi t)^{\frac{k}{2}}}\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty\right|_{k=2}\leq$$
-$$\leq \frac{1}{4\pi t^2}\norm{\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty \leq$$
-$$ \leq \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right]$$
-
-we want $\begin{cases}
-t \rightarrow 0\\
-N \rightarrow \infty\\
-Nt^\frac{5}{2} \rightarrow \infty\\
-Nt^2 \rightarrow \infty
-\end{cases}$ in order for $ \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right] \xrightarrow[t\to 0 ]{N\to\infty}0$
-
-This is true if $\begin{cases}
-t(N) = N^\beta, &\beta\in(-\frac{2}{5}, 0) \\
-t(N) = N^\beta, &\beta\in(-\frac{1}{2}, 0)
-\end{cases} \implies t(N) = N^\beta, \quad \beta\in(-\frac{2}{5}, 0)$
-
-Indeed 
-
-$Nt^\frac{5}{2}=N^{\frac{5}{2}\beta+1}\rightarrow \infty$ since $\frac{5}{2}\beta+1>0 \iff \beta>-\frac{2}{5}$
-
-$Nt^2=N^{2\beta+1}\rightarrow \infty$ since $2\beta+1>0 \iff \beta>-\frac{1}{2}$
-
-So, for $t=N^\beta$ with $\beta\in(-\frac{2}{5}, 0)$ we have that 
-
-$$\begin{cases}
-t(N)\xrightarrow{N\to\infty}0\\
-\norm{\frac{1}{4\pi t^2}L_n^tf-\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t^2}L^tf}_\infty  \xrightarrow{N\to\infty}0
-\end{cases}$$
-from which we conclude that
-$$\forall y\in\mathcal S_2 \quad \lim_{N\to\infty}\frac{1}{4\pi t^2} L_n^tf(y) =  \lim_{N\to\infty}\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t^2} L^tf(y) = \frac{1}{|\mathcal S_2|^2}\triangle_{\mathcal S_2}f(y) $$
-
-where the last equality is thanks to $\frac{1}{4\pi t^2} L^tf(y) \rightarrow \frac{1}{|\mathcal S_2|}\triangle_{\mathcal S_2}f(y)$  \cite[Towards a theoretical  blablabla]{} 
+	
+thanks to the fact that - proof in \cite{Belkin:2005:TTF:2138147.2138189} - 
+	$$\frac{1}{4\pi t^2} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{|\mathcal S_2|}\triangle_{\mathcal S_2}f(y)$$
+	we conclude that
+	$$\forall y\in\mathcal S_2 \quad \lim_{N\to\infty}\frac{1}{4\pi t_N^2} L_n^{t_N}f(y) =  \lim_{N\to\infty}\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t_N^2} L^{t_N}f(y) = \frac{1}{|\mathcal S_2|^2}\triangle_{\mathcal S_2}f(y) $$
+\end{proof}
