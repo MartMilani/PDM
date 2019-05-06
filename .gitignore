@@ -1,3 +1,6 @@
+
+*.vtu
+
 **/.ipynb_checkpoints
 papers/**
 **/.DS_Store
