@@ -13,7 +13,6 @@ from scipy.sparse import csr_matrix
 
 for nside in [1, 2, 4]:
     # Create mesh and define function space
-    # BIG PROBLEM: I HAVE NO IDEA OF HOW THE PIXELS ARE ORDERED!
     meshname = "09_meshes/HEALPix_{}.xml".format(nside)
     mesh = Mesh(meshname)
     global_normal = Expression(("x[0]", "x[1]", "x[2]"), degree=1)
@@ -23,11 +22,10 @@ for nside in [1, 2, 4]:
     # Define variational problem
     u = TrialFunction(V)
     v = TestFunction(V)
-    f = Expression("0", degree=1)
-    u_n = interpolate(Expression("pow(x[0], 2)", degree=1), V)
-    dt = 100
-    a =  u*v*dx + dt*dot(grad(u), grad(v))*dx
-    L = (u_n + dt*f)*v*dx
+    f = Expression("pow(x[0], 2)", degree=1)
+    
+    a = dot(grad(u), grad(v))*dx
+    L = f*v*dx
 
     # Compute solution and save stiffness matrix!
 
