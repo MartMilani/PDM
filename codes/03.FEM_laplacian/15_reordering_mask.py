@@ -58,6 +58,6 @@ for nside in nsides:
     for i, item in enumerate(coords):
         reordering_mask[i] = int(indexes[almost_equal(dofs_x, item)][0])
     assert len(np.unique(reordering_mask)) == 12*nside**2
-    np.save("reordering_mask_{}".format(nside), reordering_mask)
+    np.save("15_reordering_masks/reordering_mask_{}".format(nside), reordering_mask)
     print("done")
     

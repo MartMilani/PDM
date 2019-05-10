@@ -80,7 +80,7 @@ for nside in nsides:
     plt.show()
     
     # ---------- reordering ----------
-    reordered_mask = np.load('reordering_mask_{}.npy'.format(nside))
+    reordered_mask = np.load('15_reordering_masks/reordering_mask_{}.npy'.format(nside))
     eig_vectors = eig_vectors[reordered_mask]
     # --------------------------------
     
