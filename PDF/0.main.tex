@@ -1,0 +1,168 @@
+\documentclass[12pt,titlepage]{article}
+
+\usepackage{svg}
+\usepackage{nomencl}
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{a4paper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{color}
+\usepackage[tt]{titlepic}
+\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{lastpage}
+\usepackage{bm}
+\usepackage{epstopdf}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+
+\usepackage[section]{placeins}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage[justification=centering]{caption}
+\usepackage{sidecap}
+
+\usepackage{multirow}
+\usepackage[squaren, Gray, cdot]{SIunits}
+\graphicspath{{image/}} %chemin par défaut pour aller chercher les images 
+\usepackage{url}
+\usepackage[utf8]{inputenc}
+% FOR DEFINITIONS (https://www.sharelatex.com/learn/Theorems_and_proofs)
+\usepackage{amsthm}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem*{definition*}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem*{prop*}{Proposition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{example}{Example}
+
+% Custom Defines
+\usepackage[comma,numbers,sort&compress]{natbib}
+\bibliographystyle{plainnat}
+\usepackage[pdfstartview=FitH,
+            breaklinks=true,
+            bookmarksopen=true,
+            bookmarksnumbered=true,
+            colorlinks=true,
+            linkcolor=black,
+            citecolor=black
+            ]{hyperref}
+\newcommand{\rmd}{\textrm{d}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\bi}[1]{{\ensuremath{\boldsymbol{#1}}}}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+
+\topmargin=-0.45in      %
+%\evensidemargin=0in     %
+\oddsidemargin=-0.1in      %
+\textwidth=6.8in        %
+\textheight=9.2in       %
+%\headsep=0.25in         %
+\headheight=30.9pt
+
+\begin{document}
+
+% ========== TITLE PAGE ===================================================
+\input{titlepage.tex}
+%\onehalfspacing
+
+% ========== HEADER =======================================================
+\pagestyle{headings} \pagenumbering{arabic} \setcounter{page}{1}
+\addtolength{\headheight}{\baselineskip}
+\lhead{\textbf{Martino Milani}}
+\chead{Master Thesis}
+\renewcommand{\headrulewidth}{0.4pt}
+
+
+\begin{abstract}
+
+A fundamental problem in signal processing is to design computationally efficient algorithms to filter signals. In many applications, the signals to filter lie on a sphere. Meaningful examples of data of this kind are weather data on the Earth, or images of the sky. It is then important to design filtering algorithms that are computationally efficient and capable of exploiting the rotational symmetry of the problem. In these applications, given a continuous signal $f: \mathcal S_2 \rightarrow \mathbb R$ on a 2-sphere $\mathcal S_2 \subset  \mathbb R^3$, we can only know the vector of its sampled values $\mathbf f \in \mathbb R^N:\quad (\mathbf f)_i = f(\mathbf x_i)$  in a finite set of points $\mathcal P \subset \mathcal S_2,\quad \mathcal P = \{\mathbf x_i\}_{I=0}^{N-1}$ where our sensors are located. Deferrard et al. in \cite{DeepSphere} construct a sparse graph $G$ on the vertex set $\mathcal P$ and then use a polynomial of the corresponding graph Laplacian matrix $\mathbf L  \in \mathbb R^{N\times N} $ to perform a computationally efficient - $\mathcal O (N)$ - filtering of the sampled signal $\mathbf f$. In order to study how well this algorithm respects the symmetry of the problem - i.e it is equivariant to the rotation group SO(3) - it is important to guarantee that the spectrum of $\mathbf L$  and spectrum of the Laplace-Beltrami operator $\triangle_\mathcal M$ are somewhat "close".
+
+We study the spectral properties of such graph Laplacian matrix in the special case of \cite{DeepSphere} where the sampling $\mathcal P$ is the so called HEALPix sampling (acronym for \textbf Hierarchical \textbf Equal \textbf Area iso\textbf Latitude \textbf {Pix}elization) and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral properties than the one presented in \cite{DeepSphere}.
+
+We investigate other different methods of building the matrix $\mathbf L$ better suited to samplings of the sphere different than HEALPix. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on a manifold. We compare the FEM and the graph Laplacians on the HEALPix and on the equiangular sampling on the sphere.
+
+
+\end{abstract}
+\pagebreak
+
+\pagenumbering{roman}
+\section*{Acknowledgements}
+
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+\listoffigures
+\listoftables
+
+\pagebreak
+
+\pagenumbering{arabic}
+\input{1.LiteratureReview.tex}
+
+\pagebreak
+
+\input{2.Chapter1.tex}
+
+\pagebreak
+
+\input{3.Chapter2.tex}
+
+\pagebreak
+
+\input{4.Conclusions.tex}
+
+\pagebreak
+
+\bibliography{references.bib} 
+
+\nocite{*}
+
+\pagebreak
+
+
+
+\end{document}
