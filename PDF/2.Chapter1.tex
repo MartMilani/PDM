@@ -5,96 +5,136 @@
 %!TEX root = 0.main.tex
 
 \section{Improving Deep Sphere}
+
 \subsection{Adapting Belkin's setting to HEALPix sampling}
 
-Getting inspired from the work flow presented above, we try to replicate the first theorem obtained in \textbf{Towards a theoretical foundation of Laplacian-based manifold methods} but not in the case of random Laplacians, but in the case of deterministic ones where the sampling is given by the HEALPix scheme. This analysis will be a preparatory work to further studies, since as we pointed out so far, from this kind of convergence nothing is said about the convergence of eigenvalues and eigenvectors. However, this study could maybe tell us something about the equivariance of the graph with respect to the action of the rotation group $SO(3)$.
+[General introduction to our work] Getting inspired from the work flow of \cite{Belkin:2005:TTF:2138147.2138189, vonluxburg2008, NIPS2006_2989}, we try to adapt theorem 1 of \cite{Belkin:2005:TTF:2138147.2138189} in the case of a specific manifold - the 2-Sphere - where the sampling is given by the HEALPix scheme. This analysis will be a preparatory work to further studies, since as we pointed out so far, from this kind of convergence nothing is said about the convergence of eigenvalues and eigenvectors. 
 
+[Why proving this result is useful] However, the proof of this result is instructive since it shows that in order for it to work we need to impose some regularity conditions on the sampling. Before stating these regularity conditions, we need to define these following geometric quantities for a given sampling of the sphere. Define $n$ to be the number of vertices in the graph, define $N$ to be a shorthand for the parameter $N_{side}$ (remember that for HEALPix sampling, $n=12N^2$). Define $A_i$ to be the patch of the surface of the sphere corresponding to the i-th point of the sampling, and $d_i$ to be the radius of the smallest ball in $\mathbb R^3$ containing $Ai$ (see Figure \ref{fig:Geometric characteristics of a patch}). \\
+If the sampling is equal area (i), meaning that all the patches $A_i$ have the same area (i.e. HEALPix, see figure \ref{fig:HEALPix equal areas patches}), then we need to impose that $ \max_{i=1,...n} d_i \leq \frac{1}{\sqrt{n}}$. If the sampling is not equal area (ii), meaning that in general $A_i\neq A_j$, then we need a slightly more complex condition: $\max_{i=1,...n}d_i|A_i|\leq C\frac{1}{n^\frac{3}{2}}$ (meaning $\max_{i=1,...n} d_i \leq \frac{C}{\sqrt{n}}$ and $\max_{i=1,...n} |A_i| \leq \frac{C}{n}$)\\
 
-We remind that \textbf{in order to adapt this proof to our needs, we need to find an another inequality to substitute Hoeffding's inequality.}
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[width=0.4\linewidth]{figs/chapter1/d_iA_i.png}
+	\captionof{figure}{Geometric characteristics of the i-th patch}
+	\label{fig:Geometric characteristics of a patch}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figs/chapter1/Heal_Base.png}
+	\captionof{figure}{HEALPix equal areas patches for $N_{side}=1$, $N_{side}=2$}
+	\label{fig:HEALPix equal areas patches}
+	\vspace{0.5cm}
+\end{minipage}
 
+It is interesting to notice these regularity conditions for the following reasons: in \cite{Belkin:2005:TTF:2138147.2138189} the sampling is drawn form a uniform random distribution on the sphere, and their proof heavily relies on the uniformity properties of the distribution from which the sampling is drawn. In our case the sampling is deterministic, and the fact that for a sphere there doesn't exist a regular sampling with more than 12 points (being the only regular samplings of the sphere the vertices of the Platonic solids) is indeed a problem that we need to overcome someway by imposing the regularity conditions above. 
 
-\paragraph{Definitions}
+[MC perspective] The readers that are familiar with Monte Carlo and Quasi Monte Carlo methods could also see the difference between our work and Belkin et al.'s work in the following perspective: the probabilistic setting of the work of \cite{Belkin:2005:TTF:2138147.2138189} can be interpreted in a Monte Carlo fashion: the Heat Kernel Graph Laplacian can be seen as Monte Carlo estimator of the Functional approximation of the Laplace Beltrami operator $L^t$ that in \cite{1} is proven to converge to the Laplace-Beltrami operator on the manifold. Here we are trying to find a Quasi Monte Carlo estimator of the Laplace-Beltrami operator though a deterministic sampling, for which we naturally need some regularity assumptions, as a sort of bound on the Discrepancy of the sampling. In Section \ref{sec:Heat Kernel Graph Laplacian on the Equiangular Sampling}, \textit{Heat Kernel Graph Laplacian on the Equiangular Sampling} we show an example of a sampling that do not respect this regularity hypothesis, and for which we do not observe the convergence of the Heat Kernel Graph Laplacian.\\
 
-$n$ defines the number of vertices in the graph, $N$ defines the parameter $N_{side}$
-\begin{definition}{Graph Laplacian}
-	$$ \left(\mathbf L_n^t\right)_{ij}=\begin{cases}
-	-w_{ij}, & i\neq j\\
-	\sum_{k}w_{ik}, & i=j
-	\end{cases}$$
+[Review of Belkin et al's proof: the 2 steps] Before discussing the key elements of our proof, let's review the key steps of the proof of Belkin et al. Given the random sampling, the convergence of the Heat Kernel Graph Laplacian $L_n^t$ to the Functional Approximation of the Laplace-Beltrami $L^t$ is immediate thanks to the SLLN. The bulk of their work is the proof of equation \ref{eq:pointwise_convergence} and the use of the Hoeffding's inequality to let them prove the existence of a sequence $(t_n), t_n\xrightarrow{n\to\infty}0$ such that $$\forall \epsilon\quad \mathbb{P}\left[\frac{1}{4 \pi t^2}\left|L_{n}^{t_n} f(p)-\mathbb{E} L_{n}^{t_n} f(p)\right|>\epsilon\right] \xrightarrow{n\to\infty} 0$$. Since 
+$$\mathbb{E} \mathbf{L}_{n}^{t} f(p)=\left(f(p) \int_{\mathcal{M}} e^{-\frac{ \| p-\left.y\right|^{2}}{4 t}} d \mu(y)-\int_{\mathcal{M}} f(y) e^{-\frac{ \| p-y| |^{2}}{4 t}} d \mu(y)\right)= L^tf(y)$$
+and because of equation \ref{eq:pointwise_convergence}, they obtain their theorem.
+
+[What we need to modify] Two are the key elements of the proof of \cite{Belkin:2005:TTF:2138147.2138189} that we need to modify: first, we need to prove that $\left| (L_n^tf)(y)-(L^tf)(y)\right|\xrightarrow{n\to \infty} 0$ in a deterministic sense, and second we need to construct an inequality of the kind
+
+$$\left|\frac{1}{4\pi t^2}\left(L_n^tf(x) - L^tf(x)\right)\right|\xrightarrow[n\to \infty]{t\to 0}0$$
+
+that will replace Hoeffding's inequality.
+The main result of this section is the following:
+\begin{theorem}
+	For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere, for all $f: \mathcal S_2 \rightarrow \mathbb R$ Lipschitz, for all $y\in\mathcal S_2$, the rescaled Heat Kernel Graph Laplacian operator $\frac{|\mathcal S_2|}{4\pi t_n}L^t_n$ converges point wise to the Laplace Beltrami operator on the sphere $\triangle_{\mathcal M}$
+	
+	$$ \lim_{N\to\infty}\frac{|\mathcal S_2|}{4\pi t_N^2} L_n^{t_N}f(y) =  \triangle_{\mathcal S_2}f(y) $$
+	\label{theo:pointwise convergence in the healpix case}
+\end{theorem}
+
+\subsubsection{Point wise convergence of the Graph Laplacian in the HEALPix case}
+
+Let us recall some useful definitions for the proof of theorem \ref{theo:pointwise convergence in the healpix case}:
+
+\begin{definition}{}(Heat Kernel Graph Laplacian Matrix)\\
+	\label{def:Heat Kernel Graph Laplacian Matrix}
+	\text{For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere we define the \textbf{matrix} }
+	$$\mathbf L_n^t:\quad(\mathbf L_n^t)_{ij} := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-x_j||^2}{4t}}\left(f(x_j)-f(x_i)\right)\right]$$
 \end{definition}
-\begin{definition}{Point cloud Laplace operator}
-	$$L_n^t:\quad(L_n^tf)(y) = \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)\right]$$
+\begin{definition}{}(Heat Kernel Graph Laplacian operator)\\
+	\label{def:Heat Kernel Graph Laplacian operator}
+	\text{For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere we define the \textbf{operator} }
+	$$L_n^t:\quad(L_n^tf)(y) := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)\right]$$
 \end{definition}
-\begin{definition}{Functional approximation to the Laplace-Beltrami operator} \label{eq: my L^t}
+\begin{definition}{}(Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t}
+	\label{def:Functional approximation to the Laplace-Beltrami operator}
 	$$L^t:\quad L^tf(y) := \int_{\mathcal S_2}e^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
+	\text {where $\mu(x)$ is the normalized uniform measure on the sphere: $\int_{\mathcal S_2}d\mu(x)=1$}
 \end{definition}
 
 
-\subsubsection{Pointwise convergence of the Graph Laplacian in the HEALPix case}
+As an intermediate result to the main result proved in Theorem \ref{theo:pointwise convergence in the healpix case}, our first goal is to prove that 
+\begin{prop}\label{prop:1}
+	For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere, for all $f: \mathcal S_2 \rightarrow \mathbb R$ Lipschitz, for all $y\in\mathcal S_2$, the Heat Kernel Graph Laplacian operator $L^t_n$ converges point wise to the functional approximation of the Laplace Beltrami operator $L^t$
+	$$ L_n^tf(y)\xrightarrow{n\to\infty} L^tf(y)$$
+\end{prop} 
 
-Here we want to prove that 
-$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) = \frac{1}{|\mathcal S_2|} L^tf(y)$$
+Before showing the proof, we discuss why we need this result. Belkin et al. use the fact that the sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ is drawn from a uniform distribution on the manifold to to get the result of Proposition \ref{prop:1} in a \textit{probabilistic} sense. In their work they argue that if $(x_i)$ are i.i.d. uniform random variables on the surface of the sphere, observing that $L_n^t(y)$ is the empirical average of $n$ random variables with expectation $\int_{\mathcal S_2} e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$, then a straightforward application of the strong law of large numbers gives that $$ L_n^tf(y)\xrightarrow{n\to\infty}  = L^t(y)$$ where the limit is intended in a probabilistic sense.\\
 
-This will be an easy but introductory result to the main result proved in Step 2.
+Given that we work with a \textit{deterministic} sampling, we need different arguments than the SLLN to prove this convergence. Here's the proof:
 
 \begin{proof}
-	We know by construction that the HEALPix sampling cut the sphere into equal areas. Let us note the surface of one level $S_N$, and the maximum distance to the center point of one surface\textbf{ $d_{N}$}.
-	Let us assume that the function $f$ is $L$ Lipschitz, we have
-	\[
-	\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\frac{1}{2}Ld_{N}S_{N}\leq S_{N}f({\bf x}_{i})\leq\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\frac{1}{2}Ld_{N}S_{N}.
-	\]
-	Hence we have:
-	\[
-	\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}-\sum_{i}\frac{1}{2}Ld_{N}S_{N}\leq S_{N}\sum_{i}f({\bf x}_{i})\leq\sum_{i}\int_{\sigma_{i}}f({\bf x})\text{d}{\bf x}+\sum_{i}\frac{1}{2}Ld_{N}S_{N}
-	\]
-	and 
-	\[
-	\left|S_{N}\sum_{i}f({\bf x}_{i})-\int f({\bf x})\text{d}{\bf x}\right|\le\frac{1}{2}Ld_{N}S_{tot}
-	\]
-	where $S_{tot}$ is the the total surface of the sphere. Now we need to characterize $d_{N}$ with respect of $N$ and $L$ with respect of $m$ and $\ell$. 
+	We know by construction that the HEALPix sampling cut the sphere into equal areas. Given a HEALPix sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1},\ n=12N^2$, we can define $S_N: \ |A_i|=S_N=\frac{|\mathcal S_2|}{n}\ \forall i=1, ..., n$ and $d_N := \max_{i=1,...n}d_i$.
+	Let us assume that the function $f$ is Lipschitz with Lipschitz constant $\mathcal L_f$, we have 
+	
+	$$\left| \int_{A_{i}}f({\bf x})\text{d}{\mu(x)} - \frac{1}{n}f(\mathbf x_i)\right| \leq \mathcal L_fd_{N}\frac{1}{n} $$
+
+	So, by triangular inequality and by summing all the contributions of all the $n$ patches $A_i$
+	$$\left| \int_{\mathcal S_2}f({\bf x})\text{d}{\mu(x)} - \frac{1}{n}\sum_i f(\mathbf x_i)\right| \leq \sum_i \left| \int_{A_{i}}f({\bf x})\text{d}{\mu(x)} - \frac{1}{n}f(\mathbf x_i)\right|\leq n  \mathcal L_fd_{N}\frac{1}{n} = \mathcal L_fd_{N}$$
+	
+	where $|\mathcal S_2|$ is the the total surface of the sphere. If we assume that for HEALPix sampling $d_N\xrightarrow{N\to\infty}0$, then we have that
 	
 	
 
 	
 	Thanks to this result, we have the following two point wise convergences
 	
-	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}d\mu(x)$$
-	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}f(x_i)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}f(x)d\mu(x)$$
+	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}\rightarrow \int e^{-\frac{||x-y||^2}{4t}}d\mu(x)$$
+	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}f(x_i)\rightarrow \int e^{-\frac{||x-y||^2}{4t}}f(x)d\mu(x)$$
 	
-	Remembering the definition of the extension of the graph Laplacian we have the following point wise convergence:
-	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \frac{1}{|\mathcal S_2|}\int e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) = \frac{1}{|\mathcal S_2|} L^tf(y)$$
+	Remembering definitions \ref{def:Heat Kernel Graph Laplacian operator} and \ref{def:Functional approximation to the Laplace-Beltrami operator}, we have the following point wise convergence:
+	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow \int_{\mathcal S_2} e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) =  L^tf(y)$$
 \end{proof}
-\paragraph{Step 2: replacing Hoeffding's inequality}
-\begin{figure}[h!]
-	\label{fig:Belkin proof}
-	\caption{Old proof we need to modify}
-	\centering
-	\fbox{\includegraphics[width=0.9\textwidth]{figs/literaturereview/oldproof.png}}
-\end{figure}
-In the previous paragraph we already proved that \textit{keeping t fixed} $L_n^tf(x)\rightarrow L^tf(x)$. We now want to prove the following thing:
-$$\left|\frac{1}{4\pi t^2}\left(L_n^tf(x) - \frac{1}{|\mathcal S_2|}L^tf(x)\right)\right|\xrightarrow[n\to \infty]{t\to 0}0$$
-\textit{for $t\to0$ and $n\to\infty$ at the same time}. In other words, we want to prove that there exists a sequence $(t_n), \lim_{n\to\infty}t_n=0$ such that 
-$$\forall f \text{ Lipschitz, } \forall x\in\mathcal S_2 \quad \left|\frac{1}{4\pi t_n^2}\left(L_n^{t_n}f(x) -\frac{1}{|\mathcal S_2|} L^{t_n}f(x)\right)\right|\xrightarrow{n\to \infty}0$$
+
+Now, we just proved that \textit{keeping t fixed} $L_n^tf(x)\rightarrow L^tf(x)$. Now our goal is to prove that:
+\begin{prop}\label{prop:2}
+$$\left|\frac{1}{4\pi t^2}\left(L_n^tf(x) -L^tf(x)\right)\right|\xrightarrow[n\to \infty]{t\to 0}0$$
+\textit{for $t\to0$ and $n\to\infty$ at the same time}. In other words, there exists a sequence $(t_n), \\ \lim_{n\to\infty}t_n=0$ such that 
+$$\forall f \text{ Lipschitz, } \forall x\in\mathcal S_2 \quad \left|\frac{1}{4\pi t_n^2}\left(L_n^{t_n}f(x) - L^{t_n}f(x)\right)\right|\xrightarrow{n\to \infty}0$$
+\end{prop}
+
+Thanks to the fact that 
+
+\begin{equation}
+	\frac{1}{4\pi t^2} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{|\mathcal S_2|}\triangle_{\mathcal S_2}f(y)
+	\label{eq:pointwise_convergence}
+\end{equation}
+
+Theorem \ref{theo:pointwise convergence in the healpix case} is an immediate consequence of Proposition \ref{prop:2} (the proof of equation \ref{eq:pointwise_convergence} can be found in \cite{Belkin:2005:TTF:2138147.2138189})
 
 \begin{proof}
 	
 	We define for simplicity of notation
 	$$\phi^t(x;y) := e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)$$
 	$$K^t(x,y) :=  e^{-\frac{||x-y||^2}{4t}}$$
-	$$N := N_{side}$$
+
 	
 	we start by writing the following chain of inequalities
-	$$||L_n^tf-\frac{1}{|\mathcal S_2|}L^tf||_\infty = \max _{y\in \mathcal S_2} \left|L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right|=$$
-	$$= \max _{y\in \mathcal S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{\mathcal S_2} \phi^t(x;y)d\mu(x) \right|$$
-	$$\leq \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{1}{n}  \phi^t(x_i; y)-\frac{1}{|\mathcal S_2|} \int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
-	$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| \frac{|\mathcal S_2|}{n}  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
-	$$= \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \sum_{i=1}^n  \left| A_i  \phi^t(x_i; y)-\int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
-	$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ n \mathcal L_{\phi^t_y} \max_{i=1,...n} (d_i|A_i|)  \right]$$
+	$$||L_n^tf-L^tf||_\infty = \max _{y\in \mathcal S_2} \left|L_n^tf(y)-L^tf(y)\right|=$$
+	$$= \max _{y\in \mathcal S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)- \int_{\mathcal S_2} \phi^t(x;y)d\mu(x) \right|$$
+	$$\leq \max _{y\in \mathcal S_2}  \sum_{i=1}^n   \left| \frac{1}{n}  \phi^t(x_i; y)- \int_{A_i} \phi^t(x;y)d\mu(x) \right|$$
+
+	$$\leq  \max _{y\in \mathcal S_2} \left[\mathcal L_{\phi^t_y}d_N \right]$$
 	
-	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$ and where we used for the last inequality the arguments used in Step 1. If we assume $\max_{i=1,...n} (d_i|A_i|) \leq \frac{C}{N^3}$ (meaning $\max_{i=1,...n} d_i \leq \frac{C}{\sqrt{n}}$ and $\max_{i=1,...n} |A_i| \leq \frac{C}{n}$)
-	and remember that for HEALPix $n=12N^2$
+	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$ and where we used for the last inequality the arguments used in Step 1. If we assume $d_N\leq \frac{C}{\sqrt{n}}$ and remember that for HEALPix $n=12N^2$ we have that
 	
-	$$\leq \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N} \right]$$
+	$$||L_n^tf-L^tf||_\infty  \leq  \max _{y\in \mathcal S_2} \left[ \mathcal L_{\phi^t_y} \frac{C}{N} \right]$$
 	
 	Let's now find the explicit dependence $t\rightarrow \mathcal L_{\phi^t_y}$
 	
@@ -110,22 +150,22 @@ $$\forall f \text{ Lipschitz, } \forall x\in\mathcal S_2 \quad \left|\frac{1}{4\
 	
 	So we can continue
 	
-	$$ \frac{1}{|\mathcal S_2|} \max _{y\in \mathcal S_2} \left[ 12 \mathcal L_{\phi^t_y} \frac{C}{N} \right]\leq$$
-	$$ \leq \frac{1}{|\mathcal S_2|} \left[   \frac{12C}{N} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\right]\leq$$
-	$$  \leq \frac{1}{|\mathcal S_2|} \frac{12C\norm{f}_\infty}{N(2et)^\frac{1}{2}} +   \frac{1}{|\mathcal S_2|} \frac{12C}{N}\mathcal L_f$$
+	$$ \max _{y\in \mathcal S_2} \left[  \mathcal L_{\phi^t_y} \frac{C}{N} \right]\leq$$
+	$$ \leq \left[   \frac{C}{N} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\right]\leq$$
+	$$  \leq \frac{C\norm{f}_\infty}{N(2et)^\frac{1}{2}} +   \frac{C}{N}\mathcal L_f$$
 	
 	So we have that, rescaling by a factor $\frac{1}{t}\frac{1}{(4\pi t)^{\frac{k}{2}}}$
 	
-	$$\left.\norm{\frac{1}{t}\frac{1}{(4\pi t)^{\frac{k}{2}}}\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty\right|_{k=2}\leq$$
-	$$\leq \frac{1}{4\pi t^2}\norm{\left(L_n^tf-\frac{1}{|\mathcal S_2|}L^tf\right)}_\infty \leq$$
-	$$ \leq \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right]$$
+	$$\norm{\frac{1}{4\pi t^2}\left(L_n^tf-L^tf\right)}_\infty\leq$$
+	$$\leq \frac{1}{4\pi t^2}\norm{\left(L_n^tf-L^tf\right)}_\infty \leq$$
+	$$ \leq \frac{C}{4\pi}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right]$$
 	
 	we want $\begin{cases}
 	t \rightarrow 0\\
 	N \rightarrow \infty\\
 	Nt^\frac{5}{2} \rightarrow \infty\\
 	Nt^2 \rightarrow \infty
-	\end{cases}$ in order for $ \frac{3C}{\pi |\mathcal S_2|}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right] \xrightarrow[t\to 0 ]{N\to\infty}0$
+	\end{cases}$ in order for $ \frac{C}{4\pi}\left[\frac{\norm{f}}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right] \xrightarrow[t\to 0 ]{N\to\infty}0$
 	
 	This is true if $\begin{cases}
 	t(N) = N^\beta, &\beta\in(-\frac{2}{5}, 0) \\
@@ -142,14 +182,17 @@ $$\forall f \text{ Lipschitz, } \forall x\in\mathcal S_2 \quad \left|\frac{1}{4\
 	
 	$$\begin{cases}
 	(t_N)\xrightarrow{N\to\infty}0\\
-	\norm{\frac{1}{4\pi t_N^2}L_n^{t_N}f-\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t_N^2}L^{t_N}f}_\infty  \xrightarrow{N\to\infty}0
+	\norm{\frac{1}{4\pi t_N^2}L_n^{t_N}f-\frac{1}{4\pi t_N^2}L^{t_N}f}_\infty  \xrightarrow{N\to\infty}0
 	\end{cases}$$
 	
-	
-	thanks to the fact that - proof in \cite{Belkin:2005:TTF:2138147.2138189} - 
+\end{proof}
+
+The proof of theorem \ref{theo:pointwise convergence in the healpix case} is now trivial:
+\begin{proof}
+	Thanks to Proposition \ref{prop:2} and the fact that - proof in \cite{Belkin:2005:TTF:2138147.2138189} - 
 	$$\frac{1}{4\pi t^2} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{|\mathcal S_2|}\triangle_{\mathcal S_2}f(y)$$
 	we conclude that
-	$$\forall y\in\mathcal S_2 \quad \lim_{N\to\infty}\frac{1}{4\pi t_N^2} L_n^{t_N}f(y) =  \lim_{N\to\infty}\frac{1}{|\mathcal S_2|}\frac{1}{4\pi t_N^2} L^{t_N}f(y) = \frac{1}{|\mathcal S_2|^2}\triangle_{\mathcal S_2}f(y) $$
+	$$\forall y\in\mathcal S_2 \quad \lim_{N\to\infty}\frac{1}{4\pi t_N^2} L_n^{t_N}f(y) =  \lim_{N\to\infty}\frac{1}{4\pi t_N^2} L^{t_N}f(y) = \frac{1}{|\mathcal S_2|}\triangle_{\mathcal S_2}f(y) $$
 \end{proof}
 We can see that the result obtained has the same form than the result obtained in \cite{Belkin:2005:TTF:2138147.2138189}. If Belkin et al. proved convergence in the random case for $\beta \in (-\frac{1}{4}, 0)$, we proved convergence in the HEALPix case for $\beta \in (-\frac{2}{5}, 0)$. This kind of result can be interpreted in the following way. In order to have convergence, we need to reduce the kernel width but \textit{not so fast} compared to the resolution of the graph. In other words, the kernel width has to be reduced but is somewhat limited by the resolution of the graph, that has to increase faster than $t^\frac{2}{5}$.
 \subsection{How to build a better graph}
