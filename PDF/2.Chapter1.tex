@@ -6,36 +6,29 @@
 
 \section{Improving Deep Sphere}
 
-\subsection{Adapting Belkin's setting to HEALPix sampling}
+\subsection{Definitions and basic results}
 
-[Review of Belkin et al's proof: the 2 steps] 
-
-Belkin et al. in \cite{Belkin:2005:TTF:2138147.2138189} prove the following pointwise convergence result for the Heat Kernel Graph Laplacian built on a random sampling on any $k$-dimensional compact smooth manifold $\mathcal M$ embedded in some euclidean space $\mathbb R^N$:
+Let us recall some basic definitions necessary for this chapter:
 \vspace{0.5cm}
-\begin{theorem}{(Theorem 3.1 of \cite{Belkin:2005:TTF:2138147.2138189})}\\
-	\label{theo:Belkin pointwise convergence}
-	Let $\mathcal M$ be a $k$-dimensional compact smooth manifold embedded in some euclidean space $\mathbb R^N$. Let the data points $x_1, ... x_n$ be sampled form a uniform distribution on the manifold $\mathcal M$. Set $t_n=n^{-\frac{1}{k+2+\alpha}}$, for any $\alpha>0$ and let $f\in\mathcal C_\infty(\mathcal M)$. Then:
-	
-	$$\forall \epsilon>0\quad \mathbb{P}\left[\left|\frac{1}{t}\frac{1}{(4 \pi t)^{k/2}}L_{n}^{t_n} f(p)-  \frac{1}{|\mathcal M|}L^{t_n} f(p)\right|>\epsilon\right] \xrightarrow{n\to\infty} 0$$. 
-\end{theorem}
+\begin{definition}{}(Heat Kernel Graph Laplacian Matrix)\\
+	\label{def:Heat Kernel Graph Laplacian Matrix}
+	\text{For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere we define the \textbf{matrix} }
+	$$\mathbf L_n^t:\quad(\mathbf L_n^t)_{ij} := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-x_j||^2}{4t}}\left(f(x_j)-f(x_i)\right)\right]$$
+	where $||\cdot||$ is the Euclidean norm in the ambient space $\mathbb R^N$.
+\end{definition}
 \vspace{0.5cm}
-
-In this section we'll prove a similar result but on the specific case of the manifold $\mathcal M$ being the 2-Sphere $\mathcal S_2$ where the points $x_1, ..., x_n$ are not sampled form a random distribution on the manifold, but are defined by the HEALPix sampling defined in section \ref{sec:HEALPix}. Since our result is similar to theorem \ref{theo:Belkin pointwise convergence}, it is useful to review the proof of theorem \ref{theo:Belkin pointwise convergence}.
-\begin{proof}
-The first step to prove theorem \ref{theo:Belkin pointwise convergence} is observing that for any fixed $t>0$, any fixed function $f$ and a fixed point $y\in\mathcal S_2$,  the Heat Kernel Graph Laplacian $L_n^t$ is an unbiased estimator for the Functional Approximation of the Laplace-Beltrami $L^t$. In other words, $L_n^tf(y)$ is the empirical average of $n$ i.i.d. random variables $X_i= e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)$ with expected value corresponding to $L^tf(y)$. Thus, for the strong law of large numbers we have that
-\begin{equation}
-\label{eq:convergence in probability}
-\lim_{n\to\infty}L_n^tf(y) = L^t(y)
-\end{equation}
-where the limit is in the sense of the strong law of large numbers.
-The core of their work is the proof, that we will not discuss, of the following proposition:
-
-\begin{prop}	
-	$$\frac{1}{t}\frac{1}{(4\pi t)^{k/2}} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{|\mathcal M|}\triangle_{\mathcal M}f(y)$$
-	\label{prop:3}
-\end{prop}
-
-Thanks to Proposition \ref{prop:3} and equation \ref{eq:convergence in probability}, a straightforward application of Hoeffding's inequality (\ref{theo:Hoeffding}) with $K=\frac{1}{t}\frac{1}{(4\pi t)^{k/2}}$ leads to the proof of theorem \ref{theo:Belkin pointwise convergence}.
+\begin{definition}{}(Heat Kernel Graph Laplacian operator)\\
+	\label{def:Heat Kernel Graph Laplacian operator}
+	\text{For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere we define the \textbf{operator} }
+	$$L_n^t:\quad(L_n^tf)(y) := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)\right]$$
+\end{definition}
+\vspace{0.5cm}
+\begin{definition}{}(Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t}
+	\label{def:Functional approximation to the Laplace-Beltrami operator}
+	$$L^t:\quad L^tf(y) := \int_{\mathcal S_2}e^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
+	\text {where $\mu(x)$ is the uniform measure on the sphere}
+\end{definition}
+\vspace{0.5cm}
 
 \begin{prop}(Hoeffding's inequality)\\
 	Let \(X_{1}, \ldots, X_{n}\) be independent identically distributed random variables, such that
@@ -44,7 +37,51 @@ Thanks to Proposition \ref{prop:3} and equation \ref{eq:convergence in probabili
 	$$
 	\mathbb P\left\{\left|\frac{\sum_{i} X_{i}}{n}-\mathbb{E} X_{i}\right|>\epsilon\right\}<2 \exp \left(-\frac{\epsilon^{2} n}{2 K^{2}}\right)
 	$$
+	\label{theo:Hoeffding}
 \end{prop}
+\subsection{Adapting Belkin's setting to HEALPix sampling}
+
+[Review of Belkin et al's proof: the 2 steps] 
+
+Belkin et al. in \cite{Belkin:2005:TTF:2138147.2138189} prove the following pointwise convergence result for the Heat Kernel Graph Laplacian operator built on a random sampling on any $k$-dimensional compact smooth manifold $\mathcal M$ embedded in some euclidean space $\mathbb R^N$:
+\vspace{0.5cm}
+\begin{theorem}{(Theorem 3.1 of \cite{Belkin:2005:TTF:2138147.2138189})}\\
+	\label{theo:Belkin pointwise convergence}
+	Let $\mathcal M$ be a $k$-dimensional compact smooth manifold embedded in some euclidean space $\mathbb R^N$. Let the data points $x_1, ... x_n$ be sampled form a uniform distribution on the manifold $\mathcal M$. Set $t_n=n^{-\frac{1}{k+2+\alpha}}$, for any $\alpha>0$ and let $f\in\mathcal C_\infty(\mathcal M)$. Then:
+	
+	$$\forall \epsilon>0\quad \mathbb{P}\left[\left|\frac{1}{t}\frac{1}{(4 \pi t)^{k/2}}L_{n}^{t_n} f(p)-  \frac{1}{|\mathcal M|}L^{t_n} f(p)\right|>\epsilon\right] \xrightarrow{n\to\infty} 0$$
+\end{theorem}
+\vspace{0.5cm}
+
+In this section we'll prove a similar result but on the specific case of the manifold $\mathcal M$ being the 2-Sphere $\mathcal S_2$ where the points $x_1, ..., x_n$ are not sampled form a random distribution on the manifold, but are defined by the HEALPix sampling defined in section \ref{sec:HEALPix}. Since our result is similar to theorem \ref{theo:Belkin pointwise convergence}, it is useful to first review the proof of theorem \ref{theo:Belkin pointwise convergence} before stating the main result of this section.
+\begin{proof}
+The first step to prove theorem \ref{theo:Belkin pointwise convergence} is observing that for any fixed $t>0$, any fixed function $f$ and a fixed point $y\in\mathcal S_2$,  the Heat Kernel Graph Laplacian $L_n^t$ is an unbiased estimator for the Functional Approximation of the Laplace-Beltrami $L^t$. In other words, $L_n^tf(y)$ is the empirical average of $n$ i.i.d. random variables $X_i= e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)$ with expected value corresponding to $L^tf(y)$. Thus, for the strong law of large numbers we have that
+\begin{equation}
+\label{eq:convergence in probability}
+\lim_{n\to\infty}L_n^tf(y) = L^t(y)
+\end{equation}
+where the limit is in the sense of the strong law of large numbers.
+The core of \cite{Belkin:2005:TTF:2138147.2138189} is the proof, that we will not discuss, of the following proposition:
+
+\begin{prop} Under the same hypothesis of theorem \ref{theo:Belkin pointwise convergence},
+	$$\frac{1}{t}\frac{1}{(4\pi t)^{k/2}} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{|\mathcal M|}\triangle_{\mathcal M}f(y)$$
+	\label{prop:3}
+\end{prop}
+
+Thanks to Proposition \ref{prop:3} and equation \ref{eq:convergence in probability}, a straightforward application of Hoeffding's inequality (Proposition \ref{theo:Hoeffding}) with $K=\frac{1}{t}\frac{1}{(4\pi t)^{k/2}}$ leads to
+
+\begin{equation}
+	\label{eq:hoeffding applied}
+	\mathbb{P}\left[\frac{1}{t(4 \pi t)^{k / 2}}\left|L_{n}^{t} f(y)-\mathbb{E} L_{n}^{t} f(y)\right|>\epsilon\right] \leq 2 e^{-1 / 2 \epsilon^{2} n t(4 \pi t)^{k / 2}}
+\end{equation}
+
+We want the right hand side of equation \ref{eq:hoeffding applied} to go to $0$ for $n\to\infty, t\to0$ at the same time. For this to happen, we need to find a sequence $(t_n)$ such that 
+$$\begin{cases}
+t_n\xrightarrow{n\to\infty}0\\
+2 e^{-1 / 2 \epsilon^{2} n t_n(4 \pi t_n)^{k / 2}}\xrightarrow{n\to\infty}0\\
+\end{cases}$$
+
+By fixing $t_n=n^{-\frac{1}{k+2+\alpha}}$, for any $\alpha>0$, it is easy to check that $-1 / 2 \epsilon^{2} n t_n(4 \pi t_n)^{k / 2}\xrightarrow{n\to\infty}+\infty$ concluding the proof.
 
 \end{proof}
 
@@ -81,30 +118,7 @@ If the sampling is equal area (i), meaning that all the patches $A_i$ have the s
 
 It is interesting to notice these regularity conditions for the following reasons: in \cite{Belkin:2005:TTF:2138147.2138189} the sampling is drawn form a uniform random distribution on the sphere, and their proof heavily relies on the uniformity properties of the distribution from which the sampling is drawn. In our case the sampling is deterministic, and the fact that for a sphere there doesn't exist a regular sampling with more than 12 points (being the only regular samplings of the sphere the vertices of the Platonic solids) is indeed a problem that we need to overcome someway by imposing the regularity conditions above. 
 
-[MC perspective] The readers that are familiar with Monte Carlo and Quasi Monte Carlo methods could also see the difference between our work and Belkin et al.'s work in the following perspective: the probabilistic setting of the work of \cite{Belkin:2005:TTF:2138147.2138189} can be interpreted in a Monte Carlo fashion: the Heat Kernel Graph Laplacian can be seen as Monte Carlo estimator of the Functional approximation of the Laplace Beltrami operator $L^t$ that in \cite{1} is proven to converge to the Laplace-Beltrami operator on the manifold. Here we are trying to find a Quasi Monte Carlo estimator of the Laplace-Beltrami operator though a deterministic sampling, for which we naturally need some regularity assumptions, as a sort of bound on the Discrepancy of the sampling. In Section \ref{sec:Heat Kernel Graph Laplacian on the Equiangular Sampling}, \textit{Heat Kernel Graph Laplacian on the Equiangular Sampling} we show an example of a sampling that do not respect this regularity hypothesis, and for which we do not observe the convergence of the Heat Kernel Graph Laplacian.\\
-
 \subsubsection{Point wise convergence of the Graph Laplacian in the HEALPix case}
-
-Let us recall some useful definitions for the proof of theorem \ref{theo:pointwise convergence in the healpix case}:
-\vspace{0.5cm}
-\begin{definition}{}(Heat Kernel Graph Laplacian Matrix)\\
-	\label{def:Heat Kernel Graph Laplacian Matrix}
-	\text{For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere we define the \textbf{matrix} }
-	$$\mathbf L_n^t:\quad(\mathbf L_n^t)_{ij} := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-x_j||^2}{4t}}\left(f(x_j)-f(x_i)\right)\right]$$
-\end{definition}
-\vspace{0.5cm}
-\begin{definition}{}(Heat Kernel Graph Laplacian operator)\\
-	\label{def:Heat Kernel Graph Laplacian operator}
-	\text{For a sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ of the sphere we define the \textbf{operator} }
-	$$L_n^t:\quad(L_n^tf)(y) := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)\right]$$
-\end{definition}
-\vspace{0.5cm}
-\begin{definition}{}(Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t}
-	\label{def:Functional approximation to the Laplace-Beltrami operator}
-	$$L^t:\quad L^tf(y) := \int_{\mathcal S_2}e^{-\frac{||p-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
-	\text {where $\mu(x)$ is the normalized uniform measure on the sphere: $\int_{\mathcal S_2}d\mu(x)=1$}
-\end{definition}
-\vspace{0.5cm}
 
 As an intermediate result to the main result proved in Theorem \ref{theo:pointwise convergence in the healpix case}, our first goal is to prove that 
 \vspace{0.5cm}
@@ -113,7 +127,7 @@ As an intermediate result to the main result proved in Theorem \ref{theo:pointwi
 	$$ L_n^tf(y)\xrightarrow{n\to\infty} L^tf(y)$$
 \end{prop} 
 \vspace{0.5cm}
-Before showing the proof, we discuss why we need this result. Belkin et al. use the fact that the sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1}$ is drawn from a uniform distribution on the manifold to to get the result of Proposition \ref{prop:1} in a \textit{probabilistic} sense. In their work they argue that if $(x_i)$ are i.i.d. uniform random variables on the surface of the sphere, observing that $L_n^t(y)$ is the empirical average of $n$ random variables with expectation $\int_{\mathcal S_2} e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$, then a straightforward application of the strong law of large numbers gives that $$ L_n^tf(y)\xrightarrow{n\to\infty}  = L^t(y)$$ where the limit is intended in a probabilistic sense. Given that we work with a \textit{deterministic} sampling, we need different arguments than the SLLN to prove this convergence. Here's the proof:
+
 
 \begin{proof}
 	We know by construction that the HEALPix sampling cut the sphere into equal areas. Given a HEALPix sampling $\{x_i\in\mathcal S_2\}_{i=0}^{n-1},\ n=12N^2,\ N=2^k,\ k\in\mathbb N$, we can define $S_n: \ |A_i|=S_n=\frac{|\mathcal S_2|}{n}\ \forall i=1, ..., n$ and $d_n := \max_{i=1,...n}d_i$.
@@ -128,8 +142,7 @@ Before showing the proof, we discuss why we need this result. Belkin et al. use 
 	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}\rightarrow \int e^{-\frac{||x-y||^2}{4t}}d\mu(x)$$
 	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad \frac{1}{n}\sum_i e^{-\frac{||x_i-y||^2}{4t}}f(x_i)\rightarrow \int e^{-\frac{||x-y||^2}{4t}}f(x)d\mu(x)$$
 	
-	Remembering definitions \ref{def:Heat Kernel Graph Laplacian operator} and \ref{def:Functional approximation to the Laplace-Beltrami operator}, we have the following pointwise convergence:
-	$$\forall f \text{ Lipschiz,}\quad \forall y\in\mathcal S_2,  \quad\quad L_n^tf(y)\rightarrow  L^tf(y)$$
+	Together with definitions \ref{def:Heat Kernel Graph Laplacian operator} and \ref{def:Functional approximation to the Laplace-Beltrami operator} this end the proof.
 \end{proof}
 \vspace{0.5cm}
 
