@@ -26,7 +26,7 @@ spectral_content = dict()
 bws = [4, 8, 16]
 for bw in bws:
     npix = 2*bw*(2*bw-1)+1
-    lmax = bw
+    lmax = bw-1
     N = np.cumsum(np.arange(1, 2*lmax+2, 2))[-1]  # how many eigenvectors do I calculate
     
     # Define mesh, function space

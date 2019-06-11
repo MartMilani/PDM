@@ -6,10 +6,11 @@
 
 \section{Other samplings and other Discrete Laplacians}
 
-[What we want from the Laplacian matrix] In a Graph Spherical CNN we use the fact that when the sampling of the sphere is regular enough, the graph $W_{i j} = \exp {-\frac{\norm{x_i-x_j}^2}{4t}}$ is such that the corresponding graph Laplacian $\mathbf L_n^t=D-W$ has a spectrum that is close enough to the spectrum of $\triangle$ so that we can approximate a spherical convolution of a signal with a kernel with a multiplication of a polynomial of the discrete Laplacian $\sum_k \theta_k (\mathbf L_n^t)^k$ times the vector of the sampled signal $\mathbf f_i = f(x_i)$. 
+[What we want from the Laplacian matrix]\\
+In a Graph Spherical CNN we use the fact that when the sampling of the sphere is regular enough, the graph $W_{i j} = \exp {-\frac{\norm{x_i-x_j}^2}{4t}}$ is such that the corresponding graph Laplacian $\mathbf L_n^t=D-W$ has a spectrum that is close enough to the spectrum of $\triangle$ so that we can approximate a spherical convolution of a signal with a kernel with a multiplication of a polynomial of the discrete Laplacian $\sum_k \theta_k (\mathbf L_n^t)^k$ times the vector of the sampled signal $\mathbf f_i = f(x_i)$. 
 
 [Stating the problem we want to solve]\\
-In Chapter 2 we showed a way to construct $\mathbf L_n^t$ that well approximates $\triangle$ in the case of a much regular sampling of the sphere, HEALPix. In this Chapter we focus to others samplings less uniform than HEALPix. The sampling that we used for our study, very used in applications, is the so called equiangular sampling. We observed that in this case the Heat Kernel Graph Laplacian matrix is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples some specific areas of the sphere more than others. The goal of this chapter is to find a way of building a discrete approximation $\mathbf L$ of the Laplace-Beltrami operator more robust to non uniform sampling than the Heat Kernel Graph Laplacian matrix $\mathbf L_n^t$ used so far.
+In Chapter 2 we showed a way to construct $\mathbf L_n^t$ that well approximates $\triangle$ in the case of a much regular sampling of the sphere, HEALPix. In this Chapter we focus to others samplings less uniform than HEALPix. The sampling that we will use for our study, very used in applications, is the so called equiangular sampling. We will observe that in this case the Heat Kernel Graph Laplacian matrix is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples some specific areas of the sphere more than others. The goal of this chapter is to find a way of building a discrete approximation $\mathbf L$ of the Laplace-Beltrami operator more robust to non uniform sampling than the Heat Kernel Graph Laplacian matrix $\mathbf L_n^t$ used so far.
 
 [Say what we did to solve it]\\
 This chapter is organized as follows: In Section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} we introduce the equiangular sampling and the results that we obtained with the Heat Kernel Graph Laplacian matrix. In Section \ref{sec:Chapter3: other discrete laplacians} we present a short overview of different ways of building an discrete approximation of the Laplace-Beltrami operator; in Section \ref{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold} we deepen how to use the Finite Element Method (FEM) to construct a discrete approximation of $\triangle$ and how this way of constructing $\mathbf L$  is actually capable of taking into account the non uniformity of the sampling and correct it. in Section \ref{sec:Chapter3: Results} we present and discuss the results obtained.
@@ -136,7 +137,16 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 	\centering
 	\includegraphics[width=0.8\textwidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM.png}
 	\includegraphics[width=0.8\textwidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM_diagonal.png}	
-	\includegraphics[width=0.8\textwidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	
+	\includegraphics[width=0.8\textwidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	 
+\end{figure}
+
+\begin{figure}[h]
+	\label{fig:FEM and graph diffusion on HEALPix}
+	\caption{FEM and HKGL diffusion on HEALPix}
+	\centering
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/HEALPix/17_diffusion_img/FEM_diffusion.png}
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/HEALPix/17_diffusion_img/GRAPH_diffusion.png}	
+
 \end{figure}
 
 \begin{figure}[h]
@@ -157,6 +167,14 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 	\includegraphics[width=0.9\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/img/FEM_eigenvalues_16.png}	
 \end{figure}
 
+\begin{figure}[h]
+	\label{fig:FEM and graph diffusion on equianular sampling}
+	\caption{FEM and HKGL diffusion on equiangular sampling}
+	\centering
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/17_diffusion_img/FEM_diffusion.png}
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/17_diffusion_img/GRAPH_diffusion.png}	
+	
+\end{figure}
 \begin{figure}[h]
 	\label{fig:FEMequiangularLumped}
 	\caption{Lumped Linear FEM Laplacian on equiangular sampling}

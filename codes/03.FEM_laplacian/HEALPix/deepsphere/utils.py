@@ -168,7 +168,7 @@ def healpix_weightmatrix(nside=16, nest=True, indexes=None, dtype=np.float32,
     return W
 
 
-def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi', plot=False, max_plot=0.1):
+def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi', plot=False, max_plot=0.1, nest=True):
     """Return an unnormalized full weight matrix for a graph using the HEALPIX sampling.
     The order of the pixels is the RING order scheme in healpy
     Parameters
@@ -181,7 +181,7 @@ def full_healpix_weightmatrix(nside=16, dtype=np.float32, std='BelkinNyiogi', pl
     from scipy import spatial
     indexes = range(nside**2 * 12)
     # Get the coordinates.
-    x, y, z = hp.pix2vec(nside, indexes, nest=True)  # NESTED ordered
+    x, y, z = hp.pix2vec(nside, indexes, nest=nest)  # NESTED ordered
     coords = np.vstack([x, y, z]).transpose()
     coords = np.asarray(coords, dtype=dtype)
     # Compute Euclidean distances between neighbors.
@@ -299,7 +299,7 @@ def full_healpix_graph(nside=16,
     coords = np.vstack([x, y, z]).transpose()[indexes]
     # 2) computing the weight matrix
     W = full_healpix_weightmatrix(
-        nside=nside, dtype=dtype, std=std)
+        nside=nside, dtype=dtype, std=std, nest=nest)
     # 3) building the graph
     G = graphs.Graph(
         W,
