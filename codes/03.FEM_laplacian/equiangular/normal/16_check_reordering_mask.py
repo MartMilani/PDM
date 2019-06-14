@@ -164,5 +164,6 @@ for ax, (bw, sc) in zip(axes, spectral_content_reordered.items()):
 
 ax2.legend()
 plt.show()
-      
+
+import pdb; pdb.set_trace()
     

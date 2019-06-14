@@ -115,20 +115,48 @@ In the next section we present some different ways of building the matrix $\math
 \clearpage
 \subsection{Other Discrete Laplacians}\label{sec:Chapter3: other discrete laplacians}
 Present all the other ways of approximating the Laplace-Beltrami operator you found: graphs, Laplace de Rham, FEM
+\subsubsection{Frossard/Khasanova graph}
+\begin{figure}[h]
+	\label{fig:Frossard/Khasanova graph}
+	\centering
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full.png}
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full_diagonal.png}
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_Khasanova_Frossard_eigenvalues_16.png}
+	\caption{Frossard/Khasanova graph}
+\end{figure}
+\begin{figure}[h]
+	\label{fig:Frossard/Khasanova geodesic graph}
+	\centering
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full_geodesic.png}
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full_diagonal_geodesic.png}
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_Khasanova_Frossard_eigenvalues_16_geodesic.png}
+	\caption{Frossard/Khasanova geodesic graph}
+\end{figure}
 \subsection{Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}\label{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}
 Basic ingredients: works on a mesh, 
 \subsubsection{Galerkin Method and Finite Element Method}
 General introduction to the FEM: definitions, weak formulation, functional spaces, Galerkin method, linear FEM.
 \subsubsection{The eigenvalue problem on a manifold}
 Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue problem, lumping of the mass matrix, discussion on the solvers
+\begin{figure}[h]
+	\label{fig:Lumping}
+	\centering
+	\includegraphics[width=0.9\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/img/mass_matrix_diagonal.png}
+
+	\caption{Diagonal of the lumped mass matrix}
+\end{figure}
 \subsection{Results}
 \label{sec:Chapter3: Results}
+
+\subsubsection{Alignment of eigenspaces and analysis of the spectra}
+
+\paragraph{HEALPix}
 \begin{figure}[h]
 	\label{fig:HeatKernelGraphLaplacianHealpix}
-	\caption{Heat Kernel Graph Laplacian on HEALPix}
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded.png}
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded_diagonal.png}	
+	\caption{Heat Kernel Graph Laplacian on HEALPix}
 \end{figure}
 
 \begin{figure}[h]
@@ -140,15 +168,7 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 	\includegraphics[width=0.8\textwidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	 
 \end{figure}
 
-\begin{figure}[h]
-	\label{fig:FEM and graph diffusion on HEALPix}
-	\caption{FEM and HKGL diffusion on HEALPix}
-	\centering
-	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/HEALPix/17_diffusion_img/FEM_diffusion.png}
-	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/HEALPix/17_diffusion_img/GRAPH_diffusion.png}	
-
-\end{figure}
-
+\paragraph{Equiangular}
 \begin{figure}[h]
 	\label{fig:HeatKernelGraphLaplacianEquiangular}
 	\caption{Heat Kernel Graph Laplacian on equiangular sampling}
@@ -157,6 +177,7 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_diagonal.png}	
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_eigenvalues_16.png}	
 \end{figure}
+
 
 \begin{figure}[h]
 	\label{fig:FEMequiangular}
@@ -167,14 +188,9 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 	\includegraphics[width=0.9\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/img/FEM_eigenvalues_16.png}	
 \end{figure}
 
-\begin{figure}[h]
-	\label{fig:FEM and graph diffusion on equianular sampling}
-	\caption{FEM and HKGL diffusion on equiangular sampling}
-	\centering
-	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/17_diffusion_img/FEM_diffusion.png}
-	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/17_diffusion_img/GRAPH_diffusion.png}	
-	
-\end{figure}
+\paragraph{Lumping the mass matrix}
+
+
 \begin{figure}[h]
 	\label{fig:FEMequiangularLumped}
 	\caption{Lumped Linear FEM Laplacian on equiangular sampling}
@@ -192,3 +208,59 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 	\includegraphics[width=0.9\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/linearFEM_diagonal.png}	
 	\includegraphics[width=0.9\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/FEM_eigenvalues_32.png}	
 \end{figure}
+\subsubsection{Diffusion with the exponential matrix}
+
+\paragraph{HEALPix}
+\begin{figure}[h]
+	\label{fig:FEM and graph diffusion on HEALPix}
+	\caption{linear FEM and HKGL diffusion on HEALPix}
+	\centering
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/HEALPix/17_diffusion_img/FEM_diffusion.png}
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/HEALPix/17_diffusion_img/GRAPH_diffusion.png}	
+\end{figure}
+\paragraph{Equiangular}
+\begin{figure}[h]
+	\label{fig:FEM and graph diffusion on equiangular sampling}
+	\centering
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/17_diffusion_img/FEM_diffusion.png}
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/17_diffusion_img/GRAPH_diffusion.png}
+	\caption{FEM and HKGL diffusion on equiangular sampling}
+\end{figure}
+\paragraph{Lumped mass matrix}
+
+\begin{figure}[h]
+	\label{fig:FEM diffusion on equiangular sampling}
+	\centering
+	\includegraphics[width=0.4\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BL/img/FEM_diffusion.png}
+	\caption{ FEM diffusion on equiangular sampling}
+\end{figure}
+\begin{figure}[h]
+	\label{fig:FEM lumped diffusion on equiangular sampling}	
+	\centering
+	\includegraphics[width=0.4\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BL/img/FEM_lumped_diffusion.png}	
+	\caption{Lumped FEM diffusion on equiangular sampling}
+\end{figure}
+\begin{figure}[h]
+	\label{fig:FEM lumped symmetric diffusion on equiangular sampling}
+	\centering
+	\includegraphics[width=0.4\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BL/img/FEM_lumped_symmetric_diffusion.png}
+	\caption{Lumped symmetric FEM diffusion on equiangular sampling}
+\end{figure}
+
+\subsubsection{Equivariance error}
+
+\begin{figure}[h]
+	\label{fig:FEM equivariance error}
+	\centering
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/img/equivariance_error_FEM.png}
+	\caption{FEM equivariance error}
+\end{figure}
+\begin{figure}[h]
+	\label{fig:GRAPH equivariance error}
+	\centering
+	\includegraphics[width=0.6\textwidth]{../codes/03.FEM_laplacian/equiangular/normal/img/equivariance_error_GRAPH.png}
+	\caption{Graph equivariance error}
+\end{figure}
+
+
+

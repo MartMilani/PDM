@@ -5,9 +5,6 @@
 papers/**
 **/.DS_Store
 
-# images
-*.eps
-
 *~
 .DS_Store
 
