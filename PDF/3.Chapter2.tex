@@ -114,9 +114,76 @@ In the next section we present some different ways of building the matrix $\math
 
 \clearpage
 \subsection{Other Discrete Laplacians}\label{sec:Chapter3: other discrete laplacians}
-Present all the other ways of approximating the Laplace-Beltrami operator you found: graphs, Laplace de Rham, FEM
-\subsubsection{Frossard/Khasanova graph}
-\begin{figure}[h]
+Let $f$ be a sufficiently smooth function on an infinitely differentiable manifold $\mathcal M$. The Laplacian eigenvalue problem is defined as 
+
+\begin{equation}\label{eq:continous eigenvalue problem}
+	\triangle_{\mathcal M}f  = -\lambda f
+\end{equation}
+
+
+Being the Laplace-Beltrami operator self-adjoint and semi-positive definite, there exists a basis $\mathcal B=\{\psi_i\}_i$of the space $L^2(\mathcal M)$ such that $\triangle_\mathcal M \psi_i = -\lambda_i\phi_i,\ \lambda_0\leq\lambda_1\leq...,\lambda_i\leq\lambda_{i+1}...\leq+\infty$.
+
+There's been a lot of work in trying to approximate equation \ref{eq:continous eigenvalue problem}. Many ways of doing so can be grouped into the category of the so called \textit{discrete Laplacians}. By discrete Laplacian we mean an operator that, once evaluated on a signal $f$ and on a pixel $x_i$ can be written in the following way:
+
+\begin{equation}\label{eq:discrete laplacian}
+	\Delta f\left(\mathbf{x}_{i}\right)=\frac{1}{d_{i}} \sum_{j} w_{i j}\left(f\left(\mathbf{x}_{i}\right)-f\left(\mathbf{x}_{j}\right)\right)
+\end{equation}
+
+Although equation \ref{eq:discrete laplacian} shows that the discrete Laplacians are just Graph Laplacians, we have now introduced this nomenclature to underline that there are many ways to construct such matrix $\mathbf L$ that do not necessarily use a Graph perspective. Before discussing these approaches we need to introduce some basic concepts of Differential Geometry, especially the definition of mean curvature of a manifold and its link ot the Laplace-Beltrami operator.
+
+
+
+\subsubsection{Notions of Differential Geometry}
+ For this short introduction to basic concepts of Differential Geometry, set the manifold $\mathcal M$ to be a two dimensional surface in $\mathbb R^3$. For each point on the manifold $\mathcal M$, define its tangent plane, orthogonal to the normal vector $n$. For every unit vector $\mathbf e_\theta$ in the tangent plane, where $\theta$ is an angle that measures the direction on the tangent plane of $\mathbf e_\theta$, the \textit{normal curvature} $\kappa(\theta)$ is defined as the curvature of the curve that is the intersection of the manifold $\mathcal M$ and the plane containing both$\mathbf n$ and $\mathbf e_\theta$. The \textit{mean curvature} $\overline \kappa $ is defined as the average on $\theta$ of the normal curvatures:
+ 
+ \begin{equation}\label{eq:mean curvature}
+ 	\overline \kappa=\frac{1}{2 \pi} \int_{0}^{2 \pi} \kappa(\theta) d \theta
+ \end{equation}
+
+It can be proved that the Laplace-Beltrami operator applied on the identity function $\mathbf x \rightarrow \mathbf x, \ \forall \mathbf x\in \mathcal M$ is directly linked to the \textit{mean curvature normal} $\overline{\kappa}\mathbf n$ by the following formula:
+\begin{equation}\label{eq:laplacian and curvature}
+	\triangle_\mathcal M \mathbf x  = -2\overline{\kappa}\mathbf n
+\end{equation}
+This equation provides us a way to approximate the Laplace-Beltrami operator through the approximation of the mean curvature normal. This fact is exploited by methods presented in the next section.
+
+
+
+\subsubsection{Discrete Laplacians from Differential Geometry}
+Desbrun et al. \cite{Desbrun1999} construct a mesh of triangles with the vertices in the sampling $x_0, x_1, ..., x_{n-1}$ approximating the manifold $\mathcal M$, and then find the following discrete expression for the \textit{normal curvature} $\overline{\kappa} \mathbf{n}$ of the manifold $\mathcal M$:
+\begin{equation}\label{eq:curvature normal}
+	-\overline{\kappa} =\frac{1}{4 A_i} \sum_{j \in N_{1}(i)}\left(\cot \alpha_{ij}+\cot \beta_{ij}\right)\left(x_{j}-x_{i}\right)
+\end{equation}
+
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+	\label{fig:Desbrun}
+	\begin{center}
+		\includegraphics[width=0.3\textwidth]{figs/Chapter3/MyDesbrun.png}
+	\end{center}
+	\caption{One term of curvature normal formula.}
+\end{wrapfigure} 
+where $A_i$ is the area of all the triangles of the mesh sharing the vertex $x_i$; $N_1(i)$ is the first ring of neighbors of the i-th vertex; $\alpha_{i j},\ \beta_{i j}$ are the angles of the triangles of the mesh that lie on the opposite side to the edge $(i,j)$ with respect to the vertex $x_i$ (Figure \ref{fig:Desbrun}). This is a geometric approach that relies on the intrinsic properties of the mesh constructed and is based on the continuous formulation of the curvature normal. Using equations \ref{eq:curvature normal} and \ref{eq:laplacian and curvature} it can be shown \cite{REUTER2009381} that this approach leads to a \textit{discrete Laplacian} with masses $d_i=A_i/3$ where $A_i$ is the area of all the triangles of the mesh with a vertex in $x_i$, and weights
+
+$$w_{i j}=\frac{\cot \left(\alpha_{i j}\right)+\cot \left(\beta_{i j}\right)}{2}$$
+
+Meyer et al. \cite{Meyer02discretedifferential-geometry} modify the masses of Desbrun et al. and set the masses $d_i$ to be equal to $a_{V}(i)$, where \(a_{V}(i)\) is the area of the polygon obtained by joining the circumcenters of the triangles around vertex $i$ (i.e. the Voronoi cell).
+
+
+\subsubsection{A graph alternative to the HKGL for the equiangular sampling}
+Frossard et al. \cite{Frossard2017GraphBasedCO} to design a discrete Laplacian that is explicitly intended to work on the sphere with the equiangular sampling. They studied a way to build a graph to analyze image produce by omnidirectional cameras. In their work they assume that the image is sampled on the sphere on the equiangular sampling described in the above section. They start by considering the set $\mathcal G$ of all the possible graph where each node is connected just with 4 of its nearest neighbours (North, Sud, West, East) and propose a weighting scheme $w_{ij}$ specifically designed for the analysis of spherical signals such that the difference in the response to the polynomial spectral filter $\mathcal F = \mathbf L$ evaluated on images of the same object seen at different latitudes is minimized. In other words, they solve the minimization problem 
+
+\begin{equation}\label{eq:minimization frossard}
+	\min_{W\in\mathcal G} \left|\mathcal{F}\left(\mathbf{y}\left(v_{ e}\right)\right)-\mathcal{F}\left(\mathbf{y}\left(v_{ i}\right)\right)\right|
+\end{equation}
+
+for the adjacency matrix $W$, where $\mathbf y(v_i)$ is the image of the object on the sphere centered on the vertex $v_i$, and $\mathcal f\mathbf y(v_e)$ is the response of the filter at the vertex $v_e$ that lies at the same longitude of the vertex $v_i$ but on the equator. In their work they prove that the optimal weights solving the minimization problem \ref{eq:minimization frossard} are given by weights inversely proportional to the Euclidean distance between pixels
+$$
+w_{ij} = \frac{1}{\norm{v_i-v_j}}
+$$
+
+[Why it is useful, what did we do]\\
+This construction is interesting since it is adapted to the equiangular sampling (where the Heat Kernel Graph Laplacian performed badly) and by construction of the set $\mathcal G$ it leads to a graph with only 4 neighbors per node, thus very sparse. In order to compare it to the Heat Kernel Graph Laplacian we show the same Power Spectrum analysis in figure \ref{fig:Frossard/Khasanova graph}. It can be appreciated how this construction performs way better than the Heat Kernel Graph Laplacian, having furthermore the big advantage of being naturally very sparse.
+\begin{figure}[h!]
 	\label{fig:Frossard/Khasanova graph}
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full.png}
@@ -124,20 +191,21 @@ Present all the other ways of approximating the Laplace-Beltrami operator you fo
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_Khasanova_Frossard_eigenvalues_16.png}
 	\caption{Frossard/Khasanova graph}
 \end{figure}
-\begin{figure}[h]
-	\label{fig:Frossard/Khasanova geodesic graph}
-	\centering
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full_geodesic.png}
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full_diagonal_geodesic.png}
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_Khasanova_Frossard_eigenvalues_16_geodesic.png}
-	\caption{Frossard/Khasanova geodesic graph}
-\end{figure}
-\subsection{Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}\label{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}
-Basic ingredients: works on a mesh, 
+
+\subsection{The Finite Element Method approximation of the Laplace-Beltrami operator on a manifold}\label{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}
+
+
 \subsubsection{Galerkin Method and Finite Element Method}
 General introduction to the FEM: definitions, weak formulation, functional spaces, Galerkin method, linear FEM.
 \subsubsection{The eigenvalue problem on a manifold}
-Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue problem, lumping of the mass matrix, discussion on the solvers
+[Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue problem, lumping of the mass matrix, discussion on the solvers]
+
+The eigenvalue problem \ref{eq:continous eigenvalue problem} can be also formulated for a closed manifold in the following \textit{weak form}
+
+\begin{equation}\label{eq:weak eigenvalue problem}
+sdfq
+\end{equation}
+
 \begin{figure}[h]
 	\label{fig:Lumping}
 	\centering
@@ -145,6 +213,10 @@ Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue
 
 	\caption{Diagonal of the lumped mass matrix}
 \end{figure}
+\subsubsection{Manifold Harmonic Transform}
+
+
+
 \subsection{Results}
 \label{sec:Chapter3: Results}
 
