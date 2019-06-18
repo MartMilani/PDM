@@ -28,13 +28,13 @@ for bw in bws:
     npix = 2*bw*(2*bw-1)+1
     lmax = bw-1
     N = np.cumsum(np.arange(1, 2*lmax+2, 2))[-1]  # how many eigenvectors do I calculate
-    
+
     # Define mesh, function space
     mesh = Mesh("meshes/equi_{}.xml".format(bw))
     global_normal = Expression(("x[0]", "x[1]", "x[2]"), degree=1)
     mesh.init_cell_orientations(global_normal)
     V = FunctionSpace(mesh, "Lagrange", 1)
- 
+
     # Define basis and bilinear form
     u = TrialFunction(V)
     v = TestFunction(V)
@@ -48,13 +48,13 @@ for bw in bws:
 
     A_mat = as_backend_type(A).mat()
     A_sparray = csr_matrix(A_mat.getValuesCSR()[::-1], shape=A_mat.size)
-    scipy.sparse.save_npz('matrices/stiffness_matrix_{}.npz'.format(bw), A_sparray)
+    # scipy.sparse.save_npz('matrices/stiffness_matrix_{}.npz'.format(bw), A_sparray)
 
     B_mat = as_backend_type(B).mat()
     B_sparray = csr_matrix(B_mat.getValuesCSR()[::-1], shape=B_mat.size)
-    scipy.sparse.save_npz('matrices/mass_matrix_{}.npz'.format(bw), B_sparray)
-    
-    
+    # scipy.sparse.save_npz('matrices/mass_matrix_{}.npz'.format(bw), B_sparray)
+
+
 
     # Create eigensolver
     eigensolver = SLEPcEigenSolver(A, B)
@@ -67,7 +67,7 @@ for bw in bws:
 
 
     print('Done. Saving results...')
-    file = File("eigenvectors/eigenvectors_{}.pvd".format(bw))
+    #file = File("eigenvectors/eigenvectors_{}.pvd".format(bw))
 
     eig_vectors = np.ndarray((npix, N), dtype='float')
     eig_values = np.ndarray(N, dtype='float')
@@ -80,8 +80,6 @@ for bw in bws:
         u.vector()[:] = rx
         eig_vectors[:, i] = u.compute_vertex_values()
         eig_values[i] = r
-        file << (u, i)
-    np.save("eig_vectors/eig_vectors_{}".format(bw), eig_vectors)
-    np.save("eig_values/eig_values_{}".format(bw), eig_values)
-    
-   
+        # file << (u, i)
+    # np.save("eig_vectors/eig_vectors_{}".format(bw), eig_vectors)
+    # np.save("eig_values/eig_values_{}".format(bw), eig_values)
