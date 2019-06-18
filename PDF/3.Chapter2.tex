@@ -18,7 +18,7 @@ This chapter is organized as follows: In Section \ref{sec:Chapter3: Heat Kernel 
 \label{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling}
 
 \subsubsection{The Equiangular Sampling}
-[Present the equiangular sampling]\\
+
 Given the usual parametrization $x = x(\theta, \phi)$ of the sphere
 $$
 \mathbb{S}^{2}=\left\{x=\left(x_{1}, x_{2}, x_{3}\right) \in \mathbb{R}^{3} :\|x\|_{\mathbb{R}^{3}}=\left(x_{1}^{2}+x_{2}^{2}+x_{3}^{2}\right)^{1 / 2}=1\right\}
@@ -159,14 +159,16 @@ Desbrun et al. \cite{Desbrun1999} construct a mesh of triangles with the vertice
 	\label{fig:Desbrun}
 	\begin{center}
 		\includegraphics[width=0.3\textwidth]{figs/Chapter3/MyDesbrun.png}
+		\includegraphics[width=0.3\textwidth]{figs/Chapter3/Voronoi}
 	\end{center}
-	\caption{One term of curvature normal formula.}
+	\caption{One term of curvature normal formula and one Voronoi cell constructed around the vertex $x_i$}
 \end{wrapfigure} 
-where $A_i$ is the area of all the triangles of the mesh sharing the vertex $x_i$; $N_1(i)$ is the first ring of neighbors of the i-th vertex; $\alpha_{i j},\ \beta_{i j}$ are the angles of the triangles of the mesh that lie on the opposite side to the edge $(i,j)$ with respect to the vertex $x_i$ (Figure \ref{fig:Desbrun}). This is a geometric approach that relies on the intrinsic properties of the mesh constructed and is based on the continuous formulation of the curvature normal. Using equations \ref{eq:curvature normal} and \ref{eq:laplacian and curvature} it can be shown \cite{REUTER2009381} that this approach leads to a \textit{discrete Laplacian} with masses $d_i=A_i/3$ where $A_i$ is the area of all the triangles of the mesh with a vertex in $x_i$, and weights
+
+where $A_i$ is the area of all the triangles of the mesh sharing the vertex $x_i$; $N_1(i)$ is the first ring of neighbors of the i-th vertex; $\alpha_{i j},\ \beta_{i j}$ are the angles of the triangles of the mesh that lie on the opposite side to the edge $(i,j)$ with respect to the vertex $x_i$ (Figure \ref{fig:Desbrun}). This is a geometric approach that relies on the intrinsic properties of the mesh constructed and is based on the continuous formulation of the curvature normal. Using equations \ref{eq:curvature normal} and \ref{eq:laplacian and curvature} it can be shown \cite{REUTER2009381} that this approach leads to a \textit{discrete Laplacian} with masses $d_i=A_i$ where $A_i$ is the area of all the triangles of the mesh with a vertex in $x_i$, and weights
 
 $$w_{i j}=\frac{\cot \left(\alpha_{i j}\right)+\cot \left(\beta_{i j}\right)}{2}$$
 
-Meyer et al. \cite{Meyer02discretedifferential-geometry} modify the masses of Desbrun et al. and set the masses $d_i$ to be equal to $a_{V}(i)$, where \(a_{V}(i)\) is the area of the polygon obtained by joining the circumcenters of the triangles around vertex $i$ (i.e. the Voronoi cell).
+Meyer et al. \cite{Meyer02discretedifferential-geometry} modify the masses of Desbrun et al. and set the masses $d_i$ to be equal to $a_{V}(i)$, where \(a_{V}(i)\) is the area of the polygon obtained by joining the circumcenters of the triangles surrounding vertex $i$ (i.e. the Voronoi cell).
 
 
 \subsubsection{A graph alternative to the HKGL for the equiangular sampling}
@@ -181,7 +183,6 @@ $$
 w_{ij} = \frac{1}{\norm{v_i-v_j}}
 $$
 
-[Why it is useful, what did we do]\\
 This construction is interesting since it is adapted to the equiangular sampling (where the Heat Kernel Graph Laplacian performed badly) and by construction of the set $\mathcal G$ it leads to a graph with only 4 neighbors per node, thus very sparse. In order to compare it to the Heat Kernel Graph Laplacian we show the same Power Spectrum analysis in figure \ref{fig:Frossard/Khasanova graph}. It can be appreciated how this construction performs way better than the Heat Kernel Graph Laplacian, having furthermore the big advantage of being naturally very sparse.
 \begin{figure}[h!]
 	\label{fig:Frossard/Khasanova graph}
