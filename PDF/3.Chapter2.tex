@@ -17,7 +17,7 @@ In Chapter 2 we showed a way to construct $\mathbf L_n^t$ that well approximates
 	\begin{center}
 			\includegraphics[width=0.5\textwidth]{../codes/04.imbalanced/img/confront_mixed.png}
 	\end{center}
-	\caption{On the right: distortion of the eigenmodes of the HKGL caused by an irregular sampling of the sphere.}
+	\caption{On the left, the correct eigenmode. On the right: distortion of the eigenmode of the HKGL caused by an irregular sampling of the sphere.}
 \end{wrapfigure}
 
 [Say what we did to solve it]\\
@@ -202,10 +202,64 @@ This construction is interesting since it is adapted to the equiangular sampling
 \end{figure}
 
 \subsection{The Finite Element Method approximation of the Laplace-Beltrami operator on a manifold}\label{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}
+The Finite Element Method is a numerical algorithm that implements the Galerkin method. In the Galerkin method we take the weak formulation of the eigenvalue problem, we reduce the spaces on which the problem is defined to spaces with a finite dimension, and through the linearity of the differential operator we transform the continuous problem into a finite dimensional, algebric eigenvalue problem that we can solve using the normal method of linear algebra. In this section we provide the necessary definitions and mathematical concepts necessary to properly introduce the weak formulation of the eigenvalue problem, the Galerkin method and finally the Finite Element Method. \\
 
+A Banach space $(X, \norm{\cdot})$ is a normed vector space on the scalar field $F$ "big enough" such that for every Cauchy sequence $(x_n)\subset X$ there exist a $x\in X$ such that $x$ is the limit of $(x_n)$ in $X$ i.e. $\norm{x_n-x}\rightarrow 0$. A basis of $(X, \norm\cdot)$ is a minimal set of linearly independent vectors $\mathcal B \subset X$ such that every element of $X$ can be written as linear combination of the elements of $\mathcal B$. To perform Fourier analysis we are interested in those particular Banach spaces where we can define a notion of orthogonality between vectors. Such Banach spaces are called Hilbert spaces: $(X, \norm \cdot )$ is a Hilbert space when it is Banach and furthermore the norm $ \norm \cdot $ can be induced by a \textit{scalar product}: $\norm \cdot = \sqrt{\langle\cdot,\cdot\rangle}$. In this general context a scalar product is a function $\langle\cdot,\cdot\rangle: X\times X \rightarrow \mathbb F$ that is linear in the first argument, positive definite and conjugate symmetric. Through a scalar product we can define the notion of angle $\theta$ between two elements $x, y \in X$ through the following formula: 
+$$
+\cos \theta = \frac{\langle x, y\rangle}{\norm x \norm y}
+$$ 
+and in particular we can define the notion of orthogonality: two elements  $x, y \in X$ are orthogonal if and only if $\langle c, y\rangle=0$. We can now define what an \textit{orthonormal} basis of $X$ is: a basis $\mathcal B \subset X$ such that $\forall x, y \in \mathcal B, \norm x = \norm y = 1 \text{and } \langle x, y\rangle = 0$. Given an orthonormal basis $\mathcal B = \{b_i\}_{i\in I}$ we can write each vector in its \textit{Fourier series} 
 
-\subsubsection{Galerkin Method and Finite Element Method}
-General introduction to the FEM: definitions, weak formulation, functional spaces, Galerkin method, linear FEM.
+\begin{equation}\label{eq:abstract fourier}
+	x = \sum_{i\in I} \frac{\langle x, b_i\rangle}{\norm {x^2}}b_i
+\end{equation}
+If the set $I$ is countable the Hilbert space $(X, \norm\cdot)$ is called \textit{separable}. Having an orthonormal basis, and thus the possibility of representing each vector through its Fourier series \ref{eq:abstract fourier} enormously simplifies many problems.
+
+\paragraph{Linear operators and bilinear forms} A \textit{linear operator} $L: X\to X$ on the Banach space $(X, \norm \cdot)$ is such that $L(\alpha x + \beta y) = \alpha L x + \beta L y$. $(x, \lambda)$ are called respectively \textit{eigenvector} and \textit{eigenvalue} of the linear operator $L$ is the image of $x$ is a rescaling of $x$ through a factor $\lambda$ i.e. $Lx = \lambda x$. The operator $L$ is called \textit{self-adjoint} if $\langle Lx, y\rangle = \langle x,Ly\rangle\ \  \forall x,y \in X$. Self-adjoint operators have two important properties: their eigenvalues are real, and two eigenvectors $x, y$ associated to different eigenvalues $\lambda, \mu$ are orthogonal. Indeed 
+$\langle Lx, y\rangle = \langle x,Ly\rangle$
+$\langle \lambda x, y\rangle = \langle x,\mu y\rangle$
+$\lambda \langle  x, y\rangle = \mu \langle x, y\rangle$
+that implies $ \langle  x, y\rangle = 0$
+If the eigenvectors of a self-adjoint operator $L$ span the whole space $X$, than $L$ is called \textit{diagonalisable}.
+
+A bilinear form on the vector space $X$ is a map $a(\cdot, \cdot): X\times X\to F$ that is linear with respect to both arguments. It is said to be \textit{strongly coercive} if $\exists\alpha>0:\ |a(x, x)|\geq \alpha \norm {x}^2$, and \textit{bounded} if $\exists M>0:\ |a(x, y)|\leq M \norm x \norm y$.
+\subsubsection{Weak formulation of a PDE and Galerkin Method}
+Galerkin's method is a method to approximate a continuous differential problem with a finite dimensional one. This method is proved to be well posed (i.e. there exist one and only one solution) that converges to the one of the continuous problem. To introduce this method it is useful to first state the famous Lax-Milgram theorem, a result of functional analysis that uses all but only the concepts that we have introduced so far:
+\vspace{0.5cm}
+\begin{theorem}[Lax-Milgram]
+If \(a(\cdot, \cdot)\) is a bounded and strongly coercive bilinear form on the Hilbert space \(X\) then given \(u \in X\) there exist a unique solution $x$ to the following problem:
+\begin{equation}\label{eq:variational abstract problem}
+	\text{Find }x\in X\text{ such that } a(x, v)=\langle u, v\rangle \text{ for all } u \in X
+\end{equation}
+For such \(x\) one has \(\|x\| \leq \frac{1}{\alpha}\norm u\) where \(\alpha>0\) is the coercive constant \(a(v, v) \geq \alpha\norm v^{2} \forall v \in X ) .\)
+\end{theorem} 
+\vspace{0.5cm}
+Our goal now is to explain how to write a differential problem like 
+\begin{equation}\label{eq:strong form}
+\text{Find }f\in C^2(\Omega) \text{ such that given }u\in C(\Omega)
+\begin{cases}
+-\partial_{x_1x_1}f(\mathbf x) - \partial_{x_2x_2}f(\mathbf x) = u(\mathbf x) & \mathbf x \in \Omega\\
+f(\mathbf sx) =  0& \mathbf x \in \partial \Omega
+\end{cases}
+\end{equation}
+in the form \ref{eq:variational abstract problem}. Let's multiply the differential equation times a sufficiently regular function $v$ that vanishes on $\partial \Omega$ and integrate on $\Omega$. Since the contribution of both $f$ and $v$ on the border $\partial \Omega$ is zero, integrating by parts we get
+
+\begin{equation}\label{eq:int by parts}
+	\int_\Omega \nabla f(\mathbf x)\cdot\nabla v(\mathbf x) d\mathbf x = \int_\Omega  u(\mathbf x)\cdot v(\mathbf x)d\mathbf x
+\end{equation}
+
+By defining $a(f, v):=	\int_\Omega \nabla f(\mathbf x)\cdot\nabla v(\mathbf x) d\mathbf x $ and taking the usual dot product \\$\langle u, v\rangle = \int_\Omega  u(\mathbf x)\cdot v(\mathbf x)d\mathbf x$ in the space of square-integrable functions $L^2(\Omega)$ equation \ref{eq:int by parts} can be written in the form of equation \ref{eq:variational abstract problem}. It remains to verify that $a(\cdot, \cdot)$ is actually bounded and coercive, and to choose a space $X$ that is carefully constructed to be "big enough" to include those functions such that $\nabla f \in L^2(\Omega)$ and to be Hilbert with respect to the $L^2$ product $\langle\cdot,\cdot\rangle$, and at the same time "small enough" to include only those functions that are equal to 0 on the boundary of $\Omega$. It turn out that such Hilbert space exists, it is called $H^1_0(\Omega)$ and it is such that, once restricted to the continuous functions $C(\Omega)$, it contains only those functions that vanish on $\delta \Omega$ i.e. $f\in H^1_0(\Omega)\cap C(\Omega) \implies \left.f(\mathbf x)\right|_{\partial\Omega}=0$. This means that thanks to Lax-Milgram's theorem the problem
+
+\begin{equation}\label{eq:final variational form}
+	\text{Given }u\in L^2(\Omega)\text{ find }f\in H^1_0(\Omega)\text{such that }\int_\Omega \nabla f(\mathbf x)\cdot\nabla v(\mathbf x) d\mathbf x = \int_\Omega  u(\mathbf x)\cdot v(\mathbf x)d\mathbf x\quad \forall v\in H^1_0(\Omega)
+\end{equation}
+
+has one and only one solution. To have this result (existence and uniqueness of the solution) we had to pay the price of looking for such result in a much bigger space than $C^2(\Omega)$. This means that a priori our solution $f$ to problem \ref{eq:final variational form} could not be a solution to problem \ref{eq:strong form}! However, there are regularity results that we omit that assure that if the forcing term $u$ is regular enough, than also the solution $f$ will be regular and thus the strong form problem and the weak form problem are actually equivalent, and thus solving \ref{eq:final variational form} eventually leads to solving \ref{eq:strong form}.
+
+However, now that we know that a solution exists, we need to compute it! Computing it analytically is often impossible; Galerkin's method in a mathematical tool provide us a way to compute an approximation of the solution $f$.
+
+Take the variational problem \ref{eq:variational abstract problem}, but restrict the ambient space to be a finite dimensional subspace of $X$, say $V_h = \text{span}\{phi_0, ..., phi_{n-1}\}$.
+
 \subsubsection{The eigenvalue problem on a manifold}
 [Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue problem, lumping of the mass matrix, discussion on the solvers]
 
@@ -215,20 +269,22 @@ The eigenvalue problem \ref{eq:continous eigenvalue problem} can be also formula
 sdfq
 \end{equation}
 
+Lumping of the mass matrix
 \begin{figure}[h]
 	\label{fig:Lumping}
 	\centering
 	\includegraphics[width=0.9\textwidth]{figs/Chapter3/B_diagonal.png}
-
 	\caption{Diagonal of the lumped mass matrix}
 \end{figure}
+
+
 \subsubsection{Manifold Harmonic Transform}
 
 
 
 \subsection{Results}
 \label{sec:Chapter3: Results}
-
+We implemented with FEniCS the eigenvalue problem \ref{eq:FEM eigenvalue problem}
 \subsubsection{Alignment of eigenspaces and analysis of the spectra}
 
 \paragraph{HEALPix}
