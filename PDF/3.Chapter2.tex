@@ -258,8 +258,36 @@ has one and only one solution. To have this result (existence and uniqueness of 
 
 However, now that we know that a solution exists, we need to compute it! Computing it analytically is often impossible; Galerkin's method in a mathematical tool provide us a way to compute an approximation of the solution $f$.
 
-Take the variational problem \ref{eq:variational abstract problem}, but restrict the ambient space to be a finite dimensional subspace of $X$, say $V_h = \text{span}\{phi_0, ..., phi_{n-1}\}$.
+Take the variational problem \ref{eq:variational abstract problem}, but restrict the ambient space to be a finite dimensional subspace of $X$, say $V_h = \text{span}\{phi_0, ..., phi_{n-1}\}$. We write thus the Galerkin problem
+\begin{equation}\label{eq:Galerkin problem}
+		\text{Find }f_h\in V_h\text{ such that } a(f_h, v_h)=\langle u_h, v_h\rangle \text{ for all } u_h \in V_h
+\end{equation}
+The key property of the Galerkin method is that the error $f-f_h$ is orthogonal to $V_h$; thus by choosing a sequence of finite dimensional spaces that fill the original space $X$, we can get as close as we want to the continuous solution $f$.
+To solve equation \ref{eq:Galerkin problem} we write $f_h, u_h, v$ as linear combinations of the basis $\{phi_0, ..., phi_{n-1}\}$
 
+$$\begin{cases}
+f_h = f_0\phi_0 +  f_1\phi_1 + ...  f_{n-1}\phi_{n-1}\\
+u_h = u_0\phi_0 +  u_1\phi_1 + ...  u_{n-1}\phi_{n-1}\\
+v_h = v_0\phi_0 +  v_1\phi_1 + ...  v_{n-1}\phi_{n-1}
+\end{cases}
+$$
+ thus obtaining by linearity of the bilinear form and of the scalar product a linear system of equations in the $n$ coordinates of $f_h$
+\begin{equation}\label{eq:Galerkin problem in the basis functions}
+\text{Find }\mathbf f\in\mathbb R^n\text{ such that } \sum_{j=0}^{n-1}a(\phi_i, \phi_j)f_j=\sum_{j=0}^{n-1}\langle \phi_i, \phi_j\rangle u_j \text{ for all } i=0, ... n-1
+\end{equation}
+
+Defining the \textit{stiffness matrix} $(A)_{ij} = a(\phi_i, \phi_j)$ and the \textit{mass matrix} $(B)_{ij} = \langle \phi_i, \phi_j\rangle$ we can rewrite problem \ref{eq:Galerkin problem in the basis functions} in the following algebraic form
+\begin{equation}\label{eq:Galerkin algebraic}
+\text{Find }\mathbf f\in\mathbb R^n\text{ such that } A\mathbf f = B \mathbf u
+\end{equation}
+where $\mathbf f, \mathbf u$ are the vectors of coordinates of $f_h, u_h$ with respect to the basis $(\phi_i)$. Observe that if the basis functions $\phi_i$ are orthonormal, then the mass matrix $B$ equals to the identity matrix, and that in the general case, the scalar product in the space $V_h$ of two functions $u_h, v_h$ is equal to the dot product defined by the mass matrix $B$ in $\mathbb R^n$ of the coordinate vectors
+\begin{equation}\label{eq:dot product}
+	\langle u_h, v_h\rangle = \mathbf u^T B \mathbf v
+\end{equation}
+
+ \subsubsection{The Finite Element Method}
+ 
+ 
 \subsubsection{The eigenvalue problem on a manifold}
 [Weak formulation of the eigenvalue problem on the sphere, generalized eigenvalue problem, lumping of the mass matrix, discussion on the solvers]
 
