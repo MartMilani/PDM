@@ -23,9 +23,9 @@ Convolutional Neural Networks (CNNs) are a specific class of neural networks who
 Spherical convolutional neural networks (SCNNs) are a variation of CNNs that have been designed to deal with spherical data, whose layer design make them equivariant to rotations of the input.  Examples of tasks where data is naturally represented on a sphere are (i) climate science, where data is sampled on the surface of the Earth, (ii) cosmology, where observations are naturally projected on a sphere centered around the observer (see Figure \ref{fig:cosmicradiation}), and (iii) virtual reality, where the images are represented on a sphere centered around the player. Being able to come up with designs that are equivariant to rotations brings to these tasks all the advantages that traditional CNNs have brought for traditional (euclidean) image classification tasks: training is faster, easier and results are very accurate. To be specific, the transformation that each layer of a SCNN performs is a \textit{spherical convolution} of the input vector with a kernel. It is this kernel that is learned during the training phase. 
 
 \begin{figure}
-	\label{fig:cosmicradiation}
+
 	\centering
-	\caption{Cosmic microwave background map, the oldest electromagnetic radiation in the universe. Source: Wikipedia}
+	\caption{\label{fig:cosmicradiation} Cosmic microwave background map, the oldest electromagnetic radiation in the universe. Source: Wikipedia}
 	\includegraphics[width=0.4\textwidth]{figs/literaturereview/WMAP.png}
 \end{figure}
 
