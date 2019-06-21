@@ -5,10 +5,8 @@
 %!TEX root = 0.main.tex
 
 \section{Graph Spherical Convolutions}
-[Stating the problem we want to solve]\\
-Defferrard et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph Laplacian proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} on the HEALPix sampling of the sphere in order to obtain a graph whose convolution approximates the convolution on the sphere but limit the number of neighbors of each node of the graph in order to limit the computational complexity of the algorithm to be linear with the dimension of the input data. Despite Belkin et al. proved a result of spectral convergence of their graph Laplacian to the Laplace-Beltrami operator for any manifold given a random sampling \ref{theo:Belkin spectral convergence}, in the work of Defferrard et al. the graph Laplacian does not seem to show the expected spectral convergence to the continuous Laplace-Beltrami operator (see figure \ref{fig:Old spectrum}) 
+Perraudin et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph Laplacian proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} on the HEALPix sampling of the sphere in order to obtain a graph whose convolution approximates the convolution on the sphere. They constrain the degree of each node in order to limit the computational complexity of the filtering performed by each layer of the GCNN to be linear with the dimension of the input feature map. Despite Belkin et al. proved a result of spectral convergence of the graph Laplacian to the Laplace-Beltrami operator for any manifold given a random sampling \ref{theo:Belkin spectral convergence}, in the work of Perraudin et al. the graph Laplacian does not seem to show the expected spectral convergence to the continuous Laplace-Beltrami operator. In figure (\ref{fig:Old spectrum}) we see the correspondence between the subspaces spanned by the graph Fourier modes of the graph Laplacian used by Perraudin et al. and the true spherical harmonics. We call $(v_\ell^i)_{\ell=0,... \ell_\text{max}}^{i=0,...\ell(\ell+1)}$ the $i-th$ graph eigenmode of degree $\ell$. We compute the normalized Discrete Spherical Harmonic Transform (DSHT) up to the first $\sum_{\ell=0}^{\ell_\text{max}{}}2\ell + 1=\ell_{\text{max}}(\ell_\text{max}+1)$ spherical harmonics for each $v_\ell^i$. The entry $(i, j)$ of the matrix represented in the figure corresponds to the percentage of energy of the $j-th$ eigenspace $V_j = \text{span}\{v^0_j, ..., v^{j(j+1)}_j\}$ contained in the $i-th$ eigenspace of true spherical harmonics. In a perfect situation, this matrix would be the identity matrix. It can be seen that the eigenmodes of the graph Laplacian span almost the same subspaces as the spherical harmonics in the low frequencies, but this alignment gets worse at higher frequencies. Furthermore, it can be noticed that even by improving the resolution of the graph, the low frequency eigenspaces do not get better aligned.
 
-[Stating what we did to solve it]\\
 In this chapter we give three contributions: first, in section \ref{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere} we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere on a deterministic sampling that is regular enough; second, in section \ref{sec:How to build a good graph} we show a way of modifying the graph of Defferrard et al. to recover the expected spectral convergence and still managing to contain the computational costs of graph convolutions; finally in section \ref{sec:Experimental validation} we study how the graph proposed in section \ref{sec:How to build a good graph} performs in practice when used in a Graph Convolutional Neural Network, comparing its performances to DeepSphere \cite{DeepSphere}.
 
 \subsection{Definitions and basic results}
@@ -39,7 +37,7 @@ $$ (\mathbf L_n^t \mathbf f)_i:=  \sum_{j=0}^{n-1} e^{-\frac{||x_i-x_j||^2}{4t}}
 Observe that the Heat Kernel Graph Laplacian operator restricted on the sample points $x_0, ..., x_{n-1}$ acts as the Heat Kernel Graph Laplacian matrix rescaled by a factor of $\frac{1}{n}$:
 $$L_n^tf(x_i) = \frac{1}{n}\mathbf (L_n^t\mathbf f)_i$$
 \vspace{0.5cm}
-\begin{definition}{}(Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t} Let $\mu$ be the uniform probability measure on the manifold $\mathcal M$, that is the probability measure given by the induced metric on $\mathcal M$ rescaled by a factor $\frac{1}{|\mathcal M|}$, where $|\mathcal M|$ is the volume of $\mathcal M$. We define the functional approximation to the Laplace-Beltrami operator to be the operator $L^t$ such that
+\begin{definition}{}(Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t} Let $\mu$ be the uniform probability measure on the manifold $\mathcal M$, that is the probability measure given by the induced metric on $\mathcal M$ rescaled by a factor $\frac{1}{\text{vol}(\mathcal M)}$, where $\text{vol}(\mathcal M)$ is the volume of $\mathcal M$. We define the functional approximation to the Laplace-Beltrami operator to be the operator $L^t$ such that
 	\label{def:Functional approximation to the Laplace-Beltrami operator}
 	$$ L^tf(y) = \int_{\mathcal M}e^{-\frac{||y-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
 \end{definition}
@@ -57,14 +55,13 @@ We conclude by stating a result that we will need in the next section:
 \end{prop}
 \subsection{Pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
 \label{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
-[Review of Belkin et al's proof]\\ 
-As saw in Section \ref{sec:Chapter0: belkins trinity} Belkin et al. prove different convergence results for the random Heat Kernel Graph Laplacian; in this Section we are interested in the following pointwise convergence result for the Heat Kernel Graph Laplacian operator (proven in \cite{Belkin:2005:TTF:2138147.2138189}):
+Here we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere on a deterministic sampling that is regular enough. Our proof will be constructed following the ideas presented in the proof of the following pointwise convergence result for the random Heat Kernel Graph Laplacian operator (proven in \cite{Belkin:2005:TTF:2138147.2138189}):
 \vspace{0.5cm}
 \begin{theorem}{from \cite[Belkin et al.]{Belkin:2005:TTF:2138147.2138189}}\\
 	\label{theo:Belkin pointwise convergence}
 	Let $\mathcal M$ be a $k$-dimensional compact smooth manifold embedded in some euclidean space $\mathbb R^N$. Let the data points $x_1, ... x_n$ be sampled form a uniform distribution on the manifold $\mathcal M$. Set $t_n=n^{-\frac{1}{k+2+\alpha}}$, for any $\alpha>0$ and let $f\in\mathcal C_\infty(\mathcal M)$. Then:
 	
-	$$\forall \epsilon>0\quad \mathbb{P}\left[\left|\frac{1}{t}\frac{1}{(4 \pi t)^{k/2}}L_{n}^{t_n} f(p)-  \frac{1}{|\mathcal M|}L^{t_n} f(p)\right|>\epsilon\right] \xrightarrow{n\to\infty} 0$$
+	$$\forall \epsilon>0\quad \mathbb{P}\left[\left|\frac{1}{t}\frac{1}{(4 \pi t)^{k/2}}L_{n}^{t_n} f(p)-  \frac{1}{\text{vol}(\mathcal M)}L^{t_n} f(p)\right|>\epsilon\right] \xrightarrow{n\to\infty} 0$$
 \end{theorem}
 \vspace{0.5cm}
 
@@ -84,7 +81,7 @@ where the limit is in the sense of the strong law of large numbers.
 The core of the work of Belkin et al. is the proof, that we will not discuss, of the following proposition:
 
 \begin{prop} Under the same hypothesis of theorem \ref{theo:Belkin pointwise convergence},
-	$$\frac{1}{t}\frac{1}{(4\pi t)^{k/2}} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{|\mathcal M|}\triangle_{\mathcal M}f(y)$$
+	$$\frac{1}{t}\frac{1}{(4\pi t)^{k/2}} L^tf(y) \xrightarrow{t\to 0 } \frac{1}{\text{vol}(\mathcal M)}\triangle_{\mathcal M}f(y)$$
 	\label{prop:3}
 \end{prop}
 
@@ -127,14 +124,12 @@ Given a HEALPix sampling $x_0, ..., x_{n-1}$, define $N$ to be a shorthand for t
 \begin{minipage}{.5\textwidth}
 	\centering
 	\includegraphics[width=0.4\linewidth]{figs/chapter1/d_iA_i.jpg}
-	\captionof{figure}{Geometric characteristics of the i-th patch}
-	\label{fig:Geometric characteristics of a patch}
+	\captionof{figure}{\label{fig:Geometric characteristics of a patch}Geometric characteristics of the i-th patch}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
 	\centering
 	\includegraphics[width=0.7\linewidth]{figs/chapter1/Heal_Base.png}
-	\captionof{figure}{HEALPix equal areas patches for $N_{side}=1$, $N_{side}=2$}
-	\label{fig:HEALPix equal areas patches}
+	\captionof{figure}{\label{fig:HEALPix equal areas patches}HEALPix equal areas patches for $N_{side}=1$, $N_{side}=2$}
 	\vspace{0.5cm}
 \end{minipage}
 
@@ -143,7 +138,11 @@ Given a HEALPix sampling $x_0, ..., x_{n-1}$, define $N$ to be a shorthand for t
 Our first goal is to prove the following Proposition: 
 \vspace{0.5cm}
 \begin{prop}\label{prop:1}
-	For a sampling $\{x_i\in\mathbb S_2\}_{i=0}^{n-1}$ of the sphere, for all $f: \mathbb S_2 \rightarrow \mathbb R$ Lipschitz with respect to the euclidean distance $||\cdot||$, for all $y\in\mathbb S_2$, the Heat Kernel Graph Laplacian operator $L^t_n$ converges pointwise to the functional approximation of the Laplace Beltrami operator $L^t$
+	For a sampling $\{x_i\in\mathbb S_2\}_{i=0}^{n-1}$ of the sphere it is true that
+	$$
+	\left| \int_{\mathbb S_2}f({\bf x})\text{d}{\mu(x)} - \frac{1}{n}\sum_i f(\mathbf x_i)\right|\leq \mathcal L_fd^{(n)}
+	$$
+	Furthermore, for all $f: \mathbb S_2 \rightarrow \mathbb R$ Lipschitz with respect to the euclidean distance $||\cdot||$, for all $y\in\mathbb S_2$ the Heat Kernel Graph Laplacian operator $L^t_n$ converges pointwise to the functional approximation of the Laplace Beltrami operator $L^t$
 	$$ L_n^tf(y)\xrightarrow{n\to\infty} L^tf(y)$$
 \end{prop} 
 \vspace{0.5cm}
@@ -188,63 +187,72 @@ The main result of this section, theorem  \ref{theo:pointwise convergence in the
 
 	
 	we start by writing the following chain of inequalities
-	$$||L_n^tf-L^tf||_\infty = \max _{y\in \mathbb S_2} \left|L_n^tf(y)-L^tf(y)\right|=$$
-	$$= \max _{y\in \mathbb S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)- \int_{\mathbb S_2} \phi^t(x;y)d\mu(x) \right|$$
-	$$\leq \max _{y\in \mathbb S_2}  \sum_{i=1}^n   \left| \frac{1}{n}  \phi^t(x_i; y)- \int_{\sigma_i} \phi^t(x;y)d\mu(x) \right|$$
-
-	$$\leq  \max _{y\in \mathbb S_2} \left[\mathcal L_{\phi^t_y}d^{(n)} \right]$$
+	\begin{align*}
+		||L_n^tf-L^tf||_\infty &= \max _{y\in \mathbb S_2} \left|L_n^tf(y)-L^tf(y)\right|\\
+		&= \max _{y\in \mathbb S_2} \left| \frac{1}{n} \sum_{i=1}^n \phi^t(x_i; y)- \int_{\mathbb S_2} \phi^t(x;y)d\mu(x) \right|\\
+		&\leq \max _{y\in \mathbb S_2}  \sum_{i=1}^n   \left| \frac{1}{n}  \phi^t(x_i; y)- \int_{\sigma_i} \phi^t(x;y)d\mu(x) \right|\\
+		&\leq  \max _{y\in \mathbb S_2} \left[\mathcal L_{\phi^t_y}d^{(n)} \right]\\
+	\end{align*}
 	
-	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$ and where we used for the last inequality the arguments used in the proof of Proposition \ref{prop:1}. If we assume $d^{(n)}\leq \frac{C}{\sqrt{n}}$ and remember that for HEALPix $n=12N^2$ we have that
 	
-	$$||L_n^tf-L^tf||_\infty  \leq  \max _{y\in \mathbb S_2} \left[ \mathcal L_{\phi^t_y} \frac{C}{N} \right]$$
+	where $\mathcal L_{\phi^t_y}$ is the Lipschitz constant of $x \rightarrow \phi^t(x, y)$ and where we used for the last inequality Proposition \ref{prop:1}. If we assume $d^{(n)}\leq \frac{C}{\sqrt{n}}$ we have that
+	
+	$$||L_n^tf-L^tf||_\infty  \leq  \max _{y\in \mathbb S_2} \left[ \mathcal L_{\phi^t_y} \frac{C}{\sqrt{n}} \right]$$
 	
 	Let's now find the explicit dependence $t\rightarrow \mathcal L_{\phi^t_y}$
 	
-	$\mathcal L_{\phi^t_y} = ||\partial_x\phi^t(x;y)||_\infty = ||\partial_x\left(K^t(x;y)f(x)\right)||_\infty = ||\partial_x K^t(x;y)f(x) + K^t(x;y)\partial_x f(x)||_\infty \leq$
-	
-	$ \leq ||\partial_x K^t(x;y)f(x)||_\infty + ||K^t(x;y)\partial_x f(x)||_\infty \leq  ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||K^t(x;y)||_\infty||\partial_x f(x)||_\infty = $
-	
-	$ = ||\partial_x K^t(x;y)||_\infty||f(x)||_\infty + ||\partial_x f(x)||_\infty = \mathcal L_{K^t_y} ||f||_\infty + ||\partial_xf||_\infty = \mathcal L_{K^t_y} ||f||_\infty + \mathcal L_f$
+	\begin{align*}
+		\mathcal L_{\phi^t_y} &= ||\partial_x\phi^t(\cdot;y)||_\infty\\&
+		= ||\partial_x\left(K^t(\cdot;y)f\right)||_\infty\\&
+		= ||\partial_x K^t(\cdot;y)f + K^t(\cdot;y)\partial_x f||_\infty\\&
+		\leq ||\partial_x K^t(\cdot;y)f||_\infty + ||K^t(\cdot;y)\partial_x f||_\infty\\&
+		\leq  ||\partial_x K^t(\cdot;y)||_\infty||f||_\infty + ||K^t(\cdot;y)||_\infty||\partial_x f||_\infty\\&
+		= ||\partial_x K^t(\cdot;y)||_\infty||f||_\infty + ||\partial_x f||_\infty\\&
+		= \mathcal L_{K^t_y} ||f||_\infty + ||\partial_xf||_\infty\\&
+		= \mathcal L_{K^t_y} ||f||_\infty + \mathcal L_f
+	\end{align*}
 	
 	where $\mathcal L_{K^t_y}$ is the Lipschitz constant of $x\rightarrow K^t(x;y)$. We can observe that such constant does not depend on $y$:
 	
 	$\mathcal L_{K^t_y} = \norm{\partial_x e^{-\frac{x^2}{4t}}}_\infty = \norm{\frac{x}{2t}e^{-\frac{x^2}{4t}}}_\infty = \left. \frac{x}{2t}e^{-\frac{x^2}{4t}}\right|_{x=\sqrt{2t}}=(2et)^{-\frac{1}{2}}\propto t ^ {-\frac{1}{2}}$
 	
 	So we can continue
+	\begin{align*}
+		\max _{y\in \mathbb S_2} \left[  \mathcal L_{\phi^t_y} \frac{C}{\sqrt{n}} \right]
+		&\leq  \frac{C}{\sqrt{n}} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\\
+		&\leq \frac{C\norm{f}_\infty}{\sqrt{n}(2et)^\frac{1}{2}} +   \frac{C}{\sqrt{n}}\mathcal L_f\\
+	\end{align*}
 	
-	$$ \max _{y\in \mathbb S_2} \left[  \mathcal L_{\phi^t_y} \frac{C}{N} \right]\leq$$
-	$$ \leq  \frac{C}{N} \left( (2et)^{-\frac{1}{2}} \norm{f}_\infty + \mathcal L_f \right)\leq$$
-	$$  \leq \frac{C\norm{f}_\infty}{N(2et)^\frac{1}{2}} +   \frac{C}{N}\mathcal L_f$$
 	
 	So we have that, rescaling by a factor $\frac{1}{4\pi t^2}$
 	
 	$$\norm{\frac{1}{4\pi t^2}\left(L_n^tf-L^tf\right)}_\infty\leq$$
 	$$\leq \frac{1}{4\pi t^2}\norm{\left(L_n^tf-L^tf\right)}_\infty \leq$$
-	$$ \leq \frac{C}{4\pi}\left[\frac{\norm{f}_\infty}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right]$$
+	$$ \leq \frac{C}{4\pi}\left[\frac{\norm{f}_\infty}{\sqrt{2e}}\frac{1}{\sqrt{n}t^\frac{5}{2}} + \frac{\mathcal L_f}{\sqrt{n}t^2}\right]$$
 	
 	we want $\begin{cases}
 	t \rightarrow 0\\
-	N \rightarrow \infty\\
-	Nt^\frac{5}{2} \rightarrow \infty\\
-	Nt^2 \rightarrow \infty
-	\end{cases}$ in order for $ \frac{C}{4\pi}\left[\frac{\norm{f}_\infty}{\sqrt{2e}}\frac{1}{Nt^\frac{5}{2}} + \frac{\mathcal L_f}{Nt^2}\right] \xrightarrow[t\to 0 ]{N\to\infty}0$
+	n \rightarrow \infty\\
+	\sqrt{n}t^\frac{5}{2} \rightarrow \infty\\
+	\sqrt{n}t^2 \rightarrow \infty
+	\end{cases}$ in order for $ \frac{C}{4\pi}\left[\frac{\norm{f}_\infty}{\sqrt{2e}}\frac{1}{\sqrt{n}t^\frac{5}{2}} + \frac{\mathcal L_f}{\sqrt{n}t^2}\right] \xrightarrow[t\to 0 ]{n\to\infty}0$
 	
 	This is true if $\begin{cases}
-	t(N) = N^\beta, &\beta\in(-\frac{2}{5}, 0) \\
-	t(N) = N^\beta, &\beta\in(-\frac{1}{2}, 0)
-	\end{cases} \implies t(N) = N^\beta, \quad \beta\in(-\frac{2}{5}, 0)$
+	t(n) = n^\beta, &\beta\in(-\frac{1}{5}, 0) \\
+	t(n) = n^\beta, &\beta\in(-\frac{1}{4}, 0)
+	\end{cases} \implies t(n) = n^\beta, \quad \beta\in(-\frac{1}{5}, 0)$
 	
 	Indeed 
 	
-	$Nt^\frac{5}{2}=N^{\frac{5}{2}\beta+1}\xrightarrow{N \to \infty} \infty$ since $\frac{5}{2}\beta+1>0 \iff \beta>-\frac{2}{5}$
+	$\sqrt{n}t^\frac{5}{2}=n^{5/2\beta+1/2}\xrightarrow{n \to \infty} \infty$ since $\frac{5}{2}\beta+1/2>0 \iff \beta>-\frac{1}{5}$
 	
-	$Nt^2=N^{2\beta+1}\xrightarrow {N \to \infty} \infty$ since $2\beta+1>0 \iff \beta>-\frac{1}{2}$
+	$\sqrt{n}t^2=n^{2\beta+1/2}\xrightarrow {N \to \infty} \infty$ since $2\beta+1/2>0 \iff \beta>-\frac{1}{4}$
 	
-	So, for $t=N^\beta$ with $\beta\in(-\frac{2}{5}, 0)$ we have that 
+	So, for $t=n^\beta$ with $\beta\in(-\frac{1}{5}, 0)$ we have that 
 	
 	$$\begin{cases}
-	(t_N)\xrightarrow{N\to\infty}0\\
-	\norm{\frac{1}{4\pi t_N^2}L_n^{t_N}f-\frac{1}{4\pi t_N^2}L^{t_N}f}_\infty  \xrightarrow{N\to\infty}0
+	(t_n)\xrightarrow{n\to\infty}0\\
+	\norm{\frac{1}{4\pi t_n^2}L_n^{t_n}f-\frac{1}{4\pi t_n^2}L^{t_n}f}_\infty  \xrightarrow{n\to\infty}0
 	\end{cases}$$
 	
 \end{proof}
@@ -252,7 +260,7 @@ The main result of this section, theorem  \ref{theo:pointwise convergence in the
 The proof of theorem \ref{theo:pointwise convergence in the healpix case} is now trivial:
 \begin{proof}[Proof of Theorem \ref{theo:pointwise convergence in the healpix case}]
 	Thanks to Proposition \ref{prop:2} and Proposition \ref{prop:3}	we conclude that $\forall y\in\mathbb S_2 $
-	$$\lim_{N\to\infty}\frac{1}{4\pi t_N^2} L_n^{t_N}f(y) =  \lim_{N\to\infty}\frac{1}{4\pi t_N^2} L^{t_N}f(y) = \frac{1}{|\mathbb S_2|}\triangle_{\mathbb S_2}f(y) $$
+	$$\lim_{n\to\infty}\frac{1}{4\pi t_n^2} L_n^{t_n}f(y) =  \lim_{n\to\infty}\frac{1}{4\pi t_n^2} L^{t_n}f(y) = \frac{1}{|\mathbb S_2|}\triangle_{\mathbb S_2}f(y) $$
 \end{proof}
 
 
@@ -270,13 +278,10 @@ To conclude, we can see that the result obtained has the same form than the resu
 \label{sec:How to build a good graph}
 The current state of the art of rotation equivariant Graph CNN is DeepSphere \cite{DeepSphere}. However, if we measure the alignment of the eigenspaces spanned by the eigenvectors of the graph Laplacian used in \cite{DeepSphere} and the ones spanned by the spherical harmonics we see that it does not get better as $N_{side}$ increases (figure \ref{fig:deepsphere results}). We'll see that the main cause of this bad behavior of the eigenspaces is the fixed number of neighbors used in \cite{DeepSphere} for the construction of the graph. In this subsection we'll see that to obtain the desired spectral convergence it is necessary to increase the number of neighbors as we decrease the kernel width $t$. We'll follow in practice what we did in proving theorem \ref{theo:pointwise convergence in the healpix case}: first we'll build a \textit{full graph}, and let the number of pixels $n$ increase while keeping the kernel width $t$ fixed. After having discussed the results, we'll try to find a possible sequence $(t_n)$ in order to obtain the expected spectral convergence. Only in the end we'll find a way to make the graph sparse to limit the computational costs of graph convolutions but keeping the eigen decomposition of the graph Laplacian as close to the spherical harmonics as possible.
 \begin{figure}[h!]
-	\label{fig:deepsphere results}
-	
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original.png}
 		\includegraphics[width=0.7\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original_diagonal.png}	
-		\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics of the graph Laplacian of DeepSphere. First, we compute the power spectral density (PSD) of each graph eigenvector with a discrete Spherical Harmonic Transform. Second, as there is $2\ell + 1$ spherical harmonics for each degree $\ell$, we sum the contributions of the corresponding $2\ell + 1$ graph eigenvectors. Thus, the entry $(i, j)$ of the matrix correspond to the percentage of energy of the j-th eigenspace of the graph Laplacian contained in the i-th eigenspace spanned by the true spherical harmonics. In a perfect situation, this matrix would be the identity matrix.
-			It can be seen that the Fourier eigenvectors of the graph Laplacian span almost the same subspaces as the spherical harmonics in the low frequencies, but leak towards adjacent frequency bands at higher frequencies. 	For a clearer visualization and confront, we plot here the diagonal of the matrices.}
+		\caption{\label{fig:deepsphere results}Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics of the graph Laplacian of DeepSphere.}
 \end{figure}
 
 \subsubsection{Full graph, $n\to\infty$}\label{sec:Chapter1: n to infty}
@@ -285,28 +290,26 @@ $$L_n^tf(y)\xrightarrow{n\to\infty}L^tf(y)$$
 We expect to observe (even if we didn't prove it) the corresponding spectral convergence. The results obtained are in figure \ref{fig:n to infinity1}, \ref{fig:n to infinity3}.
 
 \begin{figure}[h!]
-	\label{fig:n to infinity1}
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/n.png}
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/n_diagonal.png}	
-	\caption{Alignment of the eigenvectors of the Heat Kernel Graph Laplacian with a fixed kernel width $t$}
+	\caption{\label{fig:n to infinity1}Alignment of the eigenvectors of the Heat Kernel Graph Laplacian with a fixed kernel width $t$}
 	
 \end{figure}
 \begin{figure}[h!]
-	\label{fig:n to infinity3}
+
 	\centering
 	\includegraphics[width=0.7\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/n_eigenvalues.png}	
-	\caption{Spectrum of the Heat Kernel Graph Laplacian with a fixed kernel width $t$}
+	\caption{\label{fig:n to infinity3}Spectrum of the Heat Kernel Graph Laplacian with a fixed kernel width $t$}
 \end{figure}
 
 In figure \ref{fig:n to infinity1} and in figure \ref{fig:n to infinity2} we see two things: first that there's a frequency threshold beyond which the Graph Laplacian is completely blind, approximately located at the 15th degree, and second that before this frequency threshold, we actually see the convergence expected: the alignment gets better as $n$ gets bigger.
 
 \begin{figure}[h!]
-	\label{fig:n to infinity4}
 	\centering
 	\includegraphics[width=0.45\textwidth]{figs/chapter1/frequency_threshold1.png}	\hfill
 	\includegraphics[width=0.45\textwidth]{figs/chapter1/frequency_threshold2.png}	
-	\caption{Frequency threshold explained.}
+	\caption{\label{fig:n to infinity4}Frequency threshold explained.}
 \end{figure}
 
  To explain this we refer to figure \ref{fig:n to infinity4} where we show a simplified situation where we are sampling the interval $[0, 2]$ and we plot the Gaussian kernel centered around the first pixel of the sampling corresponding to the origin. On the leftmost image the pixels are correctly spaced with respect to the kernel width, in the sense that the values of the kernel evaluated on the pixels are well far apart from each other. This makes the graph able to "see" all the pixels differently, and thus all the frequencies with wavelength around the order of magnitude of the aerage pixel distance will be captured by the graph. On the rightmost image in figure \ref{fig:n to infinity4} there are too many pixels with respect to the kernel width: the values of the kernel evaluated on the pixels close to the origin, because of the slope of the kernel being almost zero are too close to each other (in red); because of this any variation of a signal on the red pixels would be almost invisible to the graph. with this kernel width $t$, no matter how much we sample the interval $[0,2]$, any frequency with wavelength shorter than the radius $r\approx0.25$ becomes "invisible" to the graph Laplacian.\\
@@ -315,30 +318,25 @@ In figure \ref{fig:n to infinity1} and in figure \ref{fig:n to infinity2} we see
 \subsubsection{Full graph, $t\to 0$}
 In this section we fix the parameter $N_{side}$ and and we make the kernel width $t$ go to $0$. 
 \begin{figure}[h]
-	\label{fig:t_sensitivity_eigenspaces}
-	\caption{Alignment of the eigenspaces of the Heat Kernel Graph Laplacian with a fixed number of points $n$}
 	\centering
-	\includegraphics[width=1\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/t_sensitivity.png}
-	
+	\includegraphics[width=0.8\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/t_sensitivity}
+	\caption{\label{fig:t_sensitivity_eigenspaces}Alignment of the eigenspaces of the Heat Kernel Graph Laplacian with a fixed number of points $n$}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/t_sensitivity_diagonal.png}
-	\caption{Whole trend}
-	\label{fig:t_sensitivity_diagonal}
+	\caption{\label{fig:t_sensitivity_diagonal}Whole trend}
 \end{figure}%
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/t_sensitivity_diagonal_2.png}
-	\caption{First trend: error stays low for low frequencies, and gets lower for high frequencies}
-	\label{fig:t_sensitivity_diagonal_2}
+	\caption{\label{fig:t_sensitivity_diagonal_2}First trend: error stays low for low frequencies, and gets lower for high frequencies}
 	\vspace{0.5cm}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/t_sensitivity_diagonal_1.png}
-	\caption{Second trend: error gets higher for both high and low frequencies}
-	\label{fig:t_sensitivity_diagonal_1}
+	\caption{\label{fig:t_sensitivity_diagonal_1}Second trend: error gets higher for both high and low frequencies}
 \end{figure}%
 
 Results are in figure \ref{fig:t_sensitivity_eigenspaces}, \ref{fig:t_sensitivity_diagonal}: Starting from $t=0.32$, the error in the high frequencies starts to get smaller, while the error in the low frequencies keeps staying low (Figure \ref{fig:t_sensitivity_diagonal_2}) up to $t=0.05$. For $t$ that gets smaller and smaller up to $t=0.01$, we get worse alignment both in high and low frequencies (Figure \ref{fig:t_sensitivity_diagonal_1}). This behavior can be explained with the same arguments used in the previous section: low values of the kernel width correspond to a very peaked kernel, that causes all the weights to be close to zero and thus the graph becomes less and less connected loosing every capability of identifying different frequencies; on the opposite side high values of the kernel width correspond to a very flat kernel, and thus the graph loses the capacity of individuating high frequencies as discussed before.
@@ -347,26 +345,20 @@ Results are in figure \ref{fig:t_sensitivity_eigenspaces}, \ref{fig:t_sensitivit
 A heuristic grid search has been used to find the following optimal kernel width for different values of $N_{side}$, always in the case of a full graph. The optimal values of the kernel width $t$ are shown in figure \ref{fig:t}, and the usual alignment plots in figures \ref{fig:optimal graph}, \ref{fig:optimal graph diagonal}. We can see in figure \ref{fig:t} that the heuristic way of \cite{DeepSphere} of setting the standard deviation $t$ produces results very close to the optimal value. We recall that in DeepSphere $t$ is set to the average of the non zeros weight matrix entries, where the number of neighbors of each node is fixed between 7 and 8. It can be seen that the optimal values of $t$ are very close to a linear trend in the log-log plot, showing some kind of polynomial relationship with the parameter $N_{side}$ that could be used to extrapolate possible values of $t$ for higher $N_{side}$.
 
 \begin{figure}[h]
-	\label{fig:t}
-	
 	\centering
 	\includegraphics[width=0.4\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/kernelwidth.png}
-\caption{Standard deviation of the Gaussian kernel  in a log-log plot. A straight line indicates a polynomial relation.}
+\caption{\label{fig:t}Standard deviation of the Gaussian kernel  in a log-log plot. A straight line indicates a polynomial relation.}
 \end{figure}
 
 \begin{figure}[h]
-	\label{fig:optimal graph}
-	
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_full.png}	
-\caption{Alignment of eigenspaces for the optimal sequence $(t_n)$}
+\caption{\label{fig:optimal graph}Alignment of eigenspaces for the optimal sequence $(t_n)$}
 \end{figure}
 \begin{figure}[h]
-	\label{fig:optimal graph diagonal}
-	
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_full_diagonal.png}
-	\caption{Alignment of eigenspaces for the optimal sequence $(t_n)$}	
+	\caption{\label{fig:optimal graph diagonal}Alignment of eigenspaces for the optimal sequence $(t_n)$}	
 \end{figure}
 
 in figures \ref{fig:optimal graph}, \ref{fig:optimal graph diagonal} we can appreciate that for a full graph, each time we double the parameter $N_{side}$, we approximately double the degree $\ell$ at which the graph eigenvectors are correctly aligned with the spherical harmonics.
@@ -398,11 +390,12 @@ By setting $k = 0.01$ here are the usual alignment plots for the graph $W'$:
 \end{center}
 
 \begin{figure}[h]
-	\label{fig:optimal_thresholded}
-	\caption{Optimal construction \textbf{thresholded at $k=0.01$}}
+	
+	
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded.png}	
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded_diagonal.png}	
+	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded_diagonal.png}
+	\caption{\label{fig:optimal_thresholded}Optimal construction \textbf{thresholded at $k=0.01$}}
 \end{figure}
 
 We see that we need to increase the number of neighbors as $N_{side}$ gets bigger. Again, the intuition is the following: to have spectral convergence (a strong type of convergence) we need more and more global information and more precise.  Still, the number of neighbors grows slowly with the number of pixels, making graph convolutions still computationally efficient.
@@ -414,16 +407,15 @@ To conclude this subsection, we show in figure \ref{fig:Old spectrum}, \ref{fig:
 	\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original.png}
 	\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original_diagonal.png}
 	\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/05_figs/old_results3.png}
-	\captionof{figure}{Alignment of the graph Laplacian eigenvectors of the DeepSphere graph $W$, the starting point of this work, and its spectrum.}
-	\label{fig:Old spectrum}
+	\captionof{figure}{\label{fig:Old spectrum}Alignment of the graph Laplacian eigenvectors of the DeepSphere graph $W$, the starting point of this work, and its spectrum.}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
 	\centering
 	\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded.png}
 	\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded_diagonal.png}
 	\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded_eigenvalues.png}
-	\captionof{figure}{Alignment of the graph Laplacian eigenvectors of the proposed graph $W'$ and its spectrum.}
-	\label{fig:New spectrum}
+	\captionof{figure}{\label{fig:New spectrum}Alignment of the graph Laplacian eigenvectors of the proposed graph $W'$ and its spectrum.}
+	
 \end{minipage}
 
 
