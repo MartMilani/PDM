@@ -5,7 +5,16 @@
 %!TEX root = 0.main.tex
 
 \section{Graph Spherical Convolutions}
-Perraudin et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph Laplacian proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} on the HEALPix sampling of the sphere in order to obtain a graph whose convolution approximates the convolution on the sphere. They constrain the degree of each node in order to limit the computational complexity of the filtering performed by each layer of the GCNN to be linear with the dimension of the input feature map. Despite Belkin et al. proved a result of spectral convergence of the graph Laplacian to the Laplace-Beltrami operator for any manifold given a random sampling \ref{theo:Belkin spectral convergence}, in the work of Perraudin et al. the graph Laplacian does not seem to show the expected spectral convergence to the continuous Laplace-Beltrami operator. In figure (\ref{fig:Old spectrum}) we see the correspondence between the subspaces spanned by the graph Fourier modes of the graph Laplacian used by Perraudin et al. and the true spherical harmonics. We call $(v_\ell^i)_{\ell=0,... \ell_\text{max}}^{i=0,...\ell(\ell+1)}$ the $i-th$ graph eigenmode of degree $\ell$. We compute the normalized Discrete Spherical Harmonic Transform (DSHT) up to the first $\sum_{\ell=0}^{\ell_\text{max}{}}2\ell + 1=\ell_{\text{max}}(\ell_\text{max}+1)$ spherical harmonics for each $v_\ell^i$. The entry $(i, j)$ of the matrix represented in the figure corresponds to the percentage of energy of the $j-th$ eigenspace $V_j = \text{span}\{v^0_j, ..., v^{j(j+1)}_j\}$ contained in the $i-th$ eigenspace of true spherical harmonics. In a perfect situation, this matrix would be the identity matrix. It can be seen that the eigenmodes of the graph Laplacian span almost the same subspaces as the spherical harmonics in the low frequencies, but this alignment gets worse at higher frequencies. Furthermore, it can be noticed that even by improving the resolution of the graph, the low frequency eigenspaces do not get better aligned.
+Perraudin et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph Laplacian proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} on the HEALPix sampling of the sphere in order to obtain a graph whose convolution approximates the convolution on the sphere. They constrain the degree of each node in order to limit the computational complexity of the filtering performed by each layer of the GCNN to be linear with the dimension of the input feature map. Despite Belkin et al. proved a result of spectral convergence of the graph Laplacian to the Laplace-Beltrami operator for any manifold given a random sampling \ref{theo:Belkin spectral convergence}, in the work of Perraudin et al. the graph Laplacian does not seem to show the expected spectral convergence to the continuous Laplace-Beltrami operator. In figure (\ref{fig:Old spectrum1}) we see the correspondence between the subspaces spanned by the graph Fourier modes of the graph Laplacian used by Perraudin et al. and the true spherical harmonics. We call $(v_\ell^i)_{\ell=0,... \ell_\text{max}}^{i=0,...\ell(\ell+1)}$ the $i-th$ graph eigenmode of degree $\ell$. We compute the normalized Discrete Spherical Harmonic Transform (DSHT) up to the first $\sum_{\ell=0}^{\ell_\text{max}{}}2\ell + 1=\ell_{\text{max}}(\ell_\text{max}+1)$ spherical harmonics for each $v_\ell^i$. The entry $(i, j)$ of the matrix represented in the figure corresponds to the percentage of energy of the $j-th$ eigenspace $V_j = \text{span}\{v^0_j, ..., v^{j(j+1)}_j\}$ contained in the $i-th$ eigenspace of true spherical harmonics. 
+\begin{wrapfigure}{r}{0.5\textwidth}	
+	\begin{center}
+		\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original.png}
+		\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original_diagonal.png}
+		\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/05_figs/old_results3.png}
+	\end{center}
+	\captionof{figure}{\label{fig:Old spectrum1}Alignment of the graph Laplacian eigenvectors of the DeepSphere graph $W$, the starting point of this work, and its spectrum.}
+\end{wrapfigure} 
+In a perfect situation, this matrix would be the identity matrix. It can be seen that the eigenmodes of the graph Laplacian span almost the same subspaces as the spherical harmonics in the low frequencies, but this alignment gets worse at higher frequencies. Furthermore, it can be noticed that even by improving the resolution of the graph, the low frequency eigenspaces do not get better aligned.
 
 In this chapter we give three contributions: first, in section \ref{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere} we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere on a deterministic sampling that is regular enough; second, in section \ref{sec:How to build a good graph} we show a way of modifying the graph of Defferrard et al. to recover the expected spectral convergence and still managing to contain the computational costs of graph convolutions; finally in section \ref{sec:Experimental validation} we study how the graph proposed in section \ref{sec:How to build a good graph} performs in practice when used in a Graph Convolutional Neural Network, comparing its performances to DeepSphere \cite{DeepSphere}.
 
@@ -171,7 +180,7 @@ Now, we just proved that \textit{keeping t fixed} $L_n^tf(x)\rightarrow L^tf(x)$
 \begin{prop}\label{prop:2}
 	Given a sampling regular enough i.e. for which we assume $d^{(n)}\leq \frac{C}{\sqrt{n}}$, for a fixed $t>0$, a fixed Lipschitz function $f$ and a fixed point $y\in\mathbb S_2$
 $$\left|\frac{1}{4\pi t^2}\left(L_n^tf(x) -L^tf(x)\right)\right|\rightarrow0$$
-\textit{for $t\to0$ and $n\to\infty$ at the same time}. In other words, there exists a sequence $(t_n), \\ \lim_{n\to\infty}t_n=0$ such that 
+\textit{for $t\to0$ and $n\to\infty$ at the same time}. In other words, there exists a sequence $(t_n), \lim_{n\to\infty}t_n=0$ such that 
 $$\forall f \text{ Lipschitz, } \forall x\in\mathbb S_2 \quad \left|\frac{1}{4\pi t_n^2}\left(L_n^{t_n}f(x) - L^{t_n}f(x)\right)\right|\xrightarrow{n\to \infty}0$$
 \end{prop}
 \vspace{0.5cm}
@@ -303,7 +312,7 @@ We expect to observe (even if we didn't prove it) the corresponding spectral con
 	\caption{\label{fig:n to infinity3}Spectrum of the Heat Kernel Graph Laplacian with a fixed kernel width $t$}
 \end{figure}
 
-In figure \ref{fig:n to infinity1} and in figure \ref{fig:n to infinity2} we see two things: first that there's a frequency threshold beyond which the Graph Laplacian is completely blind, approximately located at the 15th degree, and second that before this frequency threshold, we actually see the convergence expected: the alignment gets better as $n$ gets bigger.
+In figure \ref{fig:n to infinity1} we see two things: first that there's a frequency threshold beyond which the Graph Laplacian is completely blind, approximately located at the 15th degree, and second that before this frequency threshold, we actually see the convergence expected: the alignment gets better as $n$ gets bigger.
 
 \begin{figure}[h!]
 	\centering
@@ -311,6 +320,7 @@ In figure \ref{fig:n to infinity1} and in figure \ref{fig:n to infinity2} we see
 	\includegraphics[width=0.45\textwidth]{figs/chapter1/frequency_threshold2.png}	
 	\caption{\label{fig:n to infinity4}Frequency threshold explained.}
 \end{figure}
+
 
  To explain this we refer to figure \ref{fig:n to infinity4} where we show a simplified situation where we are sampling the interval $[0, 2]$ and we plot the Gaussian kernel centered around the first pixel of the sampling corresponding to the origin. On the leftmost image the pixels are correctly spaced with respect to the kernel width, in the sense that the values of the kernel evaluated on the pixels are well far apart from each other. This makes the graph able to "see" all the pixels differently, and thus all the frequencies with wavelength around the order of magnitude of the aerage pixel distance will be captured by the graph. On the rightmost image in figure \ref{fig:n to infinity4} there are too many pixels with respect to the kernel width: the values of the kernel evaluated on the pixels close to the origin, because of the slope of the kernel being almost zero are too close to each other (in red); because of this any variation of a signal on the red pixels would be almost invisible to the graph. with this kernel width $t$, no matter how much we sample the interval $[0,2]$, any frequency with wavelength shorter than the radius $r\approx0.25$ becomes "invisible" to the graph Laplacian.\\
  This phenomenon can be seen also in the spectrum represented in figure \ref{fig:n to infinity3} where we plot the eigenvalues of the matrix $\mathbf L_n^t$: as $N_{side}$ gets bigger the eigenvalues get more and more grouped in the usual groups of the same multiplicity of the corresponding spherical harmonics; however, there's a frequency (corresponding approximately to the degree $\ell=15$) from which all the eigenspaces tend to merge into one, corresponding to the eigenvalue $1$.
@@ -338,18 +348,21 @@ In this section we fix the parameter $N_{side}$ and and we make the kernel width
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/t_sensitivity_diagonal_1.png}
 	\caption{\label{fig:t_sensitivity_diagonal_1}Second trend: error gets higher for both high and low frequencies}
 \end{figure}%
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/chapter1/t.png}	
+	\caption{\label{fig:weights}One row of the weight matrix for different values of the kernel width $t$.}
+\end{figure}
 
-Results are in figure \ref{fig:t_sensitivity_eigenspaces}, \ref{fig:t_sensitivity_diagonal}: Starting from $t=0.32$, the error in the high frequencies starts to get smaller, while the error in the low frequencies keeps staying low (Figure \ref{fig:t_sensitivity_diagonal_2}) up to $t=0.05$. For $t$ that gets smaller and smaller up to $t=0.01$, we get worse alignment both in high and low frequencies (Figure \ref{fig:t_sensitivity_diagonal_1}). This behavior can be explained with the same arguments used in the previous section: low values of the kernel width correspond to a very peaked kernel, that causes all the weights to be close to zero and thus the graph becomes less and less connected loosing every capability of identifying different frequencies; on the opposite side high values of the kernel width correspond to a very flat kernel, and thus the graph loses the capacity of individuating high frequencies as discussed before.
+Results are in figure \ref{fig:t_sensitivity_eigenspaces}, \ref{fig:t_sensitivity_diagonal}: Starting from $t=0.32$, the error in the high frequencies starts to get smaller, while the error in the low frequencies keeps staying low (Figure \ref{fig:t_sensitivity_diagonal_2}) up to $t=0.05$. For $t$ that gets smaller and smaller up to $t=0.01$, we get worse alignment both in high and low frequencies (Figure \ref{fig:t_sensitivity_diagonal_1}). This behavior can be explained with the same arguments used in the previous section: high values of the kernel width correspond to a very flat kernel (figure \ref{fig:weights}, left), and thus the graph loses the capacity of individuating high frequencies as discussed before. On the opposite side, low values of the kernel width correspond to a very peaked kernel, that causes all the weights to be close to zero and thus the graph becomes less and less connected loosing every capability of identifying different frequencies  (figure \ref{fig:weights}, right). 
 
 \subsubsection{Putting it together: full graph, $n\to\infty$ and $t\to 0$}
-A heuristic grid search has been used to find the following optimal kernel width for different values of $N_{side}$, always in the case of a full graph. The optimal values of the kernel width $t$ are shown in figure \ref{fig:t}, and the usual alignment plots in figures \ref{fig:optimal graph}, \ref{fig:optimal graph diagonal}. We can see in figure \ref{fig:t} that the heuristic way of \cite{DeepSphere} of setting the standard deviation $t$ produces results very close to the optimal value. We recall that in DeepSphere $t$ is set to the average of the non zeros weight matrix entries, where the number of neighbors of each node is fixed between 7 and 8. It can be seen that the optimal values of $t$ are very close to a linear trend in the log-log plot, showing some kind of polynomial relationship with the parameter $N_{side}$ that could be used to extrapolate possible values of $t$ for higher $N_{side}$.
-
+A grid search has been used to find the following optimal kernel width for different values of $N_{side}$, always in the case of a full graph, where we maximized the number of graph eigenspaces with an alignment value bigger than $80\%$. The optimal values of the kernel width $t$ are shown in figure \ref{fig:t}, and the usual alignment plots in figures \ref{fig:optimal graph}, \ref{fig:optimal graph diagonal}. We can see in figure \ref{fig:t} that the heuristic way of \cite{DeepSphere} of setting the standard deviation $t$ produces results very close to the optimal value. We recall that in DeepSphere $t$ is set to the average of the non zeros weight matrix entries, where the number of neighbors of each node is fixed between 7 and 8. It can be seen that the optimal values of $t$ are very close to a linear trend in the log-log plot, showing some kind of polynomial relationship with the parameter $N_{side}$ that could be used to extrapolate possible values of $t$ for higher $N_{side}$.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/kernelwidth.png}
 \caption{\label{fig:t}Standard deviation of the Gaussian kernel  in a log-log plot. A straight line indicates a polynomial relation.}
 \end{figure}
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_full.png}	
@@ -360,8 +373,7 @@ A heuristic grid search has been used to find the following optimal kernel width
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_full_diagonal.png}
 	\caption{\label{fig:optimal graph diagonal}Alignment of eigenspaces for the optimal sequence $(t_n)$}	
 \end{figure}
-
-in figures \ref{fig:optimal graph}, \ref{fig:optimal graph diagonal} we can appreciate that for a full graph, each time we double the parameter $N_{side}$, we approximately double the degree $\ell$ at which the graph eigenvectors are correctly aligned with the spherical harmonics.
+In figures \ref{fig:optimal graph}, \ref{fig:optimal graph diagonal} we can appreciate that for a full graph, each time we double the parameter $N_{side}$, we approximately double the degree $\ell$ at which the graph eigenvectors are correctly aligned with the spherical harmonics.
 \subsubsection{Reducing the number of neighbors}
 For what it concerns how to make the graph sparse, the intuition is the following: remember that we want our graph Laplacian to approximate the operator $L^t$, that for sufficiently small $t$ approximates $\triangle$.
 $$\frac{1}{n}\left(\sum_i e^{-\frac{||x_i-y||^2}{4t}}(f(y)-f(x_i)) \right) \quad \approxeq \quad \int_\mathcal M e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x) $$
@@ -373,25 +385,20 @@ e^{-\frac{||x_i-x_j||^2}{4t}}\quad& \text{if } e^{-\frac{||x_i-x_j||^2}{4t}} \ge
 0 \quad & \text{if } e^{-\frac{||x_i-x_j||^2}{4t}} < k
 \end{cases}$$
 
-By setting $k = 0.01$ here are the usual alignment plots for the graph $W'$:
+By setting $k = 0.01$ in figure \ref{fig:optimal_thresholded} we can see the usual alignment plots for the graph $W'$:
 
 \begin{center}
 	\begin{tabular}{ c|c} 
-		
 		$N_{side}$ & Number of neighbors \\ 
-		
 		1 & 11 \\ 
 		2 & 16 \\ 
 		4 & 37 \\ 
 		8 & 43 \\ 
 		16 & 52 \\ 
-		
 	\end{tabular}
 \end{center}
 
 \begin{figure}[h]
-	
-	
 	\centering
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded.png}	
 	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/optimal_thresholded_diagonal.png}
