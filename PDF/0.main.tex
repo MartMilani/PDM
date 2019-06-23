@@ -94,8 +94,8 @@
 
 \topmargin=-0.45in      %
 %\evensidemargin=0in     %
-\oddsidemargin=-0.15in      %
-\textwidth=6.8in        %
+\oddsidemargin=+0.5in      %
+\textwidth=5.5in        %
 \textheight=9.2in       %
 %\headsep=0.25in         %
 \headheight=30.9pt
@@ -121,7 +121,7 @@ A fundamental problem in signal processing is to design computationally efficien
 
 We study the spectral properties of such graph Laplacian matrix in the special case of \cite{DeepSphere} where the sampling $\mathcal P$ is the so called HEALPix sampling (acronym for \textbf Hierarchical \textbf Equal \textbf Area iso\textbf Latitude \textbf {Pix}elization) and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral properties than the one presented in \cite{DeepSphere}.
 
-We investigate other different methods of building the matrix $\mathbf L$ better suited to samplings of the sphere different than HEALPix. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on a manifold. We compare the FEM and the graph Laplacians on the HEALPix and on the equiangular sampling on the sphere.
+We investigate other different methods of building the matrix $\mathbf L$ better suited to non uniform sampling measures. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on the sphere. We compare the FEM and the graph Laplacian on different samplings of the sphere. We finish by discussing the general problem of how to incorporate geometrical informations about the sphere in the graph, a purely topological object.
 
 
 \end{abstract}
@@ -137,12 +137,11 @@ We investigate other different methods of building the matrix $\mathbf L$ better
 \pagebreak
 
 \listoffigures
-\listoftables
 
 \pagebreak
 
 \pagenumbering{arabic}
-\input{1.LiteratureReview.tex}
+\input{1_with_notes.tex}
 
 \pagebreak
 

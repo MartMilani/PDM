@@ -158,19 +158,19 @@ Meyer et al. \cite{Meyer02discretedifferential-geometry} modify the masses of De
 
 
 \subsubsection{A graph alternative to the HKGL for the equiangular sampling}
-\begin{wrapfigure}{r}{0.5\textwidth}	
-	\begin{center}
-		\includegraphics[width=0.9\linewidth]{figs/Chapter3/frossard2.png}
-	\end{center}
-	\caption{\label{fig:frossard2}Frossard et al. setting}
-\end{wrapfigure} 
+
 Frossard et al. \cite{Frossard2017GraphBasedCO} design a discrete Laplacian that is explicitly intended to work on the sphere with the equiangular sampling. They studied a way to build a graph to analyze images produced by omnidirectional cameras. In their work they assume that the image is sampled on the sphere on the equiangular sampling. They consider the set $\mathcal G$ of all the possible graphs where each node is connected only to four of its nearest neighbours (North, Sud, West, East) and propose a weighting scheme $w_{ij}$ specifically designed for the analysis of spherical signals. To design this weight scheme they minimize the difference in the response to the polynomial spectral filter $\mathcal F = \mathbf L$ evaluated on images of the same object seen at different latitudes. In other words, they solve the minimization problem
 
 \begin{equation}\label{eq:minimization frossard}
 	\min_{W\in\mathcal G} \left|\mathcal{F}\left(\mathbf{y}\left(v_{ e}\right)\right)-\mathcal{F}\left(\mathbf{y}\left(v_{ i}\right)\right)\right|
 \end{equation}
-
-for the adjacency matrix $W$, where $\mathbf y(v_i)$ is the image of the object on the sphere centered on the node $v_i$, and $\mathcal f\mathbf y(v_e)$ is the response of the filter at the node $v_e$ that lies at the same longitude of the node $v_i$ but on the equator. In their work they prove that the optimal weights solving the minimization problem \ref{eq:minimization frossard} are given by weights $w_{ij}$ inversely proportional to the Euclidean distance between nodes
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{figs/Chapter3/frossard2.png}
+	\end{center}
+	\caption{\label{fig:frossard2}Frossard et al. setting.}
+\end{figure}
+for the adjacency matrix $W$, where $\mathbf y(v_i)$ is the image of the object on the sphere centered on the node $v_i$, and $\mathcal f\mathbf y(v_e)$ is the response of the filter at the node $v_e$ that lies at the same longitude of the node $v_i$ but on the equator (figure \ref{fig:frossard2}). In their work they prove that the optimal weights solving the minimization problem \ref{eq:minimization frossard} are given by weights $w_{ij}$ inversely proportional to the Euclidean distance between nodes
 \begin{equation}\label{eq:frossard weights}
 	w_{ij} = \frac{1}{\norm{v_i-v_j}}
 \end{equation}
@@ -321,19 +321,20 @@ First we need to construct a discretization of the continuous domain $\Omega$. I
 \end{itemize}
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=0.4\textwidth]{figs/Chapter3/badmesh.png}
-	\end{center}
-	\caption{\label{fig:bad mesh}A bad quality mesh}
-\end{figure}
-It's clear that by discretizing the continuous domain $\Omega$ we introduce a first source of errors in the method; however for simplicity we won't take this into account in the next discussion, and we will identify the domain $\Omega$ with the domain $\Omega_h$covered by $\mathcal T_h$. The quality of the \textit{mesh} $\mathcal T_h$ is important for a good solution; a good quality mesh should avoid triangles with extreme angles and every triangle of $\mathcal T_h$ should look like as much as possible to an equilateral triangle. In figure \ref{fig:bad mesh} we see an example of a bad quality mesh: its triangles look very stretched; there are vertices that are shared by many triangles and vertices that are shared by very few. In figure \ref{fig:omega and mesh} we see a better mesh: there are no stretched triangles, and every node is shared by an almost constant number of triangles.
-
-\paragraph{Choosing the subspace $V_h$ and the basis functions $\phi_i$}
-\begin{wrapfigure}{r}{0.5\textwidth}
-	\begin{center}
 		\includegraphics[width=0.4\textwidth]{figs/Chapter3/basisfunction.png}
 	\end{center}
 	\caption{\label{fig:basis function}Basis function of the space $X^{1}_h$}
-\end{wrapfigure}
+
+\end{figure}
+It's clear that by discretizing the continuous domain $\Omega$ we introduce a first source of errors in the method; however for simplicity we won't take this into account in the next discussion, and we will identify the domain $\Omega$ with the domain $\Omega_h$covered by $\mathcal T_h$.
+\begin{wrapfigure}{r}{0.3\textwidth}
+	\begin{center}
+		\includegraphics[width=0.4\textwidth]{figs/Chapter3/badmesh.png}
+	\end{center}
+	\caption{\label{fig:bad mesh}A bad quality mesh}
+\end{wrapfigure} The quality of the \textit{mesh} $\mathcal T_h$ is important for a good solution; a good quality mesh should avoid triangles with extreme angles and every triangle of $\mathcal T_h$ should look like as much as possible to an equilateral triangle. In figure \ref{fig:bad mesh} we see an example of a bad quality mesh: its triangles look very stretched; there are vertices that are shared by many triangles and vertices that are shared by very few. In figure \ref{fig:omega and mesh} we see a better mesh: there are no stretched triangles, and every node is shared by an almost constant number of triangles.
+
+\paragraph{Choosing the subspace $V_h$ and the basis functions $\phi_i$}
 Once chosen our domain discretization $\mathcal T_h$, we need to choose the space $V_h$ we want to use for our Galerkin problem. Define 
 $$X_h^{1}=\{v_h: v_h\in C(\Omega): \left.v_h\right|_{\tau}\in\mathbb P^1\  \forall \tau\in \mathcal T_h\}$$
 to be the space of all the continuous, piecewise linear functions on $\Omega$. A reasonable choice for $V_h$ is the space $X_h^{1,0}\subset H_0^1(\Omega)$ of the functions of $X_h^1$ that vanish on $\partial \mathcal T_h$
@@ -419,18 +420,17 @@ D^{-1/2}AD^{-1/2}\mathbf f = \lambda \mathbf f
 obtaining very promising results.
 We implemented the eigenvalue problem \ref{eq:weak eigenvalue problem} in $X_h^1$. We show in figures \ref{fig:FEMHealpix}, \ref{fig:FEMequiangular} the usual analysis of the alignment of the eigenmodes for both HEALPix sampling and the equiangular sampling. Being the sphere convex, in both cases the mesh $\mathcal T_h$ has been obtained by calculating the triangulation of the convex hull of the nodes through the Qhull algorithm \cite{Barber96thequickhull}.
 
-\begin{minipage}[t!]{.49\textwidth}
+\begin{minipage}[t!]{.45\textwidth}
 	\raggedleft
 	\center
 	\includegraphics[width=0.9\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM.png}\\
 	\includegraphics[width=0.9\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM_diagonal.png}	\\
 	\includegraphics[width=0.9\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	\\
 	\captionof{figure}{	\label{fig:FEMHealpix}Alignment of eigenspaces using the linear FEM approximation to solve the eigenvalue problem \ref{eq:algebraic  eigenvalue problem} on HEALPix}
-
 \end{minipage}
 \hfill
 %
-\begin{minipage}[t!]{.49\textwidth}
+\begin{minipage}[t!]{.45\textwidth}
 	\raggedright
 	\center
 	\includegraphics[width=0.9\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM.png}
@@ -438,7 +438,7 @@ We implemented the eigenvalue problem \ref{eq:weak eigenvalue problem} in $X_h^1
 	\includegraphics[width=0.9\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/FEM_eigenvalues_16.png}	
 	\captionof{figure}{\label{fig:FEMequiangular}Alignment of eigenspaces using the linear FEM approximation to solve the eigenvalue problem \ref{eq:algebraic  eigenvalue problem} on the equiangular sampling}
 \end{minipage}
-\begin{minipage}[t!]{.49\textwidth}
+\begin{minipage}[t!]{.45\textwidth}
 	\raggedleft
 	\center
 	\centering
@@ -449,7 +449,7 @@ We implemented the eigenvalue problem \ref{eq:weak eigenvalue problem} in $X_h^1
 \end{minipage}
 \hfill
 %
-\begin{minipage}[t!]{.49\textwidth}
+\begin{minipage}[t!]{.45\textwidth}
 	\raggedright
 	\center
 	\centering
@@ -459,15 +459,14 @@ We implemented the eigenvalue problem \ref{eq:weak eigenvalue problem} in $X_h^1
 	\captionof{figure}{\label{fig:symmetricFEMequiangularLumped}Alignment of eigenspaces using the linear FEM approximation to solve the \textit{symmetric lumped} eigenvalue problem \ref{eq:symmetric lumped eigenvalue problem} on the equiangular sampling}
 \end{minipage}
 
-We see that on HEALPix the \textit{full} HKGL shows better aligned eigenmodes than the \textit{full} FEM Laplacian $B^{-1}L$. On the equiangular sampling the FEM shows his capability of catching the geometry of the problem independently of the sampling (figure \ref{fig:FEMequiangular}). Furthermore it can be seen how on the equiangular sampling the solutions of the lumped problem \ref{eq:lumped eigenvalue problem } - figure \ref{fig:FEMequiangularLumped} - and of the symmetric lumped problem \ref{eq:symmetric lumped eigenvalue problem} - figure \ref{fig:symmetricFEMequiangularLumped} - look very close to the correct solution of the problem \ref{eq:algebraic  eigenvalue problem}, thus making the FEM approach very promising.
+We see that on HEALPix the \textit{full} HKGL shows better aligned eigenmodes than the \textit{full} FEM Laplacian $B^{-1}L$. On the equiangular sampling the FEM shows his capability of catching the geometry of the problem independently of the sampling (figure \ref{fig:FEMequiangular}). Furthermore it can be seen how on the equiangular sampling the solutions of the lumped Laplacian $D^{-1}L$ - figure \ref{fig:FEMequiangularLumped} - and of the symmetric lumped Laplacian $D^{-1/2}LD^{-1/2}$ - figure \ref{fig:symmetricFEMequiangularLumped} - look very close to the correct solution of the problem \ref{eq:algebraic  eigenvalue problem}, thus making the FEM approach very promising.
 
 
 
 \subsubsection{Diffusion with the exponential matrix}
 
-To show that it is possible to filter a signal with the matrix $\mathbf L = D^{-1/2}AD^{-1/2}$ in the graph-like way and to confront it to the full HKGL with tried to filter a signal concentrated on a node  with the well known diffusion filter $\exp{-\tau \mathbf L}$. To enhance the deformation caused by the HKGL it was chosen a very irregular sampling shown in figure \ref{fig:FEM lumped symmetric diffusion on irregular sampling}. It can be seen how the full HKGL compresses the signal around the equator where the sampling is more sparse; the FEM filtering manages to keep the diffusion homogeneous no matter the asymmetry in the sampling. 
+To show that it is possible to filter a signal with the matrix $\mathbf L = D^{-1/2}AD^{-1/2}$ in the graph-like way and to confront it to the full HKGL with filter a unit mass signal $\mathbf{f}=(0,0,...0,1,0,...,0)^T$ with the \textit{diffusion} filter $\exp{-\tau \mathbf L}$. To enhance the deformation caused by the HKGL it was chosen a very irregular sampling, shown in figure \ref{fig:FEM lumped symmetric diffusion on irregular sampling}. It can be seen how the full HKGL compresses the signal around the equator where the sampling is more sparse; on the other hand the FEM filtering manages to keep the diffusion homogeneous no matter the asymmetry in the sampling. 
 \begin{figure}[h]
-	
 	\centering
 	\includegraphics[width=0.8\textwidth]{figs/Chapter3/diffusion.png}
 	\caption{\label{fig:FEM lumped symmetric diffusion on irregular sampling}Symmetric lumped linear FEM diffusion and HKGL diffusion on an irregular sampling of the sphere. The position of the filtered source signal is indicated with a black star.}
