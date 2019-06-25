@@ -29,6 +29,86 @@ Spherical convolutional neural networks (SCNNs) are NNs that have been specifica
 In Chapter 1 we start by presenting fundamental concepts of spectral theory on the sphere and we present classical ways of building rotation equivariant neural networks through the use of the classical SHT.  We present then some basics of Graph Spectral Theory useful to introduce the work of Perraudin et al. DeepSphere \cite{DeepSphere}. We present then a well suited way to build a graph to approximate the Laplace-Beltrami operator on a manifold, the Heat Kernel Graph Laplacian (HKGL) together with some convergence results. In Chapter 2 we study the spectral properties of the graph Laplacian matrix $\mathbf L$ used by Perraudin et al. and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral properties. In Chapter 3 we investigate other different methods of building the matrix $\mathbf L$ better suited to non uniform sampling measures. In particular, we study the Finite Element Method approximation of the Laplace-Beltrami operator on the sphere. We compare the FEM and the graph Laplacian on different samplings of the sphere. We conclude by discussing the general problem of how to incorporate geometrical informations about the sphere in the graph, a purely topological object.
 
 \subsection{Fourier Transforms and Convolutions on the 2-Sphere}\label{sec:Fourier on the Sphere}
+The goal of this section if to present to the reader some fundamental results of spectral theory on the sphere that we will need in this work. We start with a brief review Banach and Hilbert spaces, and we continue by defining the spherical harmonics, the fourier transform and the convolution on the sphere. We refer to Sections 2 and 3 of the work of Driscoll and Healy \cite{Driscoll:1994:CFT:184069.184073} for a more detailed and effective review of spectral theory on the Sphere.
+
+\paragraph{Banach and Hilbert spaces}
+A \textit{norm} $\norm\cdot:\ X\to\mathbb R$ on a vector space $X$ is a subadditive, positive definite function such that $\norm{x+y}\leq\norm x +\norm y,\ \forall x,y\in X$ (triangle inequality). A \textit{Cauchy sequence} $(x_n)\subset X$ is a sequence such that $\forall \epsilon>0\  \exists M>0: $ $\forall i,j>M$ $ \norm{x_i-x_j}<\epsilon$. A \textit{Banach space} $(X, \norm{\cdot})$ is a normed vector space on the scalar field $F$ that is \textit{complete}, meaning that $X$ is "big enough" such that for every Cauchy sequence $(x_n)\subset X$ there exist a $x\in X$ such that $x$ is the limit of $(x_n)$ in $X$ i.e. $\norm{x_n-x}\rightarrow 0$. A \textit{basis} of $(X, \norm\cdot)$ is a minimal set of linearly independent vectors $\mathcal B \subset X$ such that every element of $X$ can be written as linear combination of the elements of $\mathcal B$. For reasons that will be clear when presenting the Galerkin method, we are interested in those particular Banach spaces where we can define a notion of orthogonality between vectors. Such Banach spaces are called \textit{Hilbert spaces}: $(X, \norm \cdot )$ is a Hilbert space when it is Banach and furthermore the norm $ \norm \cdot $ can be induced by a \textit{scalar product}: $\norm \cdot = \sqrt{\langle\cdot,\cdot\rangle}$. A scalar product is a function $\langle\cdot,\cdot\rangle: X\times X \rightarrow \mathbb F$ that is linear in the first argument, positive definite and conjugate symmetric. Through a scalar product we can define the notion of angle $\theta$ between two elements $x, y \in X$ through the following formula: 
+$$
+\cos \theta = \frac{\langle x, y\rangle}{\norm x \norm y}
+$$ 
+and in particular we can define the notion of orthogonality: two elements  $x, y \in X$ are orthogonal if and only if $\langle c, y\rangle=0$. We can now define what an \textit{orthonormal} basis of $X$ is: a basis $\mathcal B \subset X$ such that $\forall x, y \in \mathcal B, \norm x = \norm y = 1 \text{and } \langle x, y\rangle = 0$. Given an orthonormal basis $\mathcal B = \{b_i\}_{i\in I}$ we can write each vector in its \textit{Fourier series} 
+\begin{equation}\label{eq:abstract fourier}
+x = \sum_{i\in I} \frac{\langle x, b_i\rangle}{\norm {x^2}}b_i
+\end{equation}
+If the set $I$ is countable the Hilbert space $(X, \norm\cdot)$ is called \textit{separable}. Having a countable orthonormal basis, and thus the possibility of representing each vector through its Fourier series enormously simplifies many problems.
+\paragraph{Spherical Harmonics}
+ Given the usual parametrization $x = x(\theta, \phi), \theta\in[0,\pi], \phi\in[0,2\pi]$ of the sphere
+\begin{align*}
+\mathbb{S}^{2}&=\left\{\omega=\left(\omega_{1}, \omega_{2}, \omega_{3}\right) \in \mathbb{R}^{3} :\|x\|_{\mathbb{R}^{3}}=\left(\omega_{1}^{2}+\omega_{2}^{2}+\omega_{3}^{2}\right)^{1 / 2}=1\right\}\\
+\omega_{1}&=\cos (\phi) \sin (\theta), \quad \omega_{2}=\sin (\phi) \sin (\theta), \quad \omega_{3}=\cos (\theta)
+\end{align*}
+the Hilbert space $L^2(\mathbb S^2)$ is defined as the space of square-integrable functions endowed with the scalar product $\langle f,g\rangle=\int_{\mathbb S^2}f(\omega)\overline g(\omega)d\omega$ where the measure $d\omega$ is the rotation-invariant measure such that
+\begin{align}
+\int_{\omega \in \mathbb S^{2}} f(\omega) d \omega&=\int_{\phi=0}^{2 \pi} \int_{\theta=0}^{\pi} f(\omega(\theta, \phi)) \sin \theta d \theta d \phi\\
+\int_{\omega \in \mathbb S^{2}} f(g \omega) d \omega&=\int_{\omega \in \mathbb S^{2}} f(\omega) d \omega, \quad g \in S O(3)
+\end{align}
+
+For each rotation $g\in SO(3)$ we define a corresponding rotation operator $\Lambda(g)$ by
+$$
+\Lambda(g) f(\omega)=f\left(g^{-1} \omega\right)
+$$
+A space is invariant under the rotations $g$ in $SO(3)$ if all operators $\Lambda(g)$ take each function of the space back into the space. As very well written by Driscoll et al \cite{Driscoll:1994:CFT:184069.184073}:
+
+\vspace{0.2cm}
+\textit{Fourier analysis on the sphere amounts to the decomposition of the space of square integrable functions on \(\mathbb S^{2}\) in minimal subspaces invariant under all of the rotations in \(S O(3),\) thus simplifying the analysis of rotation-invariant operators.}
+\vspace{0.2cm}
+
+The $\ell$-th invariant subspace is made of polynomials of $\mathbb R^3$ restricted to the sphere of degree $\ell$ and has dimension $2\ell+1$. The invariant space of degree $\ell$ is called the space of \textit{spherical harmonics} of degree $\ell$. These subspaces are orthogonal between them, and correspond to the eigenspaces of the Laplace-Beltrami operator $\Delta_{\mathbb S^2}$. The set of all the orthonormal basis $Y_\ell^m,\ -\ell\leq m\leq\ell$ of each minimal invariant subspace gives an orthonormal basis of $L^2(\mathbb S^2)$. The analytical expression of the spherical harmonic $Y_\ell^m(\theta, \phi)$ is known:
+\begin{equation}\label{eq:spherical harmonics}
+	Y_\ell^m(\theta, \phi) = (-1)^{m} \sqrt{\frac{(2 \ell+1)(\ell-m) !}{4 \pi(\ell+m) !}} P_{\ell}^{m}(\cos \theta) e^{i m \phi}
+\end{equation}
+where the definition of the Legendre functions $P_{\ell}^{m}$ can be found in \cite{Driscoll:1994:CFT:184069.184073}. 
+\vspace{0.5cm}
+\begin{remark}
+	Saying that the space $V_\ell$ of spherical harmonics of degree $\ell$ is invariant under rotations $SO(3)$ means that under any rotation $g\in SO(3)$, any spherical harmonic $Y_\ell^m\in V_\ell$ is transformed into a linear combination of the others spherical harmonics of the same degree $\ell$:
+	$$
+	\Lambda(g) Y_{\ell}^{m}(\omega)=\sum_{|k| \leq \ell} Y_{\ell}^{k}(\omega) D_{k, m}^{(\ell)}(g)
+	$$
+\end{remark}
+\vspace{0.5cm}
+
+\paragraph{Fourier transform}
+We can now expand each function $f\in L^2(\mathbb S^2)$ in the coordinate system given by the spherical harmonics 
+\begin{align}
+	f(\omega) &= \sum_{\ell\in\mathbb N}\sum_{|m|\leq \ell}\hat f_\ell^mY_\ell^m(\omega)\\
+	\hat f_\ell^m &=\int_{\omega\in\mathbb S^2}f(\omega)Y_\ell^m(\omega)d\omega
+\end{align}
+where the coefficients $\hat f_\ell^m$ are the \textit{Fourier coefficients} of $f$.
+
+The fact that $Y_\ell^m(\theta, \phi)$ depends on $\phi$ through a purely imaginary exponential - equation \ref{eq:spherical harmonics} - makes it possible to decompose the computation of the SHT in the two directions, latitude and longitude, and to use standard one-dimensional FFT algorithms to compute the longitudinal part of the transform on samplings of the sphere where the pixels lie on isolatitude circles.
+
+\paragraph{Convolutions}
+If we define the convolution on the sphere in the usual way we do in Euclidean spaces, we would define $f\star k$ as follows:
+\begin{equation} 
+f\star k(g) := \int_{\eta \in \mathbb S^2} k(g \eta) f(\eta) d\eta\\ 
+\end{equation}
+ However, note that the result of such convolution is not even defined on the sphere anymore, but on the special rotation group $SO(3)$. For this reason, the definition of convolution that we will use in this work and that is more similar to the convolution of graphs that we will introduce later is the following, where the integral is performed not on the sphere but on the rotation group $SO(3)$:
+
+\begin{equation}\label{eq:convolution}
+	\begin{aligned} H_{k} f(\omega) &=\left(\int_{g \in S O(3)} d g k(g \eta) \Lambda(g)\right) f(\omega) \\ &=\int_{R \in S O(3)} k(g \eta) f\left(g^{-1} \omega\right) d g \\ &=k * f(\omega) \end{aligned}
+\end{equation}
+
+where $dg$ can be written in terms of the three Euler angles $(\theta, \phi, \psi)$ 
+$$dg=\sin\theta d\theta d\phi d\psi$$
+With definition (\ref{eq:convolution}) we have the following theorem:
+\vspace{0.5cm}
+\begin{theorem}
+	Given two functions $f, g$ in $L^2(\mathbb S^2)$, the Fourier transform of the convolution is a pointwise product of the transforms
+$$
+\hat{(f * h)}(\ell, m)=2 \pi \sqrt{\frac{4 \pi}{2 \ell+1}} \hat{f}(\ell, m) \hat{h}(\ell, 0)
+$$
+\end{theorem}
+\vspace{0.5cm}
 
 \subsection{Spherical Convolutional Neural Networks}
 [TODO: Review of \textit{Spherical CNNs}]
@@ -37,5 +117,11 @@ In Chapter 1 we start by presenting fundamental concepts of spectral theory on t
 \subsection{Deep Sphere V1.0}\label{sec:Chapter1:DeepSphere}
 [TODO: Review of \textit{Deep Sphere}]
 \subsubsection{HEALPix}\label{sec:Chapter1:HEALPix}
+HEALPix is an acronym for Hierarchical Equal Area isoLatitude Pixelization of a sphere. This sampling produces a subdivision of the sphere in which each node covers the same surface area as every other node. It is parametrized by a parameter $N_{side}\in\mathbb N$, and is made by $n=12N_{side}^2$ nodes. The points of this sampling lie on isolatitude rings, that makes possible the implementation of an FFT algorithm for the discrete Fourier transform (also called in the case of the sphere Spherical Harmonic transform, SHT) of a sampled signal. The minimal resolution for HEALPix is given by $N_{side}=1$ and is made by 12 pixels. For each increasing value of $N_side$ each patch is divided into 4 equal area patches centered around the pixels of the new sampling (figure \ref{fig:healpix sampling})
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{figs/chapter1/healpix.jpg}
+	\caption{\label{fig:healpix sampling}HEALPix sampling for $N_{side}=1,2,3,4$}
+\end{figure}
 \subsection{Belkin's work}
 [TODO: Review of Belkin's work]
