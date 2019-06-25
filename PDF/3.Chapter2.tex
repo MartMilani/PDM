@@ -4,19 +4,20 @@
 %*******************************************************************************
 %!TEX root = 0.main.tex
 
-\section{Other samplings and other Discrete Laplacians}
+\section{Non uniform samplings and other Discrete Laplacians}
 
-In a Graph Spherical CNN we use the fact that when the sampling of the sphere is regular enough, the graph $W_{i j} = \exp {-\frac{\norm{x_i-x_j}^2}{4t}}$ is such that the corresponding graph Laplacian $\mathbf L_n^t$ has a spectrum that is close enough to the spectrum of $\triangle_{\mathbb S^2}$. In this way we can approximate a spherical convolution of a signal $f$ with a kernel $h$ with the graph convolution of the sampled signal 
+In a Graph Spherical CNN we use the fact that when the sampling of the sphere is regular enough, the graph $W_{i j} = \exp {-\frac{\norm{x_i-x_j}^2}{4t}}$ is such that the corresponding graph Laplacian $\mathbf L_n^t$ has a spectrum that is close enough to the spectrum of $\triangle_{\mathbb S^2}$. In this way we can approximate a spherical convolution of a signal $f$ with a kernel $h$ with the graph convolution of the sampled signal $\mathbf f$
 $$
 V\text{diag}\{h(\lambda_0), ..., h(\lambda_{n-1})\}V^T\mathbf f
 $$
-In Chapter 2 we showed a way to construct $\mathbf L_n^t$ that well approximates $\triangle_{\mathbb S^2}$ in the case of a regular sampling of the sphere. In this Chapter we focus on others samplings less uniform than HEALPix. The sampling that we will use for our study, very used in applications, is the so called \textit{equiangular sampling}. We observe that in this case the Heat Kernel Graph Laplacian matrix (HKGL) is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples the areas near the poles more than the area close to the equator. Figure \ref{fig:equiangular distortion} well illustrates this bad behavior of the Heat Kernel Graph Laplacian. To better show the distortion caused by the HKGL, in figure \ref{fig:equiangular distortion} the sphere was sampled with with many more samples near the poles than near the equator. The sample points are shown as the vertices of the triangulation in figure. On the left we plot one spherical harmonic $Y_\ell^m$ of degree $\ell=4$ and on the right we plot the corresponding eigenmode of the HKGL. We can see that the eigenmodes end up being artificially compressed along the equator.
-\begin{wrapfigure}{r}{0.5\textwidth}
+In Chapter 2 we showed a way to construct $\mathbf L_n^t$ that well approximates $\triangle_{\mathbb S^2}$ in the case of a regular sampling of the sphere. In this Chapter we focus on others samplings less uniform than HEALPix. The sampling that we will use for our study, very used in applications, is the so called \textit{equiangular sampling}. We observe that in this case the Heat Kernel Graph Laplacian matrix (HKGL) is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples the areas near the poles more than the area close to the equator. Figure \ref{fig:equiangular distortion} well illustrates this bad behavior of the Heat Kernel Graph Laplacian. To better show the distortion caused by the HKGL, in figure \ref{fig:equiangular distortion} the sphere was sampled with with many more samples near the poles than near the equator. The sample points are shown as the vertices of the triangulation in figure. On the left we plot one spherical harmonic $Y_\ell^m$ of degree $\ell=4$ and on the right we plot the corresponding eigenmode of the HKGL. 
+\begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{../codes/04.imbalanced/img/confront_mixed.png}
+		\includegraphics[width=0.7\textwidth]{../codes/04.imbalanced/img/confront_mixed.png}
 	\end{center}
 	\caption{\label{fig:equiangular distortion}On the left, the correct eigenmode. On the right: distortion of the eigenmode of the HKGL caused by an irregular sampling of the sphere.}
-\end{wrapfigure}
+\end{figure}
+We can see that the eigenmodes end up being artificially compressed along the equator.
 The goal of this chapter is to study a way of building a discrete approximation $\mathbf L$ of the Laplace-Beltrami operator more robust to non uniform sampling than the Heat Kernel Graph Laplacian matrix $\mathbf L_n^t$ used so far.
 
 This chapter is organized as follows: In Section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} we introduce the equiangular sampling and the results that we obtained with the Heat Kernel Graph Laplacian matrix. In Section \ref{sec:Chapter3: other discrete laplacians} we present a short overview of different ways of building an discrete approximation of the Laplace-Beltrami operator; in Section \ref{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold} we deepen how to use the Finite Element Method (FEM) to construct a discrete approximation of $\triangle_{\mathbb S^2}$ and how it is actually capable of taking into account the non uniformity of the sampling and correct it.
@@ -58,6 +59,7 @@ One has thus $n=4b^2$ points on the sphere, where all the points $x_{0 k}^{(b)}$
 \end{theorem}
 \vspace{0.5cm}
 Theorem \ref{theo:equiangular sampling theorem} is the equivalent on the sphere of the well known Shannon's sampling theorem, that states the minimum sampling frequency at which a band limited signal $f:\mathbb R \to \mathbb R$ can be perfectly reconstructed, and is a precious tool when doing signal processing on the sphere.
+
 \subsubsection{Heat Kernel Graph Laplacian with non uniform sampling measures}
 Thanks to Theorem \ref{theo:equiangular sampling theorem}, we can compute exactly the Fourier transform of the eigenmodes of the HKGL and see how much they are aligned with the eigenspaces of the true Laplace-Beltrami operator, following the same procedure described at the beginning of Chapter 2 when introducing the same kind of plots for the HEALPix sampling. It can be appreciated how poorly aligned the eigenmodes of the HKGL are on the equiangular sampling (figure \ref{fig:equiangular sampling alignment}) compared to the ones obtained with the HEALPix sampling (\ref{fig:optimal graph})
 

@@ -57,7 +57,10 @@
 \usepackage[justification=raggedright]{caption}
 \usepackage{sidecap}
 
+
+\usepackage{booktabs}
 \usepackage{multirow}
+
 \usepackage[squaren, Gray, cdot]{SIunits}
 \graphicspath{{image/}} %chemin par défaut pour aller chercher les images 
 \usepackage{url}
@@ -100,7 +103,7 @@
 %\headsep=0.25in         %
 \headheight=30.9pt
 \linespread{1.3}
-\raggedright
+
 \begin{document}
 
 % ========== TITLE PAGE ===================================================
@@ -108,7 +111,8 @@
 %\onehalfspacing
 
 % ========== HEADER =======================================================
-\pagestyle{headings} \pagenumbering{arabic} \setcounter{page}{1}
+%\pagestyle{headings} 
+\pagenumbering{arabic} \setcounter{page}{1}
 \addtolength{\headheight}{\baselineskip}
 \lhead{\textbf{Martino Milani}}
 \chead{Master Thesis}
@@ -141,7 +145,7 @@ We investigate other different methods of building the matrix $\mathbf L$ better
 \pagebreak
 
 \pagenumbering{arabic}
-\input{1_with_notes.tex}
+\input{1.LiteratureReview.tex}
 
 \pagebreak
 
