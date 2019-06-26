@@ -132,9 +132,9 @@ and the normalized graph Laplacian
 \mathbf L' = \mathbf I - \mathbf D^{-1/2}\mathbf L\mathbf D^{-1/2}
 \end{equation}
 A quantity that is a function of the vertex set $V$, for example the age of people in a friendship graph, one can define a vector $\mathbf f$ such that each entry $\mathbf f_i$ is the age of the person associated with the i-th vertex. One could try to measure how much in a friendship network people tend to be friends with people of the same age; in other words, how smooth the signal $\mathbf f$ is on the graph. A measure for the smoothness of a signal on a graph is given by the quadratic form associated with the normalized Laplace operator $\mathbf L'$:
-$$
-\mathbf f^T \mathbf L' \mathbf f = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \frac{\boldsymbol{W}_{j k}}{\sqrt{d_{j} {d}_{k}}}\left(\boldsymbol{f}_{j}-\boldsymbol{f}_{k}\right)^{2}
-$$
+\begin{equation}\label{eq:quadratic form}
+	\mathbf f^T \mathbf L' \mathbf f = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \frac{\boldsymbol{W}_{j k}}{\sqrt{d_{j} {d}_{k}}}\left(\boldsymbol{f}_{j}-\boldsymbol{f}_{k}\right)^{2}
+\end{equation}
 \paragraph{Graph Fourier transform}
 Since the normalized graph Laplacian is a symmetric matrix, its eigenvectors $V$ constitute an orthonormal basis of $\mathbb R^n$ and its eigenvalues are all real 
 $$\mathbf L' = \mathbf V\mathbf \Lambda\mathbf V^T
@@ -147,8 +147,49 @@ The inverse graph Fourier transform is thus
 \begin{equation}\label{eq:graph fourier inverse}
 \mathcal F^{-1}_G(\hat{\mathbf f}) = \mathbf V \hat{\mathbf f} = \mathbf V\mathbf V^T\mathbf f = {\mathbf f}
 \end{equation}
-\subsection{Deep Sphere V1.0}\label{sec:Chapter1:DeepSphere}
-[TODO: Review of \textit{Deep Sphere}]
+In the continuous case the eigenvalues of the Laplace-Beltrami operator are associated with a notion of frequency of the corresponding eigenfunction: those associated with small eigenvalues are pretty smooth functions that vary slowly across the domain. The bigger the absolute value of the eigenvalue, the more rapidly the eigenfunction oscillates. In the graph setting we have a similar notion of frequency that can be understood mathematically by writing the well known Rayleigh quotient for an eigenvector $\mathbf v$
+\begin{equation}
+	\mathcal R(\mathbf v) = \frac{\mathbf v^T\mathbf L\mathbf v}{\mathbf v^T\mathbf v}
+\end{equation}
+As explained above when introducing equation \ref{eq:quadratic form}, the Rayleigh quotient of the normalized eigenvector $\mathbf v$ is an measure of the smoothness of the eigenvector $\mathbf v$ across the graph. 
+\begin{equation}\label{eq:r(v)}
+	\mathcal R(\mathbf v) = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \frac{\boldsymbol{W}_{j k}}{\sqrt{d_{j} 	{d}_{k}}}\left(\boldsymbol{v}_{j}-\boldsymbol{v}_{k}\right)^{2}
+\end{equation}
+On the other side by simple linear algebra it is easy to prove that this measure corresponds exactly to the corresponding eigenvalue $\lambda$
+\begin{equation}\label{eq:lambda}
+	\mathcal R(\mathbf v) = \frac{\mathbf v^T\mathbf L\mathbf v}{\mathbf v^T\mathbf v} =\frac{\mathbf{v}^T\lambda\mathbf v}{\mathbf v^T\mathbf v} = \frac{\lambda\mathbf{v}^T\mathbf v}{\mathbf v^T\mathbf v}  = \lambda
+\end{equation}
+\vspace{0.5cm}
+\begin{remark}
+	It interesting to notice that the smoothness of a signal $\mathbf f$ on a graph, measured through its Rayleigh quotient, could change drastically by changing the underlying topology. In figure \ref{fig:graph} we see two simple, unweighted graphs $G=(V, E), G' =(V, E')$ with the same signal $\mathbf f$ represented as vertical red bars over the vertex set $V$. On the leftmost graph, the signal $\mathbf f$ varies smoothly across the graph since each vertex is connected to only those neighbors that have a similar value of $\mathbf f$. On the rightmost graph, since we added edges between vertices with very different values of the signal $\mathbf f$, we will have that the Rayleigh quotient of $\mathbf f$ calculated on the graph $G$ will be much smaller than the one calculated on the graph $G'$
+	$$
+	\mathcal R_{G}(\mathbf f) << \mathcal R_{G'}(\mathbf f)
+	$$
+\end{remark}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{figs/chapter1/graph.png}
+	\caption{\label{fig:graph}Different graph topologies can drastically change the measure of smoothness of a signal $\mathbf f$, here represented as red vertical bars on the vertices.}
+\end{figure}
+
+\paragraph{Convolution and filtering on graphs}
+On the continuous domain the convolution of a signals $f$ with a kernel $k$ can be performed in the spectral domain by multiplying the transformed signal $\hat f$ times a kernel \textit{defined in the spectral domain} $\hat k$: 
+\begin{equation}\label{eq:convolution normal}
+	\mathcal F^{-1}(\hat f \cdot \hat k)
+\end{equation}
+Similarly, in the graph domain we can define the convolution in the graph spectral domain. We define the convolution of a signal $\mathbf f$ times a kernel $\mathbf K$ as follows:
+\begin{equation}\label{eq:graph convolution}
+	\mathcal{F}^{-1}(\mathbf K \hat {\mathbf f})= \mathbf V\mathbf K  \mathbf V^T {\mathbf f}
+\end{equation}
+where $\mathbf K$ is a \textit{diagonal} \textit{matrix} $K_{ii} = k_i$. Graphs convolutions are different from the ones we are used to defined in Euclidean domains (\ref{eq:convolution normal}), since the graph kernels $\mathbf K$ are diagonal matrices that can not be thought as the Fourier transform of a corresponding kernel defined in the spatial (vertex) domain. Its diagonal elements $k_{i}$ can be thought as functions of the corresponding eigenvalue $k_{i}= k(\lambda_i)$, thus providing an intuitive frequency interpretation of the kernel $\mathbf K$. In this way the convolution can be seen as a \textit{filtering} operation: for example, a kernel $k(\lambda_i) = \exp -\lambda_i$ will be the kernel of a low-pass filter since it will cut the high frequencies.
+
+\subsection{Deepsphere}\label{sec:Chapter1:DeepSphere}
+Perraudin et al. propose an efficient implementation of the graph convolution \ref{eq:graph convolution} to be implemented in each layer of a so-called Graph Convolutional Neural Network, where the graph is inspired to the graph construction proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189}. Thanks to their specific graph construction (that we will further discuss in the next section) their graph filters well approximate spherical filters, where the spherical filtering is defined using the convolution (\ref{eq:convolution}). This means that Perraudin et al can approximate convolutions with radial filters only, and not the more general convolution (\ref{eq:cohen convolution}) of Cohen et al.\\
+In their GCNN Perraudin et al. propose to learn only those filters $k(\lambda)$ that are polynomials of degree $q$
+\begin{equation}\label{deepsphere filter}
+\mathcal F(\mathbf f) = \boldsymbol{V}\left(\sum_{j=0}^{q} \theta_{j} \boldsymbol{\Lambda}^{j}\right) \boldsymbol{V}^{\top} \boldsymbol{f}=\sum_{j=0}^{q} \theta_{j} \boldsymbol{L}^{j} \boldsymbol{f}
+\end{equation}
+In this way there's no need of computing the expensive eigen decomposition of the graph Laplacian and the filtering operation can now be seen also in the vertex domain as a weighted sum of the $q$-neighborhoods of each vertex. This is due to the fact that $\mathbf L $ has the same sparsity structure of the adjacency matrix of the graph, and thus $(\mathbf L^q)_{ij}$ will be different from zero if and only if the vertices $v_i, v_j$ are connected by a path of length less than $q$. In this way Perraudin et al manage the computations needed to evaluate such filter to $\mathcal O(|E|+|V|)$. Since in a NN this filtering operation has to be computed in every forward and backward pass, this gain of efficiency is dramatically important and led to speedups of different orders of magnitude compared to th architecture of Cohen et al. (see Chapter 2, table \ref{tab:SHREC17_class}). Perraudin et al. used in their experiments signals sampled only with the HEALPix sampling scheme. Since we will see that the sampling greatly influences the performances of Deepsphere, we spend now some time introducing this important sampling.
 \subsubsection{HEALPix}\label{sec:Chapter1:HEALPix}
 HEALPix is an acronym for Hierarchical Equal Area isoLatitude Pixelization of a sphere. This sampling produces a subdivision of the sphere in which each node covers the same surface area as every other node. It is parametrized by a parameter $N_{side}\in\mathbb N$, and is made by $n=12N_{side}^2$ nodes. The points of this sampling lie on isolatitude rings, that makes possible the implementation of an FFT algorithm for the discrete Fourier transform (also called in the case of the sphere Spherical Harmonic transform, SHT) of a sampled signal. The minimal resolution for HEALPix is given by $N_{side}=1$ and is made by 12 pixels. For each increasing value of $N_{side}$ each patch is divided into 4 equal area patches centered around the pixels of the new sampling (figure \ref{fig:healpix sampling})
 \begin{figure}
