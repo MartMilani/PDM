@@ -5,7 +5,7 @@
 %!TEX root = 0.main.tex
 
 \section{Graph Spherical Convolutions}
-Perraudin et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph Laplacian proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} using the HEALPix sampling of the sphere - described in Section \ref{sec:Chapter1:HEALPix} - in order to obtain a graph convolution that well approximates the convolution on the sphere. They constrain the degree of each node of the graph in order to limit the computational complexity of the filtering performed by each layer of the GCNN to be \textit{linear} with the dimension of the input feature map. Despite Belkin et al. proved a result of spectral convergence of the graph Laplacian to the Laplace-Beltrami operator [TODO: cite previous section, still to write], in the work of Perraudin et al. the graph Laplacian does not seem to show the expected spectral convergence to the continuous Laplace-Beltrami operator. In figure (\ref{fig:Old spectrum1}) we see the correspondence between the subspaces spanned by the graph Fourier modes of the graph Laplacian used by Perraudin et al. and the true spherical harmonics. [For an introduction to spherical harmonics see Section \ref{sec:Fourier on the Sphere}]. We call $v_\ell^i$ the $i-th$ graph eigenmode of degree $\ell$. We compute the normalized Discrete Spherical Harmonic Transform (DSHT) of each $v^i_\ell$ up to the degree $\ell_\text{max}$. The entry $(\ell, \kappa)$ of the matrix represented in the figure corresponds to the percentage of energy of the $\ell-th$ eigenspace $V_j = \text{span}\{v^0_\ell, ..., v^{2\ell+1}_\ell\}$ contained in the $\kappa-th$ eigenspace of the true spherical harmonics. 
+Perraudin et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph Laplacian proposed by Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} using the HEALPix sampling of the sphere in order to obtain a graph convolution that well approximates the convolution on the sphere. They constrain the degree of each node of the graph in order to limit the computational complexity of the filtering performed by each layer of the GCNN to be \textit{linear} with the dimension of the input feature map. Despite Belkin et al. proved a result of spectral convergence of the graph Laplacian to the Laplace-Beltrami operator (theorem \ref{theo:spectral convergence}), in the work of Perraudin et al. the graph Laplacian does not seem to show the expected spectral convergence to the continuous Laplace-Beltrami operator. In figure (\ref{fig:Old spectrum1}) we see the correspondence between the subspaces spanned by the graph Fourier modes of the graph Laplacian used by Perraudin et al. and the true spherical harmonics. We call $v_\ell^i$ the ith graph eigenmode of degree $\ell$. We compute the normalized Discrete Spherical Harmonic Transform (DSHT) of each $v^i_\ell$ up to the degree $\ell_\text{max}$. The entry $(\ell, \kappa)$ of the matrix represented in the figure corresponds to the percentage of energy of the $\ell-th$ eigenspace $V_\ell = \text{span}\{v^0_\ell, ..., v^{2\ell+1}_\ell\}$ contained in the $\kappa-th$ eigenspace of the true spherical harmonics. 
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=0.9\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original.png}
@@ -16,10 +16,34 @@ Perraudin et al. \cite{DeepSphere} use in their Graph CNN the Heat Kernel Graph 
 \end{figure} 
 In a perfect situation, this matrix would be the identity matrix, being all the energy of the $\ell$-th graph eigenspace contained in the corresponding one spanned by the true spherical harmonics. It can be seen that the eigenmodes of the graph Laplacian span almost the same subspaces as the spherical harmonics in the low frequencies, but this alignment gets worse at higher frequencies. Furthermore, it can be noticed that even by improving the resolution of the graph, the low frequency eigenspaces do not get better aligned.
 
-In this chapter we give three contributions: first, in section \ref{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere} we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere using a regular deterministic sampling; second, in section \ref{sec:How to build a good graph} we show a way of modifying the graph of Defferrard et al. to recover the expected spectral convergence and still managing to contain the computational costs of graph convolutions; finally in section \ref{sec:Experimental validation} we study how the graph proposed in section \ref{sec:How to build a good graph} performs in practice when used in a Graph Convolutional Neural Network, comparing its performances to DeepSphere \cite{DeepSphere}.
+In this chapter we give three contributions: first, in section \ref{sec:Chapter2:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere} we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere using a regular deterministic sampling; second, in section \ref{sec:Chapter2:How to build a good graph} we show a way of modifying the graph of Defferrard et al. to recover the expected spectral convergence and still managing to contain the computational costs of graph convolutions; finally in section \ref{sec:Chapter2:Experimental validation} we study how the graph proposed in section \ref{sec:Chapter2:How to build a good graph} performs in practice when used in a Graph Convolutional Neural Network, comparing its performances to DeepSphere \cite{DeepSphere}.
+
+
+
+\subsection{Definitons and useful results}
+\vspace{0.5cm}
+\begin{definition}{}(Heat Kernel Graph Laplacian operator)\\
+	\label{def:Heat Kernel Graph Laplacian operator}
+	\text{Given a sampling $\{x_i\in\mathcal M\}_{i=0}^{n-1}$ of the manifold we define the \textbf{operator} }$L_n^t$ such that
+	$$L_n^tf(y) := \frac{1}{n}\left[ \sum_{i=0}^{n-1} \exp{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)\right]$$
+\end{definition}
+\vspace{0.5cm}
+Observe that the Heat Kernel Graph Laplacian operator restricted on the sample points $x_0, ..., x_{n-1}$ acts as the Heat Kernel Graph Laplacian matrix \ref{eq:HKGL} rescaled by a factor of $\frac{1}{n}$:
+$$L_n^tf(x_i) = \frac{1}{n}\mathbf (L_n^t\mathbf f)_i$$.
+
+\vspace{0.5cm}
+\begin{prop}(Hoeffding's inequality)\\
+	Let \(X_{1}, \ldots, X_{n}\) be independent identically distributed random variables, such that
+	\(\left|X_{i}\right| \leqslant K .\) Then
+	
+	$$
+	\mathbb P\left\{\left|\frac{\sum_{i} X_{i}}{n}-\mathbb{E} X_{i}\right|>\epsilon\right\}<2 \exp \left(-\frac{\epsilon^{2} n}{2 K^{2}}\right)
+	$$
+	\label{theo:Hoeffding}
+\end{prop}
 
 \subsection{Pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
-\label{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
+\label{sec:Chapter2:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
 Here we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere on a deterministic sampling that is regular enough. Our proof will be constructed following the ideas presented in the proof of the following pointwise convergence result for the random Heat Kernel Graph Laplacian operator (proven in \cite{Belkin:2005:TTF:2138147.2138189}):
 \vspace{0.5cm}
 \begin{theorem}{from \cite[Belkin et al.]{Belkin:2005:TTF:2138147.2138189}}\\
@@ -30,7 +54,7 @@ Here we prove a pointwise convergence result of the full graph Laplacian in the 
 \end{theorem}
 \vspace{0.5cm}
 
-This theorem states a rather weak convergence of $L_n^t$ to $L^t$, that is far from being as strong as spectral convergence, proven in theorem [TODO: cite previous section, still to write]. However, we want to show that a similar result still holds in the specific case of the manifold $\mathcal M$ being the 2-Sphere $\mathbb S^2$ and where the points $x_1, ..., x_n$ are not sampled form a random distribution on $\mathbb S^2$, but are defined by the HEALPix sampling. To understand the differences between theorem \ref{theo:Belkin pointwise convergence} and theorem \ref{theo:pointwise convergence in the healpix case} it is useful to first review the proof of theorem \ref{theo:Belkin pointwise convergence}.
+This theorem states a rather weak convergence of $L_n^t$ to $L^t$, that is far from being as strong as spectral convergence of theorem \ref{theo:spectral convergence}. However, we want to show that a similar result still holds in the specific case of the manifold $\mathcal M$ being the 2-Sphere $\mathbb S^2$ and where the points $x_1, ..., x_n$ are not sampled form a random distribution on $\mathbb S^2$, but are defined by the HEALPix sampling. To understand the differences between theorem \ref{theo:Belkin pointwise convergence} and theorem \ref{theo:pointwise convergence in the healpix case} it is useful to first review the proof of theorem \ref{theo:Belkin pointwise convergence}.
 \begin{proof}[Proof of Theorem \ref{theo:Belkin pointwise convergence}]
 The first step is to observe that for any fixed $t>0$, any fixed function $f$ and a fixed point $y\in\mathbb S^2$,  the Heat Kernel Graph Laplacian $L_n^t$ is an unbiased estimator for the Functional Approximation of the Laplace-Beltrami $L^t$. In other words, $L_n^tf(y)$ is the empirical average of $n$ i.i.d. random variables $X_i= e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)$ with expected value corresponding to $L^tf(y)$. Thus,
 \begin{equation}
@@ -89,7 +113,7 @@ Given a sampling $x_0, ..., x_{n-1}$ define $\sigma_i$ to be the patch of the su
 \begin{minipage}{.5\textwidth}
 	\centering
 	\includegraphics[width=0.4\linewidth]{figs/chapter1/d_iA_i.jpg}
-	\captionof{figure}{\label{fig:Geometric characteristics of a patch}Geometric characteristics of the i-th patch}
+	\captionof{figure}{\label{fig:Geometric characteristics of a patch}Geometric characteristics of the ith patch}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
 	\centering
@@ -376,7 +400,7 @@ To conclude this subsection, we show in figure \ref{fig:Old spectrum}, \ref{fig:
 \end{minipage}
 
 \subsection{Experimental validation}
-\label{sec:Chapter1:Experimental validation}
+\label{sec:Chapter2:Experimental validation}
 Gusset et al. \cite{Gusset} compared the performances of DeepSphere on the SHREC17 perturbed dataset \cite{SHREC17}. They modified the available graph of DeepSphere and proposed four different graph architectures to compete in the SHREC17 competition. Refer to their work for more details. One of these four architectures - called in table \ref{tab:SHREC17_retriev} Deepsphere Optimal - was obtained implementing the thresholding procedure described in this work at section \ref{sec:Chapter2:How to build a good graph} adapted to the \textit{equiangular} sampling (explained in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling}). They compared the performances of these four Deepsphere architectures together with the traditional SCNN architectures of Cohen et al. \cite{SCNN} introduced in section \ref{sec:Chapter1:SCNN} and of Esteves et a. \cite{Esteves}, plus the two best scorer models of the SCHREC17 competition. The models were tested in a retrieval task, and evaluated with the four different metrics provided by the official script \footnote{\url{https://shapenet.cs.stanford.edu/shrec17/code/evaluator.zip}}. Results can be seen in table \ref{table:results}.  The first two models are the best scorer of the competition, the last seven are all rotation equivariant models.
 
 \begin{table}[h]

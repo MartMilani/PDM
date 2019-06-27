@@ -196,7 +196,7 @@ f(x)=g(x)\quad &x\in\partial\Omega
 \end{align}
 the Finite Element Method (FEM) is a numerical algorithm that allows to calculate a discrete approximation of the solution $f$ through a functional discretization of the differential operator $D$. Even if in our setting we are not interested in PDE problems of the form \ref{eq:PDE}, we are interested in the FEM discretization of the differential operator $D=\Delta_{\mathbb S^2}$. In this section we provide the necessary definitions and mathematical concepts necessary to properly introduce the weak formulation of a differential problem, the Galerkin method and finally the Finite Element Method.\\
 
-We refer to section \ref{sec:Chapter1} for a quick review of Banach and Hilbert spaces.
+We refer to Chapter 1 for a review of Banach and Hilbert spaces.
 \paragraph{Linear operators, functionals and bilinear forms} A \textit{linear operator} $L: X\to X$ from the Hilbert space $(X, \norm \cdot)$ to itself is a map such that $L(\alpha x + \beta y) = \alpha L x + \beta L y$. A linear operator on a Hilbert space is \textit{continuous} (or {bounded}) if $\exists M:\ |Lx|\leq Mx$. $(x, \lambda)$ are called respectively \textit{eigenvector} and \textit{eigenvalue} of the linear operator $L$ is the image of $x$ through $L$ is a rescaling of $x$ of factor $\lambda$ i.e. $Lx = \lambda x$. The operator $L$ is called \textit{self-adjoint} if $\langle Lx, y\rangle = \langle x,Ly\rangle\ \  \forall x,y \in X$. Self-adjoint operators have two important properties: their eigenvalues are real, and two eigenvectors $x, y$ associated to different eigenvalues $\lambda, \mu$ are orthogonal. Indeed 
 \begin{align*}
 	\langle Lx, y\rangle &= \langle x,Ly\rangle\\
