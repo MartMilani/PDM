@@ -18,50 +18,6 @@ In a perfect situation, this matrix would be the identity matrix, being all the 
 
 In this chapter we give three contributions: first, in section \ref{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere} we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere using a regular deterministic sampling; second, in section \ref{sec:How to build a good graph} we show a way of modifying the graph of Defferrard et al. to recover the expected spectral convergence and still managing to contain the computational costs of graph convolutions; finally in section \ref{sec:Experimental validation} we study how the graph proposed in section \ref{sec:How to build a good graph} performs in practice when used in a Graph Convolutional Neural Network, comparing its performances to DeepSphere \cite{DeepSphere}.
 
-\subsection{Definitions and basic results}
-[ I'll move this section to the previous Chapter when introducing the work of Belkin et al. For now I'll leave it here for completeness]\\
-Let us recall some basic definitions necessary for this chapter:
-\vspace{0.5cm}
-\begin{definition}{}(Heat Kernel Graph Laplacian Matrix)\\
-	\label{def:Heat Kernel Graph Laplacian Matrix}
-	Given a sampling $ \mathcal P = \{x_i\in\mathcal M\}_{i=0}^{n-1}$ on a $k$-dimensional manifold $\mathcal M\subset \mathbb R^N$ we construct the full graph defined by the adjacency matrix 
-	$$(\mathbf W)_{ij}=e^{-\frac{||x_i-x_j||^2}{4t}}$$
-	 where $||\cdot||$ is the Euclidean norm in the ambient space $\mathbb R^N$ and we define the corresponding Heat Kernel Graph Laplacian by the \textbf{matrix} 
-    $$(\mathbf{L}_n^t)_{ij}=\begin{cases}
-    \sum_k W_{ik} & \text{if }i=j\\
-    -W_{ij}&\text{if }i\neq j
-    \end{cases}$$
-\end{definition}
-\vspace{0.5cm}
-Observe that given a function $f: \mathcal P \rightarrow \mathbb R$ defined on the sampling $ \mathcal P$ and defined the vector $\mathbf f\in\mathbb R^n$ such that $\mathbf f_i = f(x_i)$, the Heat Kernel Graph Laplacian matrix acts on $\mathbf f$ in the following way:
-$$ (\mathbf L_n^t \mathbf f)_i:=  \sum_{j=0}^{n-1} e^{-\frac{||x_i-x_j||^2}{4t}}\left(f(x_i)-f(x_j)\right)$$
-
-\vspace{0.5cm}
-\begin{definition}{}(Heat Kernel Graph Laplacian operator)\\
-	\label{def:Heat Kernel Graph Laplacian operator}
-	\text{Given a sampling $\{x_i\in\mathcal M\}_{i=0}^{n-1}$ of the manifold we define the \textbf{operator} }$L_n^t$ such that
-	$$L_n^tf(y) := \frac{1}{n}\left[ \sum_{i=0}^{n-1} e^{-\frac{||x_i-y||^2}{4t}}\left(f(y)-f(x_i)\right)\right]$$
-\end{definition}
-\vspace{0.5cm}
-Observe that the Heat Kernel Graph Laplacian operator restricted on the sample points $x_0, ..., x_{n-1}$ acts as the Heat Kernel Graph Laplacian matrix rescaled by a factor of $\frac{1}{n}$:
-$$L_n^tf(x_i) = \frac{1}{n}\mathbf (L_n^t\mathbf f)_i$$
-\vspace{0.5cm}
-\begin{definition}{}(Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t} Let $\mu$ be the uniform probability measure on the manifold $\mathcal M$, that is the probability measure given by the induced metric on $\mathcal M$ rescaled by a factor $\frac{1}{\text{vol}(\mathcal M)}$, where $\text{vol}(\mathcal M)$ is the volume of $\mathcal M$. We define the functional approximation to the Laplace-Beltrami operator to be the operator $L^t$ such that
-	\label{def:Functional approximation to the Laplace-Beltrami operator}
-	$$ L^tf(y) = \int_{\mathcal M}e^{-\frac{||y-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
-\end{definition}
-\vspace{0.5cm}
-We conclude by stating a result that we will need in the next section:
-\vspace{0.5cm}
-\begin{prop}(Hoeffding's inequality)\\
-	Let \(X_{1}, \ldots, X_{n}\) be independent identically distributed random variables, such that
-	\(\left|X_{i}\right| \leqslant K .\) Then
-	
-	$$
-	\mathbb P\left\{\left|\frac{\sum_{i} X_{i}}{n}-\mathbb{E} X_{i}\right|>\epsilon\right\}<2 \exp \left(-\frac{\epsilon^{2} n}{2 K^{2}}\right)
-	$$
-	\label{theo:Hoeffding}
-\end{prop}
 \subsection{Pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
 \label{sec:pointwise convergence of the Heat Kernel Graph Laplacian on the Sphere}
 Here we prove a pointwise convergence result of the full graph Laplacian in the case of the sphere on a deterministic sampling that is regular enough. Our proof will be constructed following the ideas presented in the proof of the following pointwise convergence result for the random Heat Kernel Graph Laplacian operator (proven in \cite{Belkin:2005:TTF:2138147.2138189}):
