@@ -121,11 +121,11 @@
 
 \begin{abstract}
 
-A fundamental problem in signal processing is to design computationally efficient algorithms to filter signals. In many applications, the signals to filter lie on a sphere. Meaningful examples of data of this kind are weather data on the Earth, or images of the sky. It is then important to design filtering algorithms that are computationally efficient and capable of exploiting the rotational symmetry of the problem. In these applications, given a continuous signal $f: \mathbb S^2 \rightarrow \mathbb R$ on a 2-sphere $\mathbb S^2 \subset  \mathbb R^3$, we can only know the vector of its sampled values $\mathbf f \in \mathbb R^N:\  (\mathbf f)_i = f(\mathbf x_i)$  in a finite set of points $\mathcal P \subset \mathbb S^2,\quad \mathcal P = \{\mathbf x_i\}_{I=0}^{N-1}$ where our sensors are located. Perraudin et al. in \cite{DeepSphere} construct a sparse graph $G$ on the vertex set $\mathcal P$ and then use a polynomial of the corresponding graph Laplacian matrix $\mathbf L  \in \mathbb R^{N\times N} $ to perform a computationally efficient - $\mathcal O (N)$ - filtering of the sampled signal $\mathbf f$. In order to study how well this algorithm respects the symmetry of the problem - i.e it is equivariant to the rotation group SO(3) - it is important to guarantee that the spectrum of $\mathbf L$  and spectrum of the Laplace-Beltrami operator $\triangle_\mathcal M$ are somewhat "close".
+A fundamental problem in signal processing is to design computationally efficient algorithms to filter signals. In many applications, the signals to filter lie on a sphere. Meaningful examples of data of this kind are weather data on the Earth, or images of the sky. It is then important to design filtering algorithms that are computationally efficient and capable of exploiting the rotational symmetry of the problem. In these applications, given a continuous signal $f: \mathbb S^2 \rightarrow \mathbb R$ on a 2-sphere $\mathbb S^2 \subset  \mathbb R^3$, we can only know the vector of its sampled values $\mathbf f \in \mathbb R^N:\  (\mathbf f)_i = f(\mathbf x_i)$  in a finite set of points $\mathcal P \subset \mathbb S^2,\quad \mathcal P = \{\mathbf x_i\}_{i=0}^{N-1}$ where our sensors are located. Perraudin et al. in \cite{DeepSphere} construct a sparse graph $G$ on the vertex set $\mathcal P$ and then use a polynomial of the corresponding graph Laplacian matrix $\mathbf L  \in \mathbb R^{N\times N} $ to perform a computationally efficient - $\mathcal O (N)$ - filtering of the sampled signal $\mathbf f$. In order to study how well this algorithm respects the symmetry of the problem - i.e it is equivariant to the rotation group SO(3) - it is important to guarantee that the spectrum of $\mathbf L$  and spectrum of the Laplace-Beltrami operator $\triangle_\mathbb S^2$ are somewhat ``close''.
 
 We study the spectral properties of such graph Laplacian matrix in the special case of \cite{DeepSphere} where the sampling $\mathcal P$ is the so called HEALPix sampling (acronym for \textbf Hierarchical \textbf Equal \textbf Area iso\textbf Latitude \textbf {Pix}elization) and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral properties than the one presented in \cite{DeepSphere}.
 
-We investigate other different methods of building the matrix $\mathbf L$ better suited to non uniform sampling measures. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on the sphere. We compare the FEM and the graph Laplacian on different samplings of the sphere. We finish by discussing the general problem of how to incorporate geometrical informations about the sphere in the graph, a purely topological object.
+We investigate other different methods of building the matrix $\mathbf L$ better suited to non uniform sampling measures. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on the sphere. We compare the FEM and the graph Laplacian for different samplings of the sphere. We finish by discussing the general problem of how to incorporate geometrical informations about the sphere in the graph, a purely topological object.
 
 
 \end{abstract}
@@ -137,10 +137,6 @@ We investigate other different methods of building the matrix $\mathbf L$ better
 \pagebreak
 
 \tableofcontents
-
-\pagebreak
-
-\listoffigures
 
 \pagebreak
 
