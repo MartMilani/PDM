@@ -79,7 +79,7 @@ where $P_{\ell}^{m}$ are the \textit{Legendre functions} as defined in \cite{Dri
 
 \paragraph{Fourier transform}
 We can now expand each function $f\in L^2(\mathbb S^2)$ in the orthonormal coordinate system given by the spherical harmonics 
-\begin{align}
+\begin{align}\label{eq:inverse spherical fourier transform}
 	f(\omega) &= \sum_{\ell\in\mathbb N}\sum_{|m|\leq \ell}\hat f(\ell,m) Y_\ell^m(\omega)\\
 	\hat f(\ell,m) &=\int_{\omega\in\mathbb S^2}f(\omega)Y_\ell^m(\omega)d\omega \label{eq:SHT}
 \end{align}
@@ -190,69 +190,3 @@ Similarly, with graphs we can still define the convolution in the graph spectral
 \end{equation}
 where $\mathbf K$ is a \textit{diagonal} \textit{matrix} $K_{ii} = k_i$. Graphs convolutions are different from the ones we are used to define in Euclidean domains (\ref{eq:convolution normal}), since the graph kernels $\mathbf K$ are diagonal matrices that can not be thought as the Fourier transform of a corresponding kernel defined in the spatial (vertex) domain.
 Its diagonal elements $k_{i}$ can be thought as functions of the corresponding eigenvalue $k_{i}= k(\lambda_i)$, thus providing an intuitive frequency interpretation of the kernel $\mathbf K$. In this way the convolution can be seen as a \textit{filtering} operation: for example, a kernel $k(\lambda_i) = \exp (-\lambda_i)$ will be the kernel of a low-pass filter since it will cut the high frequencies.
-
-\subsection{Deepsphere}\label{sec:Chapter1:DeepSphere}
-Perraudin et al. \cite{DeepSphere} have proposed a Spherical CNN to process and analyze spherical sky maps, as the Cosmic Radiation map in figure \ref{fig:cosmicradiation}. Their SCNN uses graph convolution and hierarchical pooling to achieve rotation equivariance, and computational efficiency. Sky images are modeled as signals on the vertices of a \textit{sparse} graph $G$ on the vertex set $V$ of the image pixels $(v_i)$ with weights
-$$
-w_{ij}=\exp \left(-\frac{\norm {v_i-v_j}^2}{4t}\right)
-$$
-where $t$ is a parameter to optimize. In an earlier work, Belkin et al. \cite{NIPS2006_2989} proved the convergence of eigenvectors of the \textit{full} graph $G$ to the eigenfunctions of the Laplace Beltrami operator $\Delta_\mathbb S^2$, when the data is sampled from a uniform distribution on $\mathbb S^2$ (see Section \ref{sec:Chapter1:theoretical foundations}, theorem \ref{theo:spectral convergence}). For this reason, the construction of Perraudin et al. will work well only for images that were sampled with \textit{uniform sampling measures} on the sphere. The most used sampling scheme by cosmologists and astrophysics is called HEALPix \cite{HEALPix}, and is the one implemented in Deepsphere. HEALPix is an acronym for Hierarchical Equal Area isoLatitude Pixelization of a sphere. This sampling produces a subdivision of the sphere in which each pixel covers the same surface area as every other pixel. It is parametrized by a parameter $N_{side}\in\mathbb N$, and is made of $n=12N_{side}^2$ pixels. The points of this sampling lie on isolatitude rings, making it possible to implement an FFT algorithm for the discrete SHT. The minimal resolution for HEALPix is given by $N_{side}=1$ and is made by 12 pixels. For each increasing value of $N_{side}$ each patch is divided into 4 equal area patches centered around the pixels of the new sampling (figure \ref{fig:healpix sampling}).
-
- Since the graph Laplacian eigenvectors well approximate the spherical harmonics sampled in the graph pixels, the graph convolution (\ref{eq:graph convolution}) well approximates the true spherical convolution (\ref{eq:convolution}). This is because HEALPix is an equal-area sampling and thus
- $$\mathbf f^T\mathbf v_\ell^m \approx \int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)=\hat f_\ell^m.$$
- In chapter \ref{sec:Chapter4} of this work we'll deepen the relationship between the continuous spherical Fourier transform and the graph Fourier transform in case of non-uniform sampling measures. Perraudin et al. propose an efficient implementation of the graph convolution (\ref{eq:graph convolution}) to be implemented in each layer of their Graph Spherical Convolutional Neural Network. They propose to learn only those filters that are polynomials of degree $q$ of the eigenvalues $\lambda_i$
-\begin{equation}\label{eq:deepsphere filter}
-\begin{aligned}
-k(\lambda) &= \sum_{j=0}^{q} \theta_{j} \lambda^{j}\\ 
-\Omega_\mathbf K \mathbf f &= \boldsymbol{V}\left(\sum_{j=0}^{q} \theta_{j} \boldsymbol{\Lambda}^{j}\right) \boldsymbol{V}^{\top} \boldsymbol{f}=\sum_{j=0}^{q} \theta_{j} \boldsymbol{L}^{j} \boldsymbol{f}
-\end{aligned}
-\end{equation}
-Learning the filter $k$ means learning the coefficients $\theta_i$. In this way they solve different problems at once: first, to compute the graph convolution (\ref{eq:graph convolution})) there's no need of computing the expensive eigen decomposition of $\mathbf L$. Thanks to a suitable parametrization of the polynomial $\sum_{j=0}^{q} \theta_{j} \boldsymbol{L}^{j}$ in term of Chebyshev polynomials, they manage to reduce the computations needed to evaluate such filter to $\mathcal O(|E|)$. Since in a NN this filtering operation has to be computed in every forward and backward pass, this gain of efficiency is dramatically important and led to speedups of different orders of magnitude compared to the architecture of Cohen et al. (see Chapter 2, table \ref{tab:SHREC17_class}). The filtering operation (\ref{eq:deepsphere filter}) can be seen also in the vertex domain as a weighted sum of the $q$-neighborhoods of each vertex. This is due to the fact that $\mathbf L $ has the same sparsity structure of the adjacency matrix of the graph, and thus $(\mathbf L^q)_{ij}$ will be non-zero if and only if the vertices $v_i, v_j$ are connected by a path of length $q$. 
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{figs/chapter1/healpix.jpg}
-	\caption{\label{fig:healpix sampling}HEALPix sampling for $N_{side}=1,2,3,4$ \cite{HEALPix}}
-\end{figure}
-
-\subsection{The teoretical foundations of Graph Spherical Convolutional Neural Networks}\label{sec:Chapter1:theoretical foundations}
-In their work, Convergence of Laplacian Eigenmaps \cite{NIPS2006_2989}, Belkin et al. prove convergence of eigenvectors of the \textit{Heat Kernel Graph Laplacian} $\mathbf L_n^t$ (HKGL) of a data point cloud to the eigenfunctions of the Laplace Beltrami operator $\Delta_\mathcal M$ on the manifold $\mathcal M$, when the data is sampled from a uniform distribution on $\mathcal M$.
-For this result to hold, they suppose the manifold $\mathcal M$ to be compact, infinitely differentiable and without boundary. See \cite{rosenberg_1997} for an introduction to the Laplace-Beltrami operator on manifolds. We just point out that being $\mathcal M$ compact, $\Delta_\mathcal M$ has a discrete spectrum. The graph they use to approximate the manifold is constructed as follows: given a sampling $ \mathcal P = \{x_i\in\mathcal M\}_{i=0}^{n-1}$ on a $k$-dimensional manifold $\mathcal M\subset \mathbb R^N$ they construct the full graph defined by the weights 
-	$$
-	w_{ij}=\exp\left({-\frac{||x_i-x_j||^2}{4t}}\right)
-	$$
-	where $\norm\cdot$ is the Euclidean norm in the ambient space $\mathbb R^N$ and whose Laplacian matrix 
-	$$
-	\mathbf L_n^t = \mathbf D-W
-	$$ we call \textit{Heat Kernel Graph Laplacian matrix}.
-	
-Observe that given a function $f: \mathcal P \rightarrow \mathbb R$ defined on the sampling $ \mathcal P$ and defined the vector $\mathbf f\in\mathbb R^n$ such that $\mathbf f_i = f(x_i)$, the Heat Kernel Graph Laplacian matrix acts on $\mathbf f$ in the following way:
-\begin{equation}\label{eq:HKGL}
-	(\mathbf L_n^t \mathbf f)_i:=  \sum_{j=0}^{n-1} e^{-\frac{||x_i-x_j||^2}{4t}}\left(f(x_i)-f(x_j)\right)
-\end{equation}
-This graph construction is motivated by the fact that the HKGL is nothing else than the natural discretization of the continuous \textit{functional approximation to the Laplace-Beltrami operator} $L^t:  L^{2}(\mathcal{M}) \rightarrow L^{2}(\mathcal{M})$ that is proven to converge to $\Delta_\mathcal M$.
-\vspace{0.5cm}
-\begin{definition}{}(\cite[Belkin et al.]{Belkin:2005:TTF:2138147.2138189}Functional approximation to the Laplace-Beltrami operator)\\ \label{eq: my L^t} Let $\mu$ be the uniform probability measure on the manifold $\mathcal M$, where $\text{vol}(\mathcal M)$ is the volume of $\mathcal M$. We define the functional approximation to the Laplace-Beltrami operator to be the operator $L^t: L^{2}(\mathcal{M}) \rightarrow L^{2}(\mathcal{M})$ such that
-	\label{def:Functional approximation to the Laplace-Beltrami operator}
-	$$ L^tf(y) = \int_{\mathcal M}e^{-\frac{||y-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
-\end{definition}
-\vspace{0.5cm}
-
-We end this Chapter by stating the theorem of spectral convergence of the HKGL to the Laplace-Beltrami operator $\Delta_\mathcal M$, thus lying the theoretical foundations of graph spherical convolutional neural network.
-
-\begin{theorem}(Belkin et al., \cite{NIPS2006_2989})\label{theo:spectral convergence}
-	 Let \(\lambda_{n, i}^{t}\) be the $i$th eigenvalue of 
-	 $$
-	 \frac{(4\pi t)^{-(k+2)/2}}{n}\mathbf L^t_n
-	 $$
-	 and \(e_{n, i}^{t}\) be the corresponding eigenfunction (which, for each fixed \(i\) , will be shown to exist for \(t\) sufficiently small). Let \(\lambda_{i}\) and \(e_{i}\) be the corresponding eigenvalue and eigenfunction of \(\Delta\) respectively. Then there exists a sequence \(t_{n} \rightarrow 0,\) such that
-	\begin{equation}
-	\begin{array}{c}{\lim _{n \rightarrow \infty} \lambda_{n, i}^{t_{n}}=\lambda_{i}} \\ {\lim _{n \rightarrow \infty}\left\|e_{n, i}^{t_{n}}(x)-e_{i}(x)\right\|_{2}=0}\end{array}
-	\end{equation}
-	where the limit are in probability.
-\end{theorem}
-
-
-
-
-
