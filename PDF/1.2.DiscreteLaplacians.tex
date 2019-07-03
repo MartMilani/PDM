@@ -1,6 +1,37 @@
 
 \section{Discrete Laplacians}\label{sec:Chapter3: other discrete laplacians}
-If we want to filter a discrete signal on the sphere in the spectral domain as in theorem \ref{theo:convolution}, the first step is to come up with a way to calculate the Fourier coefficients $\hat f(\ell, m)$ defined in equation (\ref{eq:SHT}). We saw in equation (\ref{eq:graph convolution}) that by defining the graph Fourier transform of a signal $\mathbf f$ as the product with the eigenvectors of the graph Laplacian $\mathbf V^T \mathbf f$, the Fourier coefficient $\hat f(\ell, m)$ is approximated by the scalar product $\mathbf f^T \mathbf v_{i(\ell, m)}$. So, graph convolutions will result to be equivariant to rotations if the scalar product $\mathbf f^T \mathbf v_{i(\ell, m)}$ well approximates the $L^2$ scalar product of the continuous signals $\int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$. \textit{If the signal is sampled on an equal area sampling scheme}, this is will work if we are able to construct a matrix $\mathbf L$ whose eigenvectors $\mathbf v_i$ well approximate the eigenfunctions of the Laplace-Beltrami operator $\Delta_{\mathbb S^2}$ evaluated in the points of the sampling scheme. Graphs are only one of many ways of coming up with such matrix $\mathbf L$, and many other methods have been already studied in the literature. In this section we present a brief overview of some of these methods providing the general context in which graph filtering can be framed.
+\subsection{The Equivariance error for graph convolutions}
+Take a sampling scheme $V=\{v_i\in\mathbb S^2, i=0, ..., n\}$ of the sphere, a weighted undirected graph $G(V, E, \mathbf W)$, a signal $f: \mathbb S^2\to\mathbb R$ and its sampled representation $\mathbf f:\ f_i=f(v_i)$. Suppose that there exists a sampling operator $T_V: L^2(\mathbb S^2) \supset F\to \mathbb R^n,\  T_V(f) = \mathbf f$ defined on a suitable subspace $F$ of $L^2(\mathbb S^2)$ such that it is invertible, i.e., we can unambiguously reconstruct the function $f\in F$ from its sampled values $\mathbf f$. The existence of such subspace depends on the sampling scheme $V$, and its characterization is a common problem in signal processing \cite{Driscoll:1994:CFT:184069.184073}. Recall the definition (\ref{eq:rotation operator}) of the rotation operator $\Lambda(g), g\in SO(3)$. 
+
+We now want to understand how to set the edges and the weights of $G$ such that
+\begin{equation}\label{eq:equivariance}
+	T \Lambda(g) T^{-1} \Omega_k T_V(f) = \Omega_k T \Lambda(g) f
+\end{equation}
+i.e., the graph convolution $\Omega_k$ and any rotation $\Lambda(g)$ commute.
+ 
+Verifying equation (\ref{eq:equivariance}) is really hard in practice, due to the fact that for almost all samplings schemes $V$ it is not known if there exists a space $F$ in which $T$ is invertible. A special case is the \textit{equiangular sampling} scheme described in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} where the sampling theorem \ref{theo:equiangular sampling theorem} holds \cite{Driscoll:1994:CFT:184069.184073}. With all the other sampling schemes, there are no sampling theorems available but there are implementations of approximated, discrete SHT to reconstruct a sampled signal $\mathbf f$, thus providing a way to approximate $T^{-1}$. Thanks to this we are able, for a given sampling, a given function $f$ and a given rotation $g$, to compute the \textit{normalized equivariance error} 
+\begin{equation}\label{eq:equivariance error}
+	E_{G}(f, g) = \left(\frac{ \norm {T \Lambda(g) T^{-1} \Omega_k T_V(f) - \Omega_k T \Lambda(g) f}_{L^2(\mathbb R^2)}}{\norm {Tf}_{L^2(\mathbb R^2)}}\right)^2
+\end{equation}
+where $T^{-1}$ is substituted with a discrete SHT in case $T$ is not invertible.
+A measure of how equivariant a graph is with respect to rotations will then be given by the \textit{mean equivariance error}
+\begin{equation}\label{eq:mean equivariance error}
+\overline E_G = \mathbb E_{f, g}\ 	E_G(f, g) 
+\end{equation}
+In practice the expected value is obtained by averaging over a finite number of random functions and random rotations. The mean equivariance error $\overline E_G$ gives us an indication of how close the graph $G$ is from being equivariant to rotations.
+
+Now we state an intuitive concept that explains how to construct rotation invariant graphs, i.e. graphs such that $\overline{E_G}$ is small.
+\begin{snugshade*}
+The mean equivariance error $\overline{E_G}$ will be small if the scalar product $\mathbf f^T \mathbf v_{i(\ell, m)}$ well approximates $\hat {f}(\ell,m)$ i.e., the $L^2$ scalar product of the continuous signal \\
+$\hat {f}(\ell,m)= \int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$.
+
+\textit{If $V$ is an equal area sampling scheme}, i.e. the area around each pixel $v_i$ is the same, $\overline{E_G}$ will be small if the graph Laplacian $\mathbf L$ is such that its eigenvectors $\mathbf v_i$ well approximate the eigenfunctions of the Laplace-Beltrami operator $\Delta_{\mathbb S^2}$ evaluated in the points of the sampling scheme, i.e., 
+$$
+\mathbf v_{i(\ell, m)} \approxeq Y_\ell^m(x_i)
+$$
+\end{snugshade*}
+
+In this way we framed the problem of constructing a rotation invariant graph with the more general problem of coming up with a matrix $\mathbf L$ with some specific spectral properties. Graphs are only one of many ways of coming up with such matrix $\mathbf L$, and many other methods have been already studied in the literature. In this section we present a brief overview of some of these methods providing the general context in which graph filtering can be framed.
 
 Let $f$ be a sufficiently smooth function on a compact, closed infinitely differentiable manifold $\mathcal M$. The Laplacian eigenvalue problem on $\mathcal M$ is defined as 
 \begin{equation}\label{eq:continous eigenvalue problem}
@@ -14,7 +45,7 @@ There's been a lot of work in trying to calculate solutions to equation (\ref{eq
 	L f\left(\mathbf{x}_{i}\right)=\frac{1}{d_{i}} \sum_{j} w_{i j}\left(f\left(\mathbf{x}_{i}\right)-f\left(\mathbf{x}_{j}\right)\right)
 \end{equation}
 
-Note that with unit \textit{masses} $d_i=1$ we recover the same definition of Graph Laplacian. However, there are many ways to construct such matrix $\mathbf L$ that do not necessarily use a Graph perspective. Before discussing these approaches we need to introduce some basic concepts of Differential Geometry, especially the definition of mean curvature of a manifold and its link with the Laplace-Beltrami operator.
+Note that with unit \textit{masses} $d_i=1$ we recover the same definition of Graph Laplacian. Before continuing the discussion we need to introduce some basic concepts of Differential Geometry, especially the definition of mean curvature of a manifold and its link with the Laplace-Beltrami operator.
 
 \subsection{Notions of Differential Geometry}
 
@@ -75,21 +106,24 @@ This graph construction is motivated by the fact that the HKGL is nothing else t
 	\label{def:Functional approximation to the Laplace-Beltrami operator}
 	$$ L^tf(y) = \int_{\mathcal M}e^{-\frac{||y-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
 \end{definition}
-\vspace{0.5cm}
-
+\vspace{0.3cm}
 We end this Chapter by stating the theorem of spectral convergence of the HKGL to the Laplace-Beltrami operator $\Delta_\mathcal M$, thus lying the theoretical foundations of graph spherical convolutional neural network.
-\vspace{1cm}
-\begin{theorem}(Belkin et al., \cite{NIPS2006_2989})\label{theo:spectral convergence}
-	Let \(\lambda_{n, i}^{t}\) be the $i$th eigenvalue of 
-	$$
-	\frac{(4\pi t)^{-(k+2)/2}}{n}\mathbf L^t_n
-	$$
-	and \(\mathbf v_{n, i}^{t}\) be the corresponding eigenvector. Let \(\lambda_{i}\) and \(v_{i}\) be the corresponding eigenvalue and eigenfunction of \(\Delta\) respectively. Then there exists a sequence \(t_{n} \rightarrow 0,\) such that
-	\begin{equation}
-	\begin{array}{c}{\lim _{n \rightarrow \infty} \lambda_{n, i}^{t_{n}}=\lambda_{i}} \\ 
-	{\lim _{n \rightarrow \infty}\left\|\mathbf v_{n, i}^{t_{n}}-v_{i}(\mathbf x)\right\|_{2}=0}\end{array}
-	\end{equation}
-	where the limits are in probability.
-\end{theorem}
+\vspace{0.5cm}
+\begin{snugshade*}
+	\begin{theorem}(Belkin et al., \cite{NIPS2006_2989})\label{theo:spectral convergence}
+		Let \(\lambda_{n, i}^{t}\) be the $i$th eigenvalue of 
+		$$
+		\frac{(4\pi t)^{-(k+2)/2}}{n}\mathbf L^t_n
+		$$
+		and \(\mathbf v_{n, i}^{t}\) be the corresponding eigenvector. Let \(\lambda_{i}\) and \(v_{i}\) be the corresponding eigenvalue and eigenfunction of \(\Delta\) respectively. Then there exists a sequence \(t_{n} \rightarrow 0,\) such that
+		\begin{equation}
+		\begin{array}{c}{\lim _{n \rightarrow \infty} \lambda_{n, i}^{t_{n}}=\lambda_{i}} \\ 
+		{\lim _{n \rightarrow \infty}\left\|\mathbf v_{n, i}^{t_{n}}-v_{i}(\mathbf x)\right\|_{2}=0}\end{array}
+		\end{equation}
+		where the limits are in probability.
+	\end{theorem}
+\end{snugshade*}
+This theorem states that in probability the equivariance error $\overline E_G$ for the HKGL tends to zero, making it a really good candidate to construct rotation invariant graph convolutions.
+
 
 

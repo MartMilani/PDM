@@ -4,18 +4,18 @@
 %*******************************************************************************
 %!TEX root = 0.main.tex
 
-\section{Non uniform sampling schemes and other Discrete Laplacians}
+\section{Non uniform sampling schemes and the FEM Laplacian}
 
-In a Graph Spherical CNN we use the fact that when the sampling scheme of the sphere is regular enough, the graph $W_{i j} = \exp {-\frac{\norm{x_i-x_j}^2}{4t}}$ is such that the corresponding graph Laplacian $\mathbf L_n^t$ has a spectrum that is close enough to the spectrum of $\triangle_{\mathbb S^2}$. In this way we can approximate a spherical convolution of a signal $f$ with a kernel $h$ with the graph convolution of the sampled signal $\mathbf f$
+So far to design a graph with a low mean equivariance error we used the fact that when the sampling scheme of the sphere is regular enough, the graph $G$ is such that the corresponding graph Laplacian $\mathbf {L=V\Lambda V}^t$ has a spectrum that is close enough to the spectrum of $\triangle_{\mathbb S^2}$. In this way we can approximate a spherical convolution of a signal $f$ with a kernel $h$ with the graph convolution of the sampled signal $\mathbf f$
 $$
-V\text{diag}\{h(\lambda_0), ..., h(\lambda_{n-1})\}V^T\mathbf f
+\mathbf V\text{diag}\{h(\lambda_0), ..., h(\lambda_{n-1})\}\mathbf V^T\mathbf f
 $$
-In Chapter 2 we showed a way to construct $\mathbf L_n^t$ that well approximates $\triangle_{\mathbb S^2}$ in the case of a regular sampling scheme of the sphere. In this Chapter we focus on other sampling schemes less uniform than HEALPix. The sampling scheme that we will use for our study, very used in applications, is the so called \textit{equiangular sampling scheme}. We observe that in this case the HKGL is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples the areas near the poles more than the area close to the equator. Figure \ref{fig:equiangular distortion} well illustrates this bad behavior of the HKGL. To better show the distortion caused by the HKGL, in figure \ref{fig:equiangular distortion} the sphere was sampled with many more samples near the poles than near the equator. The sample points are shown as the vertices of the triangulation used for the plot. On the left we plot one spherical harmonic $Y_\ell^m$ of degree $\ell=4$ and on the right we plot the corresponding eigenmode of the HKGL. 
+In Chapter \ref{sec:Graph Spherical Convolutions} we showed a way to construct $G$ such that $\mathbf L$ well approximates $\triangle_{\mathbb S^2}$ in the case of a regular sampling scheme of the sphere and we tested it on a very special, equi area sampling scheme: HEALPix. In this Chapter we focus on other sampling schemes less uniform than HEALPix. The sampling scheme that we will use for our study, very used in applications, is the so called \textit{equiangular sampling scheme}. We observe that in this case the HKGL is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples the areas near the poles more than the area close to the equator, thus making the dot product $\mathbf v^T_{i(\ell, m)} \mathbf f$ very different from the true SHT $\int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$. Figure \ref{fig:equiangular distortion} illustra. To better show the distortion caused by the HKGL, in figure \ref{fig:equiangular distortion} the sphere was sampled with many more samples near the poles than near the equator. The sample points are shown as the vertices of the triangulation used for the plot. On the left we plot one spherical harmonic $Y_\ell^m$ of degree $\ell=4$ and on the right we plot the corresponding eigenmode of the HKGL. 
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=0.7\textwidth]{../codes/04.imbalanced/img/confront_mixed.png}
 	\end{center}
-	\caption{\label{fig:equiangular distortion}On the left, the correct eigenmode. On the right: distortion of the eigenmode of the HKGL caused by an irregular sampling scheme of the sphere.}
+	\caption{\label{fig:equiangular distortion}On the left, the eigenmode obtained with the FEM approach. On the right: distortion of the eigenmode of the HKGL caused by an irregular sampling scheme of the sphere.}
 \end{figure}
 We can see that the eigenmodes end up being artificially compressed along the equator.
 The goal of this chapter is to study a way of building a discrete approximation $\mathbf L$ of the Laplace-Beltrami operator more robust to non uniform sampling schemes than the HKGL $\mathbf L_n^t$ used so far.
