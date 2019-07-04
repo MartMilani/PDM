@@ -6,21 +6,14 @@
 
 \section{Non uniform sampling schemes and the FEM Laplacian}
 
-So far to design a graph with a low mean equivariance error we used the fact that when the sampling scheme of the sphere is regular enough, the graph $G$ is such that the corresponding graph Laplacian $\mathbf {L=V\Lambda V}^t$ has a spectrum that is close enough to the spectrum of $\triangle_{\mathbb S^2}$. In this way we can approximate a spherical convolution of a signal $f$ with a kernel $h$ with the graph convolution of the sampled signal $\mathbf f$
-$$
-\mathbf V\text{diag}\{h(\lambda_0), ..., h(\lambda_{n-1})\}\mathbf V^T\mathbf f
-$$
-In Chapter \ref{sec:Graph Spherical Convolutions} we showed a way to construct $G$ such that $\mathbf L$ well approximates $\triangle_{\mathbb S^2}$ in the case of a regular sampling scheme of the sphere and we tested it on a very special, equi area sampling scheme: HEALPix. In this Chapter we focus on other sampling schemes less uniform than HEALPix. The sampling scheme that we will use for our study, very used in applications, is the so called \textit{equiangular sampling scheme}. We observe that in this case the HKGL is not able to correctly approximate the continuous Laplace-Beltrami operator, due to the fact that the equiangular sampling samples the areas near the poles more than the area close to the equator, thus making the dot product $\mathbf v^T_{i(\ell, m)} \mathbf f$ very different from the true SHT $\int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$. Figure \ref{fig:equiangular distortion} illustra. To better show the distortion caused by the HKGL, in figure \ref{fig:equiangular distortion} the sphere was sampled with many more samples near the poles than near the equator. The sample points are shown as the vertices of the triangulation used for the plot. On the left we plot one spherical harmonic $Y_\ell^m$ of degree $\ell=4$ and on the right we plot the corresponding eigenmode of the HKGL. 
-\begin{figure}[h]
-	\begin{center}
-		\includegraphics[width=0.7\textwidth]{../codes/04.imbalanced/img/confront_mixed.png}
-	\end{center}
-	\caption{\label{fig:equiangular distortion}On the left, the eigenmode obtained with the FEM approach. On the right: distortion of the eigenmode of the HKGL caused by an irregular sampling scheme of the sphere.}
-\end{figure}
-We can see that the eigenmodes end up being artificially compressed along the equator.
-The goal of this chapter is to study a way of building a discrete approximation $\mathbf L$ of the Laplace-Beltrami operator more robust to non uniform sampling schemes than the HKGL $\mathbf L_n^t$ used so far.
+So far to design a graph with a low mean equivariance error we used the fact that when the sampling scheme of the sphere is regular enough, the graph $G$ is such that the corresponding graph Laplacian $\mathbf {L=V\Lambda V}^t$ has eigenvectors that are close enough to the ones of $\triangle_{\mathbb S^2}$. In Chapter \ref{sec:Graph Spherical Convolutions} we showed a way to construct a graph $G$ such that $\mathbf L$ well approximates $\triangle_{\mathbb S^2}$ in the case of a regular sampling scheme of the sphere and we tested it on a very special, equi area sampling scheme: HEALPix. In this Chapter we focus on other sampling schemes less uniform than HEALPix. The sampling scheme $V=\{v_i\in \mathbb S^2\}$ that we will use for our study, very used in applications, is the so called \textit{equiangular sampling scheme} \cite{Driscoll:1994:CFT:184069.184073}. 
 
-This chapter is organized as follows: In Section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} we introduce the equiangular sampling and the results that we obtained with the HKGL. In Section \ref{sec:Chapter3: other discrete laplacians} we present a short overview of different ways of building a discrete approximation of the Laplace-Beltrami operator; in Section \ref{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold} we deepen how to use the Finite Element Method (FEM) to construct a discrete approximation of $\triangle_{\mathbb S^2}$ and how it is actually capable of taking into account the non uniformity of the sampling scheme and correct it.
+\begin{snugshade*}
+	 Due to the fact that the equiangular sampling samples the areas near the poles more than the area close to the equator systematically, if we try to construct a graph such that $\mathbf (v_{i(\ell, m)})_j \approx Y_\ell^m(v_j)$ - as we did so far - the dot product $\mathbf v^T_{i(\ell, m)} \mathbf f$ will be very different from the true SHT $\int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$.
+\end{snugshade*} 
+
+
+This chapter is organized as follows: In section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} we introduce the equiangular sampling and the results that we obtained with the HKGL. In Section \ref{sec:Chapter3: other discrete laplacians} we present an alternative graph proposed by Frossard et al. \cite{Frossard2017GraphBasedCO} specifically designed for this sampling. We then deepen how to use the Finite Element Method (FEM) to construct a discrete approximation of $\Delta _{\mathbb S^2}$ and how to derive a graph-like Laplacian from it, that shows a low equivariance error.
 \subsection{Graph Laplacian on the Equiangular Sampling}
 \label{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling}
 
@@ -61,8 +54,6 @@ One has thus $n=4b^2$ points on the sphere, where all the points $x_{0 k}^{(b)}$
 Theorem \ref{theo:equiangular sampling theorem} is the equivalent on the sphere of the well known Shannon's sampling theorem, that states the minimum sampling frequency at which a band limited signal $f:\mathbb R \to \mathbb R$ can be perfectly reconstructed, and is a precious tool when doing signal processing on the sphere.
 
 \subsubsection{Heat Kernel Graph Laplacian with non uniform sampling measures}
-Thanks to Theorem \ref{theo:equiangular sampling theorem}, we can compute exactly the Fourier transform of the eigenmodes of the HKGL and see how much they are aligned with the eigenspaces of the true Laplace-Beltrami operator, following the same procedure described at the beginning of Chapter 2 when introducing the same kind of plots for the HEALPix sampling scheme. It can be appreciated how poorly aligned the eigenmodes of the HKGL are on the equiangular sampling (figure \ref{fig:equiangular sampling alignment}) compared to the ones obtained with the HEALPix sampling (\ref{fig:optimal graph})
-
 
 \begin{table}[h!]
 	\centering
@@ -78,20 +69,10 @@ $b$ & $t$ \\
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full.png}
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_diagonal.png}
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_eigenvalues_16.png}
-	\caption{\label{fig:equiangular sampling alignment}Alignment of eigenspaces of the full HKGL with respect to the true Laplace-Beltrami eigenspaces on the equiangular sampling. The kernel width for each bandwidth $bw$ are given by table \ref{table:equiangular kernel width}}
+	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/FullHKGLonequiangularsampling.png}
+	\includegraphics[width=\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_eigenvalues_16.png}
+	\caption{\label{fig:Equivariance error of the full HKGL}Equivariance error of the full HKGL on the equiangular sampling with bandwidth $b=8$ by spherical harmonic degree $\ell$, and its spectrum.}
 \end{figure}
-The HKGL behaves badly in the case of the equiangular sampling, and does not seem to converge to $\triangle_{\mathbb S^2}$, thus making us think that the equiangular sampling does not respect the uniformity hypothesis of theorem \ref{theo:pointwise convergence in the healpix case}. The proof of Proposition 4 gives us a hint to understand the reasons behind this bad alignment of the eigenmodes. For convenience of notations define 
-\begin{align*}
-	\phi^{t}(x ; y):=e^{-\frac{||x-y||^2}{4t}}\left(f(y)-f(x)\right)
-\end{align*}
- In order for theorem \ref{theo:pointwise convergence in the healpix case} to hold, Proposition 4 states that the HKGL operator $$L_n^tf(\mathbf y)=\sum_i \frac{1}{n} \phi^{t}(\mathbf x_i ; \mathbf y)$$ must well approximate the functional approximation of the Laplace-Beltrami operator $$L^tf(\mathbf y)=\int_\mathcal M\phi^{t}(\mathbf x ; \mathbf y)d\mu(\mathbf x)$$
- where $\mu(\mathbf x)$ is the \textit{uniform probability measure} on the sphere.
-The way of building the HKGL works well with a random sampling scheme because in this case the HKGL is an \textit{unbiased estimator} of the operator $L^t$.
-
-To conclude, we understood that in the case of a non uniform sampling measure the original way of Belkin et al. \cite{Belkin:2005:TTF:2138147.2138189} to construct the HKGL can not work any more, and we need an alternative way to construct a graph whose Laplacian can well approximate the Laplace Beltrami operator on $\mathbb S^2$. In the next section we present some different ways of building the discrete Laplacian matrix $\mathbf L$. Some of these do not even use the notion of graph but come from notions of Differential Geometry or Numerical Mathematics.
 
 \subsubsection{A graph alternative to the HKGL for the equiangular sampling}
 
@@ -110,13 +91,12 @@ for the adjacency matrix $W$, where $\mathbf y(v_i)$ is the image of the object 
 \begin{equation}\label{eq:frossard weights}
 	w_{ij} = \frac{1}{\norm{x_i-x_j}}
 \end{equation}
-This construction is interesting since it is adapted to the equiangular sampling (where the HKGL performed badly) and leads to a graph with only 4 neighbors per vertex, thus very sparse. Furthermore, to obtain the weights (\ref{eq:frossard weights}) every calculation was done in the \textit{spatial domain}, without any consideration about the spectral interpretation of the filter. In order to compare it to the HKGL we show the same Power Spectrum analysis in figure \ref{fig:Frossard/Khasanova graph}. It can be appreciated how this construction performs way better than the \textit{full} HKGL, having furthermore the big advantage of being naturally very sparse.
+This construction is interesting since it is adapted to the equiangular sampling (where the HKGL performed badly) and leads to a graph with only 4 neighbors per vertex, thus very sparse. Furthermore, to obtain the weights (\ref{eq:frossard weights}) every calculation was done in the \textit{spatial domain}, without any consideration about the spectral interpretation of the filter. In order to compare it to the HKGL we show the equivariance error by spherical harmonic degree in figure \ref{fig:Equivariance error of the Frossard-Khasanove graph}. It can be appreciated how this construction performs way better than the \textit{full} HKGL, having furthermore the big advantage of being naturally very sparse.
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full.png}
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_Khasanova_Frossard_full_diagonal.png}
-	\includegraphics[width=0.9\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_Khasanova_Frossard_eigenvalues_16.png}
-	\caption{\label{fig:Frossard/Khasanova graph}Khasanova-Frossard graph}
+	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/KhasanovaFrossardgraphonequiangularsampling.png}
+	\includegraphics[width=\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_Khasanova_Frossard_eigenvalues_16.png}
+	\caption{\label{fig:Equivariance error of the Frossard-Khasanove graph}Equivariance error of the Frossard-Khasanove graph on the equiangular sampling with bandwidth $b=8$ by spherical harmonic degree $\ell$, and its spectrum.}
 \end{figure}
 
 \subsection{The Finite Element Method approximation of the Laplace-Beltrami operator on a manifold}\label{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}
@@ -183,13 +163,8 @@ Observe that being the Laplace-Beltrami operator self-adjoint, we have that $A=A
 B^{-1}A\mathbf f = \lambda \mathbf f
 \end{equation}
 
-
-
-Taken any triangulation of the sphere $\mathcal T_h$, since $\mathbb S^2$ does not have boundaries and thus there are no boundary conditions to impose, this time the correct space $V_h$ to chose is $X^1_h$. The number of degrees of freedom of the space - and thus the number of basis functions - is equal to the number of vertices of the mesh and thanks to equation (\ref{eq:dof and values}) the solution $\mathbf f$ that is the vector of the coefficients of the function $f_h$ in the basis $\phi_i$ corresponds exactly to the values of the function $f_h$ in the vertices. For these reasons, the matrix $\mathbf L$ that we are looking for to perform our graph-like convolution is exactly
-$$
-\mathbf L = B^{-1}A
-$$
-However, having chosen a basis $\{\phi_i\}_i$ not orthonormal, $B$ is different to the identity matrix and its inverse is full, making $\mathbf L$ not efficient to perform graph-like convolutions. However this is a well known problem in the FEM literature; a common workaround is the so called \textit{lumping} of the mass matrix, that consist in replacing the matrix $B$ with the \textit{lumped} diagonal matrix $D$ obtained by placing in each diagonal entry $(D)_{ii}$ the sum of the elements of the i-th row of the mass matrix $B$:
+It can be shown \cite{Strang} that even though the matrix $B^{-1}L$ is not symmetric, its eigenvalues are still real and its eigenvectors are such that $VBV^T=I$, where $I$ is the identity matrix.
+Taken any triangulation of the sphere $\mathcal T_h$, since $\mathbb S^2$ does not have boundaries and thus there are no boundary conditions to impose, this time the correct space $V_h$ to chose in our FEM formulation is $X^1_h$. The number of degrees of freedom of the space - and thus the number of basis functions - is equal to the number of vertices of the mesh and thanks to equation (\ref{eq:dof and values}) the solution $\mathbf f$ that is the vector of the coefficients of the function $f_h$ in the basis $\phi_i$ corresponds exactly to the values of the function $f_h$ in the vertices. However, being the matrix $B^{-1}L$ not symmetric, there does not exists a graph Laplacian $\mathbf L$ such that $\mathbf L = B^{-1}L$. Furthermore, having chosen a basis $\{\phi_i\}_i$ not orthonormal, $B$ is different to the identity matrix and its inverse is full. Thus, even if we could overcome the symmetry problem of $B^{-1}L$, we would still obtain a full matrix, not efficient for graph-like convolutions. This is a well known problem in the FEM literature; a common workaround is the so called \textit{lumping} of the mass matrix, that consists in replacing the matrix $B$ with the \textit{lumped} diagonal matrix $D$ obtained by placing in each diagonal entry $(D)_{ii}$ the sum of the elements of the $i$th row of the mass matrix $B$:
 
 \begin{equation}\label{eq:lumping}
 D = \text{diag}\{d_i\},\quad d_i = \sum_j (B)_{ij}
@@ -199,12 +174,8 @@ This approximation is well studied in the literature and it is proved to work we
 \begin{equation}\label{eq:lumped eigenvalue problem}
 	D^{-1}A\mathbf f = \lambda \mathbf f
 \end{equation}
-has the same sparsity pattern of the stiffness matrix $A$, and thus leads to an acceptable computational cost of the filtering operation. However, $D^{-1}A$ is not symmetric; we then tried to use the symmetric matrix $\mathbf L = D^{-1/2}AD^{-1/2}$, thus solving the problem 
-\begin{equation}\label{eq:symmetric lumped eigenvalue problem}
-D^{-1/2}AD^{-1/2}\mathbf f = \lambda \mathbf f
-\end{equation}
-obtaining very promising results.
-We implemented the eigenvalue problem \ref{eq:weak eigenvalue problem} in $X_h^1$. We show in figures \ref{fig:FEMHealpix}, \ref{fig:FEMequiangular} the usual analysis of the alignment of the eigenmodes for both HEALPix sampling and the equiangular sampling. Being the sphere convex, in both cases the mesh $\mathcal T_h$ has been obtained by calculating the triangulation of the convex hull of the vertices through the Qhull algorithm \cite{Barber96thequickhull}.
+has the same sparsity pattern of the stiffness matrix $A$. However, $D^{-1}A$ is still not symmetric; we then tried to use the symmetric matrix $\mathbf L = D^{-1/2}AD^{-1/2}$ as graph Laplacian, obtaining very promising results (figure \ref{fig:Equivariance error of the symmetric lumped FEM Laplacian}).
+We implemented the FEM eigenvalue problem (\ref{eq:weak eigenvalue problem}) in $X_h^1$. Thanks to the sampling theorem \ref{theo:equiangular sampling theorem}, we are able to compute their exact SHT (under the hypothesis of band limited signals) and we show in figures \ref{fig:FEMHealpix}, \ref{fig:FEMequiangular} the power spectrum of the eigenmodes for both HEALPix sampling and the equiangular sampling, as a measure of the goodness of the linear FEM approach to approximate the spherical harmonics. Being the sphere convex, in both cases the mesh $\mathcal T_h$ has been obtained by calculating the triangulation of the convex hull of the vertices through the Qhull algorithm \cite{Barber96thequickhull}.
 
 \begin{minipage}[t!]{.49\textwidth}
 	\raggedleft
@@ -212,41 +183,32 @@ We implemented the eigenvalue problem \ref{eq:weak eigenvalue problem} in $X_h^1
 	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM.png}\\
 	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM_diagonal.png}	\\
 	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	\\
-	\captionof{figure}{	\label{fig:FEMHealpix}Alignment of eigenspaces using the linear FEM approximation to solve the eigenvalue problem \ref{eq:algebraic  eigenvalue problem} on HEALPix}
+	\captionof{figure}{	\label{fig:FEMHealpix}Alignment of eigenspaces of the linear FEM Laplacian on HEALPix}
 \end{minipage}
 \hfill
 %
 \begin{minipage}[t!]{.49\textwidth}
-	\raggedright
 	\center
 	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM.png}
 	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM_diagonal.png}	
 	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/FEM_eigenvalues_16.png}	
-	\captionof{figure}{\label{fig:FEMequiangular}Alignment of eigenspaces using the linear FEM approximation to solve the eigenvalue problem \ref{eq:algebraic  eigenvalue problem} on the equiangular sampling}
-\end{minipage}
-\begin{minipage}[t!]{.49\textwidth}
-	\raggedleft
-	\center
-	\centering
-	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BL/img/linearFEM.png}
-	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BL/img/linearFEM_diagonal.png}	
-	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BL/img/FEM_eigenvalues_32.png}	
-	\captionof{figure}{\label{fig:FEMequiangularLumped}Alignment of eigenspaces using the linear FEM approximation to solve the \textit{lumped} eigenvalue problem \ref{eq:lumped eigenvalue problem} on the equiangular sampling}
-\end{minipage}
-\hfill
-%
-\begin{minipage}[t!]{.49\textwidth}
-	\raggedright
-	\center
-	\centering
-	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/linearFEM.png}
-	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/linearFEM_diagonal.png}	
-	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/FEM_eigenvalues_32.png}	
-	\captionof{figure}{\label{fig:symmetricFEMequiangularLumped}Alignment of eigenspaces using the linear FEM approximation to solve the \textit{symmetric lumped} eigenvalue problem \ref{eq:symmetric lumped eigenvalue problem} on the equiangular sampling}
+	\captionof{figure}{\label{fig:FEMequiangular}Alignment of eigenspaces of the linear FEM Laplacian on the equiangular sampling}
 \end{minipage}
 
-We see that on HEALPix the \textit{full} HKGL shows better aligned eigenmodes than the \textit{full} FEM Laplacian $B^{-1}L$. On the equiangular sampling the FEM shows its capability of catching the geometry of the problem independently of the sampling scheme (figure \ref{fig:FEMequiangular}). Furthermore it can be seen how on the equiangular sampling the solutions of the lumped Laplacian $D^{-1}L$ - figure \ref{fig:FEMequiangularLumped} - and of the symmetric lumped Laplacian $D^{-1/2}LD^{-1/2}$ - figure \ref{fig:symmetricFEMequiangularLumped} - look very close to the correct solution of the problem \ref{eq:algebraic  eigenvalue problem}, thus making the FEM approach very promising.
 
+\begin{figure}[h]
+		\centering
+	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/SymmetriclumpedFEMLaplacianonequiangularsampling.png}
+	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/FEM_eigenvalues_bw16.png}
+	\caption{\label{fig:Equivariance error of the symmetric lumped FEM Laplacian}Equivariance error of the symmetric lumped FEM Laplacian on the equiangular sampling with bandwidth $b=8$ by spherical harmonic degree $\ell$, and its spectrum.}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/FEMdiffusiononequiangularsampling.png}
+	\caption{\label{fig:FEM diffusion}Equivariance error of the FEM diffusion $B^{-1}V^{-T} \exp({-\Lambda})V^TB \mathbf f$ on the equiangular sampling by spherical harmonic degree $\ell$.}
+\end{figure}
 
 
 \subsubsection{Diffusion with the exponential matrix}

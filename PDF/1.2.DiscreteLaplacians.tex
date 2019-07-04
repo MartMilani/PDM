@@ -5,7 +5,7 @@ Take a sampling scheme $V=\{v_i\in\mathbb S^2, i=0, ..., n\}$ of the sphere, a w
 
 We now want to understand how to set the edges and the weights of $G$ such that
 \begin{equation}\label{eq:equivariance}
-	T \Lambda(g) T^{-1} \Omega_k T_V(f) = \Omega_k T \Lambda(g) f
+	T \Lambda(g) T^{-1} \Omega_k T f = \Omega_k T \Lambda(g) f
 \end{equation}
 i.e., the graph convolution $\Omega_k$ and any rotation $\Lambda(g)$ commute.
  
@@ -106,8 +106,7 @@ This graph construction is motivated by the fact that the HKGL is nothing else t
 	\label{def:Functional approximation to the Laplace-Beltrami operator}
 	$$ L^tf(y) = \int_{\mathcal M}e^{-\frac{||y-x||^2}{4t}}\left(f(y)-f(x)\right)d\mu(x)$$
 \end{definition}
-\vspace{0.3cm}
-We end this Chapter by stating the theorem of spectral convergence of the HKGL to the Laplace-Beltrami operator $\Delta_\mathcal M$, thus lying the theoretical foundations of graph spherical convolutional neural network.
+We end this Chapter by stating the theorem of spectral convergence of the HKGL to the Laplace-Beltrami operator $\Delta_\mathcal M$, that makes it a really good candidate to construct rotation invariant graphs.
 \vspace{0.5cm}
 \begin{snugshade*}
 	\begin{theorem}(Belkin et al., \cite{NIPS2006_2989})\label{theo:spectral convergence}
@@ -123,7 +122,6 @@ We end this Chapter by stating the theorem of spectral convergence of the HKGL t
 		where the limits are in probability.
 	\end{theorem}
 \end{snugshade*}
-This theorem states that in probability the equivariance error $\overline E_G$ for the HKGL tends to zero, making it a really good candidate to construct rotation invariant graph convolutions.
 
 
 
