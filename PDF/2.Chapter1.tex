@@ -410,6 +410,7 @@ where $n$ is the number of vertices of the graph. This complexity is a little wo
 To conclude this subsection, we show in figure \ref{fig:Old spectrum}, \ref{fig:New spectrum} we show a confront between the alignment of the graph Laplacian eigenvectors and the spectra of the DeepSphere graph $W$, the starting point of this work, and  of the proposed graph $W'$. It can appreciated how the alignment plots show a much better behavior of the graph Laplacian eigenvectors, and how the eigenvalues show now the correct multiplicity. This was obtained through a careful selection of the kernel width $t$ and of the number of neighbors in accord with the theory developed in the previous section. \\
 \begin{minipage}{.5\textwidth}
 	\centering
+	\vspace{0.4cm}
 	\includegraphics[width=0.95\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original.png}
 	\includegraphics[width=0.95\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/06_figures/deepsphere_original_diagonal.png}
 	\includegraphics[width=0.95\linewidth]{../codes/02.HeatKernelGraphLaplacian/HEALPix/05_figs/old_results3.png}
@@ -439,19 +440,19 @@ $$ of the diffusion filter $K = \exp(-\Lambda)$ for both graphs $G, G'$ by spher
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/img_example_DeepSphere/DS.png}	
-	\caption{\label{fig:DeepSphere equivariance error in practice}}
+	\caption{\label{fig:DeepSphere equivariance error in practice}DeepSphere V1 equivariance error. On the left, a signal $f$. Top right, $f$ was first rotated and then filtered through a diffusion filter $k(\lambda) = \exp (-\lambda)$. Bottom right, $f$ was first filtered and then rotated. The difference in the two outcomes is evident.}
 \end{figure}
 
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/img_example_thresholdedHKGL/thresholdedHKGL.png}	
-	\caption{\label{fig:Optimal equivariance error in practice}}
+	\caption{\label{fig:Optimal equivariance error in practice}DeepSphere V2 equivariance error. On the left, a signal $f$. Top right, $f$ was first rotated and then filtered through a diffusion filter $k(\lambda) = \exp (-\lambda)$. Bottom right, $f$ was first filtered and then rotated. No difference in the two outcomes is visible to the human eye.}
 \end{figure}
 
-In figure \ref{fig:DeepSphere equivariance error in practice} we see the visualization of the equivariance error of DeepSphere: on the left, the original sampled signal $Tf$. Top right, the rotated and filtered signal $\Omega_k T \Lambda(g) f$. Bottom tight, the filtered and rotated signal $T \Lambda(g) T^{-1} \Omega_k T f $. The difference between them can be appreciated. In figure \ref{fig:Optimal equivariance error in practice} we see the visualization of the equivariance error of the optimal graph $G'$: on the left, the same original sampled signal $Tf$. Top right, the rotated and filtered signal $\Omega_k T \Lambda(g) f$. Bottom tight, the filtered and rotated signal $T \Lambda(g) T^{-1} \Omega_k T f $. No difference between them can be appreciated at a visual analysis.
+In figure \ref{fig:DeepSphere equivariance error in practice} we see the visualization of the equivariance error of DeepSphere: on the left, the original sampled signal $Tf$. Top right, the rotated and filtered signal $\Omega_k T \Lambda(g) f$. Bottom right, the filtered and rotated signal $T \Lambda(g) T^{-1} \Omega_k T f $. The difference between them can be appreciated. In figure \ref{fig:Optimal equivariance error in practice} we see the visualization of the equivariance error of the optimal graph $G'$: on the left, the same original sampled signal $Tf$. Top right, the rotated and filtered signal $\Omega_k T \Lambda(g) f$. Bottom right, the filtered and rotated signal $T \Lambda(g) T^{-1} \Omega_k T f $. No difference between them can be appreciated at a visual analysis.
 To conclude, we report in table \ref{tab:final results} as final metric for the evaluation of rotation equivariance of the two graphs $G$, $G'$ the mean equivariance error for a different values of $N_{side}$ that we computed by sampling random coefficients $\theta_\ell^m \in(0,1)$ of linear combinations of all the spherical harmonics up to degree $\ell=16$
-$$f = \sum_{\ell\leq 15,\ |m|\leq\ell}\theta_\ell^m Y_\ell^m(x)
+$$f(x) = \sum_{\ell\leq 16,\ |m|\leq\ell}\theta_\ell^m Y_\ell^m(x)
 $$
 and by averaging on random rotations $g\in SO(3)$. Our graph shows lower errors as $N_{side}$ grows, and a much lower error than DeepSphere.
 
@@ -465,60 +466,3 @@ and by averaging on random rotations $g\in SO(3)$. Our graph shows lower errors 
 \caption{\label{tab:final results}}
 \end{table}
 
-\subsection{Experimental validation}
-\label{sec:Chapter2:Experimental validation}
-\paragraph{SHREC17 as a retrieval problem.}
-Gusset et al. \cite{Gusset} compared the performances of DeepSphere on the SHREC17 perturbed dataset \cite{SHREC17}. They modified the available graph of DeepSphere and proposed four different graph architectures to compete in the SHREC17 competition. Refer to their work for more details. One of these four architectures - called in table \ref{tab:SHREC17_retriev} Deepsphere Optimal - was obtained implementing the thresholding procedure described in this work in section \ref{sec:Chapter2:How to build a good graph} adapted to the \textit{equiangular} sampling (explained in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling}). They compared the performances of these four Deepsphere architectures together with the traditional SCNN architectures of Cohen et al. \cite{SCNN} introduced in section \ref{sec:Chapter1:SCNN} and of Esteves et al. \cite{Esteves}, plus the two best scorer models of the SCHREC17 competition. The models were tested in a retrieval task, and evaluated with the four different metrics provided by the official script. \footnote{\url{https://shapenet.cs.stanford.edu/shrec17/code/evaluator.zip}} Results can be seen in table \ref{tab:SHREC17_class}.  The first two models are the best scorer of the competition, the last seven are all rotation equivariant models.
-
-\begin{table}[h]
-	\scriptsize
-	\centering
-	\begin{tabular}{l|c c c c|c c c c}
-		& \multicolumn{4}{c|}{micro (label average)} & \multicolumn{4}{c}{macro (instance average)} \\
-		Method & P@N & R@N & F1@N & mAP & P@N & R@N & F1@N & mAP \\ \hline
-		Furuya DLAN & \textbf {0.814} & 0.683 & 0.706 & 0.656 &\textbf{0.607} & 0.539 &\textbf  {0.503} & \textbf {0.476} \\
-		Tatsuma ReVGG & 0.705 & \textbf{0.769} & \textbf {0.719 }& \textbf {0.696} & 0.424 & \textbf{0.563} & 0.434 & 0.418\\ \hline
-		Cohen \emph{s2cnn} & 0.701 & 0.711 & 0.699 & 0.676 & - & - & - & - \\
-		Cohen \emph{s2cnn\_simple} & 0.704 & 0.701 & 0.696 & 0.665 & 0.430 & 0.480 & 0.429 & 0.385\\
-		Esteves \emph{sphericalcnn} & 0.717 & 0.737 & - & 0.685 & 0.450 & 0.550 & - & 0.444\\
-		Deepsphere \emph{Cohen-like} & 0.695 & 0.688 & 0.684 & 0.654 & 0.424 & 0.478 & 0.423 & 0.389\\
-		Deepsphere \emph{local filter} & 0.684 & 0.682 & 0.676 & 0.643 & 0.410 & 0.452 & 0.398 & 0.354 \\
-		Deepsphere \emph{equiangular} & 0.642 & 0.629 & 0.627 & 0.589 & 0.370 & 0.423 & 0.370 & 0.322 \\
-		\textbf{Deepsphere Optimal}& \textbf{0.725} & \textbf{0.717} & \textbf{0.715} & \textbf{0.686} & \textbf{0.475} & \textbf{0.508} & \textbf{0.468} & \textbf{0.428}
-	\end{tabular}
-	\caption{\label{tab:SHREC17_retriev}Results from Gusset et al. Performance of different models over SHREC17 perturbed dataset as a retrieval task. In bold the best score by category}
-\end{table}
-We can see how \textit{DeepSphere Optimal} has \textit{always} the highest score between all the rotation equivariant models, and sometimes even manages to beat of the two best scoring models of the competition. It is remarkable that with the F1 metric, the accuracy of DeepSphere Optimal is only 0.4\% lower than the best accuracy of the top scorer model of Tatsuma et al.
-
-\paragraph{SHREC17 as a classification problem.}We report another result of Gusset et al. \cite{Gusset} obtained in the SHREC17 dataset as a \textit{classification} task. They compare with two different metrics the performance of all the rotation invariant models taken into consideration so far, while also comparing the speed of inference and of training of each model. Results are shown in table \ref{tab:SHREC17_class}. Again it can be seen how \textit{DeepSphere Optimal} has \textit{always} the highest score between all the rotation equivariant models, no matter the evaluation metric. Furthermore, its performances in terms of speed of influence and training are comparable to the best one. To conclude this analysis, it can be appreciated how all the four Graph CNNs are orders of magnitude faster to train than the traditional Spherical CNNs of Cohen et al. and of Esteves et al. 
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{l|c c r r r}
-		\multicolumn{1}{l}{} & \multicolumn{2}{c}{performance} & \multicolumn{1}{c}{size} & \multicolumn{2}{c}{speed}\\
-		\cmidrule(lr){2-3} \cmidrule(lr){4-4} \cmidrule(lr){5-6}
-		\multicolumn{1}{l}{Method} & Accuracy & F1-score & params & inference & training \\ \hline
-		Cohen \emph{s2cnn} & 73.10 & 72.86 & 1.4M & 38ms & 65h\\
-		Cohen \emph{s2cnn\_simple} & 78.59 & 78.85 & 400k & 12ms & 32h\\
-		Esteves \emph{sphericalcnn} & 79.18 & 79.36 & 500k & 9.8ms & 2h52\\ \hline
-		Deepsphere \emph{Cohen-like} & 77.86 & 77.90 & 170k & 17.5ms & 9h43\\
-		Deepsphere \emph{local filter} & 76.83 & 76.66 & 60k & 2.8ms & 1h37\\
-		Deepsphere \emph{equiangular} & 73.36 & 73.67 & 190k & \textbf{0.98ms} & \textbf{43m} \\
-		\textbf{Deepsphere \emph{Optimal}} & \textbf{80.42} & \textbf{80.65} & 190k & 1.0ms & 48m
-	\end{tabular}
-	\caption{Results form Gusset et al. Performance of four rotation equivariant GCNNs and two SCNNs on the SHREC17 dataset as a classification task.}
-	\label{tab:SHREC17_class}
-\end{table}
-\paragraph{On HEALPix }
-We conclude this section by citing a last result of Gusset et al. that tested the original architecture of DeepSphere with the Optimal one on a HEALPix sampling with $N_{side}=32$. Results can be seen in table \ref{table:results}.
-\begin{table}[h!]
-	\centering
-	\begin{tabular}{ c|c|c } 
-		& Original graph & Optimal graph \\ 
-		\hline
-		accuracy & 82.23\% & 82.76\% \\ 
-	\end{tabular}
-	\caption{\label{table:results}Results form Gusset et al. Accuracy on the HEALPix sampling}
-\end{table}
- Being the new graph $W'$ more equivariant to rotations, we expected to see an improvement in the accuracy. The fact that this improvement was not observed as we did in the the SHREC17 competition - where an equiangular sampling of the sphere was used - means that with the HEALPix sampling the original DeepSphere graph $W$ \textit{is already sufficiently equivariant to rotations}. By this we mean that for this task, being equivariant to rotations of the low frequency eigenmodes is sufficient to obtain good results, and that being rotation equivariant to the higher frequencies does not lead to any improvement.
- 
- \paragraph{Conclusions} On the SHREC17 dataset, where DeepSphere was modified to work with the equiangular sampling, \textit{DeepSphere optimal} showed a noticeable but little improvement - around 3\% - with respect to the others GCNN architectures. On the HEALPix sampling, the optimal choice of parameters did not bring a noticeable improvement. However, it is much faster and memory efficient than concurrent methods.

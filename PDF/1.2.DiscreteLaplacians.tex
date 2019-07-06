@@ -11,7 +11,7 @@ i.e., the graph convolution $\Omega_k$ and any rotation $\Lambda(g)$ commute.
  
 Verifying equation (\ref{eq:equivariance}) is really hard in practice, due to the fact that for almost all samplings schemes $V$ it is not known if there exists a space $F$ in which $T$ is invertible. A special case is the \textit{equiangular sampling} scheme described in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} where the sampling theorem \ref{theo:equiangular sampling theorem} holds \cite{Driscoll:1994:CFT:184069.184073}. With all the other sampling schemes, there are no sampling theorems available but there are implementations of approximated, discrete SHT to reconstruct a sampled signal $\mathbf f$, thus providing a way to approximate $T^{-1}$. Thanks to this we are able, for a given sampling, a given function $f$ and a given rotation $g$, to compute the \textit{normalized equivariance error} 
 \begin{equation}\label{eq:equivariance error}
-	E_{G}(f, g) = \left(\frac{ \norm {T \Lambda(g) T^{-1} \Omega_k T_V(f) - \Omega_k T \Lambda(g) f}_{L^2(\mathbb R^2)}}{\norm {Tf}_{L^2(\mathbb R^2)}}\right)^2
+	E_{G}(f, g) = \left(\frac{ \norm {T \Lambda(g) T^{-1} \Omega_k Tf - \Omega_k T \Lambda(g) f}_{L^2(\mathbb R^2)}}{\norm {Tf}_{L^2(\mathbb R^2)}}\right)^2
 \end{equation}
 where $T^{-1}$ is substituted with a discrete SHT in case $T$ is not invertible.
 A measure of how equivariant a graph is with respect to rotations will then be given by the \textit{mean equivariance error}
@@ -85,6 +85,25 @@ w_{i j}=\frac{\cot \left(\alpha_{i j}\right)+\cot \left(\beta_{i j}\right)}{2}
 $$
 
 Meyer et al. \cite{Meyer02discretedifferential-geometry} modify the masses of Desbrun et al. and set the masses $d_i$ to be equal to $a_{V}(i)$, where \(a_{V}(i)\) is the area of the polygon obtained by joining the circumcenters of the triangles surrounding node $i$ (i.e. the Voronoi cell, figure \ref{fig:Desbrun}).
+
+\subsection{Linear Finite Element Method Laplacian}
+The eigenvalue problem (\ref{eq:continous eigenvalue problem}) can be rewritten in the equivalent weak form
+\begin{equation}\label{eq:weak}
+	\langle \nabla f, \nabla v\rangle_{L^2(\mathbb S^2)} = \lambda \langle  f, v\rangle_{L^2(\mathbb S^2)} \quad \forall v \in L^2(\mathbb S^2)
+\end{equation}
+The Finite Element Method (FEM) is a numerical algorithm that allows to calculate a discrete approximation of the solution $f$ through a functional discretization of the weak eigenvalue problem (\ref{eq:weak}). We will discuss this method deeper in section \ref{sec:Chapter3: Using the Finite Element Method to approximate the Laplace-Beltrami operator on a manifold}. By projecting equation (\ref{eq:weak}) on a finite dimensional functional subspace of $L^2(\mathbb S^2)$ spanned by $n$ basis functions $\phi_i$, by writing $n$ times the equation (\ref{eq:weak eigenvalue problem}), setting each time the \textit{test} function $v$ equal to the $i$th basis function $\phi_i$ we obtain the generalized algebraic eigenvalue problem
+$$
+\begin{aligned}
+&\text{Find }(f,\lambda)\text{ such that }A\mathbf f = \lambda B \mathbf f\\
+&\begin{cases}
+(A)_{ij} &= \int_{\mathbb S^2}\nabla \phi_i(\mathbf{x})\cdot \nabla \phi_j(\mathbf{x})d\mathbf{x}\\
+(B)_{ij} &= \int_{\mathbb S^2} \phi_i(\mathbf{x}) \phi_j(\mathbf{x})d\mathbf{x}\\
+(\mathbf f)_i &= f_i:\quad f(\mathbf x) = f_0\phi_0(\mathbf x)+ ... + f_{n-1}\phi_{n-1}(\mathbf x) 
+\end{cases}
+\end{aligned}
+$$
+that can be solved through usual algebraic solvers.
+
 \subsection{Graph Laplacian for manifolds}\label{sec:Chapter1:theoretical foundations}
 In their work, Convergence of Laplacian Eigenmaps \cite{NIPS2006_2989}, Belkin et al. prove convergence of eigenvectors of the \textit{Heat Kernel Graph Laplacian} $\mathbf L_n^t$ (HKGL) of a data point cloud to the eigenfunctions of the Laplace Beltrami operator $\Delta_\mathcal M$ on the manifold $\mathcal M$, when the data is sampled from a uniform distribution on $\mathcal M$.
 For this result to hold, they suppose the manifold $\mathcal M$ to be compact, infinitely differentiable and without boundary. We just point out that being $\mathcal M$ compact, $\Delta_\mathcal M$ has a discrete spectrum. The graph they use to approximate the manifold is constructed as follows: given a sampling $ \mathcal P = \{x_i\in\mathcal M\}_{i=0}^{n-1}$ on a $k$-dimensional manifold $\mathcal M\subset \mathbb R^N$ they construct the full graph defined by the weights 

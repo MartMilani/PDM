@@ -11,7 +11,8 @@ In this section we provide the necessary definitions and mathematical concepts n
 that implies $ \langle  x, y\rangle = 0$. If the eigenvectors of a self-adjoint operator $L$ span the whole space $X$, then $L$ is called \textit{diagonalisable}.  A linear operator from a Hilbert space $X$ to $\mathbb R$ is called a linear \textit{functional} on $X$. A functional is bounded if $\exists M\geq 0: \ |Lx|\leq M\norm x$. The normed vector space made by the set of all linear bounded functionals on $X$ endowed with the norm $\norm L = sup_{v\in X}|Lv|/\norm v$ is called the \textit{dual} space of $X$ and is indicated with $X^\star$. An important property of linear functionals is that for every functional $L\in X^\star$, there exists a unique vector $u\in X$ such that
 $$Lv = \langle u, v\rangle\quad \forall v\in X$$ 
 
-A \textit{bilinear form} on the vector space $X$ is a map $a(\cdot, \cdot): X\times X\to F$ that is linear with respect to both arguments. It is said to be \textit{strongly coercive} if $\exists\alpha>0:\ |a(x, x)|\geq \alpha \norm {x}^2$, and \textit{bounded} if $\exists M>0:\ |a(x, y)|\leq M \norm x \norm y$.
+A \textit{bilinear form} on the vector space $X$ is a map $a(\cdot, \cdot): X\times X\to F$ that is linear with respect to both arguments. It is said to be \textit{strongly coercive} if \\
+$\exists\alpha>0:\ |a(x, x)|\geq \alpha \norm {x}^2$, and \textit{bounded} if $\exists M>0:\ |a(x, y)|\leq M \norm x \norm y$.
 
 \paragraph{The Lax-Milgram theorem}
 Before introducing the Galerkin method the last thing to do is to state the Lax-Milgram theorem, theorem that is the foundation of the FEM formulation.
@@ -21,7 +22,7 @@ Before introducing the Galerkin method the last thing to do is to state the Lax-
 	\begin{equation}\label{eq:variational abstract problem}
 	\text{Find }f\in X\text{ such that } a(f, v)=Lv \text{ for all } v \in X
 	\end{equation}
-	For such \(f\) one has \(\|f\| \leq \frac{1}{\alpha}\norm L\) where \(\alpha>0\) is the coercive constant \(a(v, v) \geq \alpha\norm v^{2} \forall v \in X.\)
+	For such \(f\) one has \(\|f\| \leq \frac{1}{\alpha}\norm L\) where \(\alpha>0\) is the coercive constant \\\(a(v, v) \geq \alpha\norm v^{2} \forall v \in X.\)
 \end{theorem} 
 \vspace{0.5cm}
 The Finite Element Method takes a PDE problem in strong form (\ref{eq:PDE}), reformulates it in the equivalent \textit{weak form} (\ref{eq:variational abstract problem}) through suitable definitions of $X, a(\cdot, \cdot), L$ and finally solves it through polynomial interpolation.
@@ -44,7 +45,7 @@ in the form \ref{eq:variational abstract problem}. Let's multiply the differenti
 f(\mathbf x) =  0&\quad \mathbf x \in \partial \Omega
 \end{cases}	
 \end{align}
- Since the contribution of both $f$ and $v$ on the border $\partial \Omega$ is zero, $\int_{\partial \Omega}\nabla f \cdot \mathbf nv d\sigma=0$ and integrating by parts we get
+ Since the contribution of both $f$ and $v$ on the border $\partial \Omega$ is zero, \\$\int_{\partial \Omega}\nabla f \cdot \mathbf nv d\sigma=0$ and integrating by parts we get
 
 \begin{equation}\label{eq:int by parts}
 	\int_\Omega \nabla f(\mathbf x)\cdot\nabla v(\mathbf x) d\mathbf x = \int_\Omega  u(\mathbf x)\cdot v(\mathbf x)d\mathbf x
@@ -54,7 +55,7 @@ By defining $a(f, v):=	\int_\Omega \nabla f(\mathbf x)\cdot\nabla v(\mathbf x) d
 $$
 \langle u, v\rangle_{H^1_0(\Omega)} = \int_\Omega u(\mathbf x)v(\mathbf x)d\mathbf x + \int_\Omega\nabla u(\mathbf x)\cdot \nabla v(\mathbf x) d\mathbf x
 $$
-$H^1_0$ contains only those functions that vanish on $\delta \Omega$ i.e. $f\in H^1_0(\Omega)\cap C(\Omega) \implies \left.f(\mathbf x)\right|_{\partial\Omega}=0$. This means that thanks to Lax-Milgram theorem the problem
+$H^1_0$ contains only those functions that vanish on $\delta \Omega$ i.e. \\$f\in H^1_0(\Omega)\cap C(\Omega) \implies \left.f(\mathbf x)\right|_{\partial\Omega}=0$. This means that thanks to Lax-Milgram theorem the problem
 
 \begin{equation}\label{eq:final variational form}
 \begin{split}
@@ -87,7 +88,7 @@ To solve equation \ref{eq:Galerkin problem} we write $f_h, u_h, v$ as linear com
 \text{Find }\mathbf f\in\mathbb R^n\text{ such that } \sum_{j=0}^{n-1}a(\phi_i, \phi_j)f_j=\sum_{j=0}^{n-1}\langle \phi_i, \phi_j\rangle u_j \text{ for all } i=0, ... n-1
 \end{equation}
 
-Defining the \textit{stiffness matrix} $(A)_{ij} = a(\phi_i, \phi_j)$ and the \textit{mass matrix} $(B)_{ij} = \langle \phi_i, \phi_j\rangle$ we can rewrite problem \ref{eq:Galerkin problem in the basis functions} in the following algebraic form
+Defining the \textit{stiffness matrix} $(A)_{ij} = a(\phi_i, \phi_j)$ and the \textit{mass matrix} \\$(B)_{ij} = \langle \phi_i, \phi_j\rangle$ we can rewrite problem \ref{eq:Galerkin problem in the basis functions} in the following algebraic form
 \begin{equation}\label{eq:Galerkin algebraic}
 \text{Find }\mathbf f\in\mathbb R^n\text{ such that } A\mathbf f = B \mathbf u
 \end{equation}
