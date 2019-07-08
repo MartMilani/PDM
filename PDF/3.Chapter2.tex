@@ -112,9 +112,9 @@ Let's transform the strong form of the eigenvalue problem on the Sphere on its \
 &\int_{\mathbb S^2} \nabla f(\mathbf x)\cdot\nabla v(\mathbf x) d\mathbf x = \lambda \int_{\mathbb S^2} f(\mathbf x)\cdot v(\mathbf x)d\mathbf x\quad \forall v\in H^1(\mathbb S^2)
 \end{split}
 \end{equation}
-with no boundary conditions, where $v$ has been chosen to belong to $H^1\subset L^2(\mathbb S^2)$, the Sobolev space of all the functions with derivative $\nabla f\in L^2(\mathbb S^2)$. The Finite Element Method first approximates the domain $\Omega$ with a triangulation $\mathcal T_h=\{ \tau_i \}$, and then \textit{projects} the weak problem (\ref{eq:weak eigenvalue problem}) into a finite dimensional subspace $V_h\subset H^1(\mathcal T_h)$ made by all the piecewise linear polynomials on the triangulation $\mathcal T_h$. Being the sphere convex, the triangulation $\mathcal T_h$ has been obtained by calculating the triangulation of the convex hull of the vertices of the chosen sampling scheme through the Qhull algorithm \cite{Barber96thequickhull}. Now, define $V_h$ to be the space of all the continuous, piecewise linear functions on $\Omega$ $X_h^1$:
+with no boundary conditions, where $v$ has been chosen to belong to \\$H^1\subset L^2(\mathbb S^2)$, the Sobolev space of all the functions with derivative \\$\nabla f\in L^2(\mathbb S^2)$. The Finite Element Method first approximates the domain $\Omega$ with a triangulation $\mathcal T_h=\{ \tau_i \}$, and then \textit{projects} the weak problem (\ref{eq:weak eigenvalue problem}) into a finite dimensional subspace $V_h\subset H^1(\mathcal T_h)$ made by all the piecewise linear polynomials on the triangulation $\mathcal T_h$. Being the sphere convex, the triangulation $\mathcal T_h$ has been obtained by calculating the triangulation of the convex hull of the vertices of the chosen sampling scheme through the Qhull algorithm \cite{Barber96thequickhull}. Now, define $V_h$ to be the space of all the continuous, piecewise linear functions on $\Omega$ $X_h^1$:
 $$X_h^{1}=\{v_h: v_h\in C(\Omega): \left.v_h\right|_{\tau}\in\mathbb P^1\  \forall \tau\in \mathcal T_h\}$$ 
-Since for the functions in $X_h^1$ the number of degrees of freedom is the same of the number of vertices of the mesh $n$, we need  $n$ basis functions $\phi_i, i=0,...,n-1$ to fully describe $X_h^{1}$. The most natural choice for $\phi_i$ is the following: $\phi_i$ is defined as the continuous piecewise linear function such that 
+Since for the functions in $X_h^1$ the number of degrees of freedom is the same of the number of vertices of the mesh $n$, we need  $n$ basis functions \\$\phi_i, i=0,...,n-1$ to fully describe $X_h^{1}$. The most natural choice for $\phi_i$ is the following: $\phi_i$ is defined as the continuous piecewise linear function such that 
 $$
 \phi_i(x_j) = \delta_{ij}\quad i=0,...,n-1
 $$
@@ -168,10 +168,10 @@ Calculating the discrete Fourier transform with the linear FEM means projecting 
 where $v_{i(\ell, m)}$ is the solution to the eigenvalue problem \ref{eq:algebraic generalized eigenvalue problem}, $f_h$ is the projection of $f$ on $V_h$, and $B$ is the mass matrix. It follows that the filtering of a discretized signal $\mathbf f$ in the spectral domain is done by the following matrix  $\Omega_K^{FEM}$:
 
 \begin{equation}\label{eq:FEM filtering}
-	 \Omega_K^{FEM} = B^{-1}V^{-T}KV^TB
+	 \Omega_K^{FEM} := (BV^T)^{-1}KV^TB
 \end{equation}
 
-where $V^TB$ is the Fourier transform matrix, $K$ is the diagonal matrix that represent the chosen kernel for this filter, and $B^{-1}V^{-T}$ is the matrix representing the inverse Fourier transform. We can already notice a fundamental difference between this way of filtering a signal and the way of filtering a signal with a graph. The FEM filtering uses not only the eigenvectors of the FEM Laplacian, but also the mass matrix $B$. We computed the usual mean equivariance error per spherical harmonic degree for the diffusion filter $K=\exp(-\Lambda)$ on the equiangular sampling, and we show it in figure \ref{fig:FEM diffusion}.
+where $V^TB$ is the FEM Fourier transform matrix, $K$ is the diagonal matrix that represent the chosen kernel for this filter, and $B^{-1}V^{-T}$ is the matrix representing the inverse FEM Fourier transform. We can already notice a fundamental difference between this way of filtering a signal and the way of filtering a signal with a graph. The FEM filtering uses not only the eigenvectors of the FEM Laplacian, but also the mass matrix $B$. We computed the usual mean equivariance error per spherical harmonic degree for the diffusion filter $K=\exp(-\Lambda)$ on the equiangular sampling, and we show it in figure \ref{fig:FEM diffusion}.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/FEMdiffusiononequiangularsampling.png}
@@ -179,37 +179,61 @@ where $V^TB$ is the Fourier transform matrix, $K$ is the diagonal matrix that re
 \end{figure}
 We can see that the FEM filtering works better than the state-of-the-art graph of Khasanova-Frossard, but the matrix $\Omega_K^{FEM}$ is full, and its computation requires the expensive inversion of the Fourier matrix $V^TB$, making it not efficient to use it in a CNN. 
 \subsubsection{FEM filtering as a graph filtering}
-Observe that a polynomial filter
+Due to the fact that 
+$
+V^TBV = I
+$,
+whe have that 
+$$
+\begin{aligned}
+	(V^TB)^{-1} &= V,\\
+	V^TB &= V^{-1}.
+\end{aligned}
+$$
+So, the FEM filter matrix $\Omega_K^{FEM}$ can be rewritten as 
+$$
+ \Omega_K^{FEM}  = V K V^{-1}
+$$
+and thus a polynomial filter
 $$
 k(\lambda)=P_\kappa(\lambda) = \sum_{k=0}^{\kappa-1} \theta_k \lambda^k
 $$
 would be implemented with a matrix
 $$
-\Omega_K^{FEM} = P_\kappa(B^TB^{-1}AB) = \sum_{k=0}^{\kappa-1} \theta_k (B^TB^{-1}AB)^k.
+\Omega_K^{FEM} = V \left(\sum_{k=0}^{\kappa-1} \theta_k \Lambda^k \right)V^{-1} = \sum_{k=0}^{\kappa-1} \theta_k (B^{-1}A)^k = P_\kappa(B^{-1}L).
 $$
-This means that the FEM filtering could be implemented exactly as the graph filtering already implemented in DeepSphere using the matrix $L_{FEM} := B^TB^{-1}AB$ instead of the usual sparse HKGL $L_n^t$. Unfortunately, in order to make the evaluation of the polynomial $P_\kappa(B^TB^{-1}AB)$ efficient, we need the matrix $B^TB^{-1}AB$ to be sparse. The only way to do so is to have a sparse stiffness matrix $A$ and choose the basis functions $\phi_i$ such that $B=I$. Unfortunately there is no likely solution to this problem, that is one of the most well known trade offs of the FEM \cite{Strang}: to make $B$ the identity matrix we need to choose $\phi_i$ to be an orthonormal basis of $V_h$. We will need to choose more complicated basis functions than the usual ones in figure \ref{fig:basis function}, \textit{most likely with a support that extends to the whole sphere}, making the stiffness matrix $A$ not sparse anymore. A common workaround \cite{Strang} is the so called \textit{lumping} of the mass matrix, that consists in replacing the matrix $B$ with the \textit{lumped} diagonal matrix $D$ obtained by placing in each diagonal entry $(D)_{ii}$ the sum of the elements of the $i$th row of the mass matrix $B$:
+
+This means that the FEM filtering could be implemented exactly as the graph filtering already implemented in DeepSphere using the matrix \\$B^{-1}A$ instead of the usual symmetric HKGL $L_n^t$. Unfortunately, in order to make the evaluation of the polynomial $P_\kappa(B^{-1}L)$ efficient, we need the matrix $B^{-1}L$ to be sparse. The only way to do so is to have a sparse stiffness matrix $A$ and choose the basis functions $\phi_i$ such that $B=I$. Unfortunately there is no likely solution to this problem, that is one of the most well known trade offs of the FEM \cite{Strang}: to make $B$ the identity matrix we need to choose $\phi_i$ to be an orthonormal basis of $V_h$. We will need to choose more complicated basis functions than the usual ones in figure \ref{fig:basis function}, \textit{most likely with a support that extends to the whole sphere}, making the stiffness matrix $A$ not sparse anymore. A common workaround \cite{Strang} is the so called \textit{lumping} of the mass matrix, that consists in replacing the matrix $B$ with the \textit{lumped} diagonal matrix $D$ obtained by placing in each diagonal entry $(D)_{ii}$ the sum of the elements of the $i$th row of the mass matrix $B$:
 
 \begin{equation}\label{eq:lumping}
 D = \text{diag}\{d_i\},\quad d_i = \sum_j (B)_{ij}
 \end{equation}
-This approximation is well studied in the literature and it is proved to work well in many practical cases \cite{Quarteroni:1639539}. In this way the FEM matrix $B^TB^{-1}AB$ would be approximated by the matrix
+This approximation is well studied in the literature and it is proved to work well in many practical cases \cite{Quarteroni:1639539}. In this way the FEM matrix $B^{-1}L$ would be approximated by the matrix
 $$
-D^TD^{-1}AD = AD.
+D^{-1}A.
 $$
 This matrix has the big advantage of having the same sparsity pattern of the stiffness matrix $A$, making it very efficient if used in DeepSphere. We can take one step further by using the symmetric matrix
 $$
-L_{FEM}^{\text{sym}} = D^{-1/2}AD^{-1/2}.
+D^{-1/2}AD^{-1/2}.
 $$
+
+
+To show that it is possible to filter a signal with the matrix $L_{FEM}^{\text{sym}} = D^{-1/2}AD^{-1/2}$ in the graph-like way defined by equation (\ref{eq:graph convolution}) and to confront it to the full HKGL we filter a unit mass signal $\mathbf{f}=(0,0,...0,1,0,...,0)^T$ with the \textit{diffusion} filter $\exp{(-\tau \mathbf L)}$. To enhance the deformation caused by the HKGL it was chosen a very irregular sampling scheme, shown in figure \ref{fig:FEM lumped symmetric diffusion on irregular sampling}. It can be seen how the full HKGL compresses the signal around the equator where the sampling scheme is more sparse; on the other hand the FEM filtering manages to keep the diffusion homogeneous no matter the asymmetry in the sampling scheme. 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figs/Chapter3/diffusion.png}
+	\caption{\label{fig:FEM lumped symmetric diffusion on irregular sampling}Symmetric lumped linear FEM diffusion and HKGL diffusion on an irregular sampling scheme of the sphere. The position of the filtered source signal is indicated with a black star.}
+\end{figure}
 
 The mean equivariance error using by spherical harmonic degree can be found in figure \ref{fig:Equivariance error of the symmetric lumped FEM Laplacian}. Compared to the full HKGL and to the Khasanova-Frossard graph, it has a much flatter error, that as the bandwidth grows il looks more and more evenly distributed at higher and lower frequencies. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/SymmetriclumpedFEMLaplacianonequiangularsampling.png}
 	\includegraphics[width=\textwidth]{../codes/03.FEM_laplacian/equiangular/mass_lumping/BLB/img/FEM_eigenvalues_bw16.png}
-	\caption{\label{fig:Equivariance error of the symmetric lumped FEM Laplacian}Equivariance error of the symmetric lumped FEM Laplacian on the equiangular sampling with bandwidth $b=8$ by spherical harmonic degree $\ell$, and its spectrum.}
+	\caption{\label{fig:Equivariance error of the symmetric lumped FEM Laplacian}Equivariance error of the symmetric lumped FEM Laplacian on the equiangular sampling by spherical harmonic degree $\ell$, and its spectrum for bandwidth $b=8$.}
 \end{figure}
 
-\paragraph{Accuracy of the linear FEM spherical harmonics.} Thanks to the sampling theorem \ref{theo:equiangular sampling theorem}, we are able to compute the exact SHT (under the hypothesis of band limited signals) of the solutions to the eigenvalue problem \ref{eq:algebraic generalized eigenvalue problem} and we show in figures \ref{fig:FEMHealpix}, \ref{fig:FEMequiangular} the power spectrum of the eigenmodes for both HEALPix sampling and the equiangular sampling, as a measure of the goodness of the linear FEM approach to approximate the spherical harmonics.
+\paragraph{Accuracy of the linear FEM spherical harmonics.} Thanks to the sampling theorem \ref{theo:equiangular sampling theorem}, we are able to compute the exact SHT (under the hypothesis of band limited signals) of the solutions to the eigenvalue problem (\ref{eq:algebraic generalized eigenvalue problem}) and we show in figures \ref{fig:FEMHealpix}, \ref{fig:FEMequiangular} the power spectrum of the eigenmodes for both HEALPix sampling and the equiangular sampling, as a measure of the goodness of the linear FEM approach to approximate the spherical harmonics.
 
 \begin{minipage}[t!]{.49\textwidth}
 	\raggedleft
@@ -229,14 +253,6 @@ The mean equivariance error using by spherical harmonic degree can be found in f
 	\captionof{figure}{\label{fig:FEMequiangular}Alignment of eigenspaces of the linear FEM Laplacian on the equiangular sampling}
 \end{minipage}
 
-\subsubsection{Diffusion with the exponential matrix}
-
-To show that it is possible to filter a signal with the matrix $L_{FEM}^{\text{sym}} = D^{-1/2}AD^{-1/2}$ in the graph-like way \ref{eq:graph convolution} and to confront it to the full HKGL we filter a unit mass signal $\mathbf{f}=(0,0,...0,1,0,...,0)^T$ with the \textit{diffusion} filter $\exp{(-\tau \mathbf L)}$. To enhance the deformation caused by the HKGL it was chosen a very irregular sampling scheme, shown in figure \ref{fig:FEM lumped symmetric diffusion on irregular sampling}. It can be seen how the full HKGL compresses the signal around the equator where the sampling scheme is more sparse; on the other hand the FEM filtering manages to keep the diffusion homogeneous no matter the asymmetry in the sampling scheme. 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.8\textwidth]{figs/Chapter3/diffusion.png}
-	\caption{\label{fig:FEM lumped symmetric diffusion on irregular sampling}Symmetric lumped linear FEM diffusion and HKGL diffusion on an irregular sampling scheme of the sphere. The position of the filtered source signal is indicated with a black star.}
-\end{figure}
 \clearpage
 
 

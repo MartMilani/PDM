@@ -405,7 +405,7 @@ to the data in table \ref{table:NN} we obtain that $\alpha$ should be close to $
 $$
 \mathcal O(|E|) = \mathcal O(n\sqrt{N_{side}})  = \mathcal{O}(n^{5/4}).
 $$
-where $n$ is the number of vertices of the graph. This complexity is a little worse that the linear complexity of DeepSphere, but in practice the number of neighbors grows very slowly with the number of pixels, making graph convolutions still computationally efficient (see section \ref{sec:Chapter2:Experimental validation}, table \ref{table:results}). 
+where $n$ is the number of vertices of the graph. This complexity is a little worse that the linear complexity of DeepSphere, but in practice the number of neighbors grows very slowly with the number of pixels, making graph convolutions still computationally efficient (see section \ref{sec:Chapter5:Experimental validation}, table \ref{table:results}). 
 
 To conclude this subsection, we show in figure \ref{fig:Old spectrum}, \ref{fig:New spectrum} we show a confront between the alignment of the graph Laplacian eigenvectors and the spectra of the DeepSphere graph $W$, the starting point of this work, and  of the proposed graph $W'$. It can appreciated how the alignment plots show a much better behavior of the graph Laplacian eigenvectors, and how the eigenvalues show now the correct multiplicity. This was obtained through a careful selection of the kernel width $t$ and of the number of neighbors in accord with the theory developed in the previous section. \\
 \begin{minipage}{.5\textwidth}
@@ -451,7 +451,7 @@ $$ of the diffusion filter $K = \exp(-\Lambda)$ for both graphs $G, G'$ by spher
 \end{figure}
 
 In figure \ref{fig:DeepSphere equivariance error in practice} we see the visualization of the equivariance error of DeepSphere: on the left, the original sampled signal $Tf$. Top right, the rotated and filtered signal $\Omega_k T \Lambda(g) f$. Bottom right, the filtered and rotated signal $T \Lambda(g) T^{-1} \Omega_k T f $. The difference between them can be appreciated. In figure \ref{fig:Optimal equivariance error in practice} we see the visualization of the equivariance error of the optimal graph $G'$: on the left, the same original sampled signal $Tf$. Top right, the rotated and filtered signal $\Omega_k T \Lambda(g) f$. Bottom right, the filtered and rotated signal $T \Lambda(g) T^{-1} \Omega_k T f $. No difference between them can be appreciated at a visual analysis.
-To conclude, we report in table \ref{tab:final results} as final metric for the evaluation of rotation equivariance of the two graphs $G$, $G'$ the mean equivariance error for a different values of $N_{side}$ that we computed by sampling random coefficients $\theta_\ell^m \in(0,1)$ of linear combinations of all the spherical harmonics up to degree $\ell=16$
+To conclude, we report in table \ref{tab:final results}, as final metric for the evaluation of rotation equivariance of the two graphs $G$, $G'$, the mean equivariance error for a different values of $N_{side}$ that we computed by sampling random coefficients $\theta_\ell^m \in(0,1)$ of linear combinations of all the spherical harmonics up to degree $\ell=16$
 $$f(x) = \sum_{\ell\leq 16,\ |m|\leq\ell}\theta_\ell^m Y_\ell^m(x)
 $$
 and by averaging on random rotations $g\in SO(3)$. Our graph shows lower errors as $N_{side}$ grows, and a much lower error than DeepSphere.

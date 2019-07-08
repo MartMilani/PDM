@@ -115,7 +115,7 @@ $$
 
 \subsection{Spherical Convolutional Neural Networks}\label{sec:Chapter1:SCNN}
 Cohen et al. \cite{SCNN} proposed a NN where the first layer performs a convolution on the sphere of the input spherical signal with a spherical kernel as defined by equation (\ref{eq:cohen convolution}). The output feature map - a signal on $SO(3)$ - is processed by the deeper layers that perform other convolutions in $SO(3)$. All these convolutions are performed in the spectral domain as in theorem \ref{theo:convolution}, meaning that every signal has to be Fourier-transformed first, at each forward and backward step of the training phase of the NN. This approach, even with the use of Generalized FFT algorithms for $\mathbb S^2$ and $SO(3)$, remains both computationally expensive and memory expensive, due to the need of storing kernels defined on the much bigger space $SO(3)$. In section \ref{sec:Chapter2:Experimental validation} we report in table (\ref{tab:SHREC17_class}) the results of Gusset et al. \cite{Gusset}, that compared both the training and inference time of Cohen's SCNN, showing how slow this architecture is compared to other rotation equivariant NNs.
-\subsection{Graph Spectral Theory} \label{sec:Chapter1: Spectral Graph Theory}
+\subsection{Spectral Graph Theory} \label{sec:Chapter1: Spectral Graph Theory}
 \paragraph{Graphs.}
 For the purposes of this work, a \textit{weighted undirected graph} $G(V, E, \mathbf W)$ is defined by a vertex set $V$, an edge set $E$, where the edges are unordered pairs of vertices, and the matrix $\mathbf W$ whose entries $w_{ij}$ represent the weight of the edge $(v_i, v_j)$. $G$ is a \textit{simple} graph, if $w_{ij}$ assume only values in $\{0, 1\}$. Undirected graphs are common mathematical objects used to model simple, symmetric relationships between things. The edge $e_{ij} = (v_i, v_j) \in E$ is the mathematical object that translates the fact that the vertices $v_i, v_j$ are in a relationship, and the weight $w_{ij}$ measures how strong this relationship is. Common examples of graphs include friendship graphs, where people are the vertices and the edges represent friendship, or electric network graphs, where vertices represent electronic components and edges represent wires.
 \paragraph{The graph Laplacian.}
@@ -187,3 +187,50 @@ $$
 k_{i}= k(\lambda_i)
 $$
 thus providing an intuitive frequency interpretation of the kernel $\mathbf K$. In this way the convolution can be seen as a \textit{filtering} operation: for example, a kernel $k(\lambda_i) = \exp (-\lambda_i)$ will be the kernel of a low-pass filter since it will cut the high frequencies.
+
+\subsection{The Equivariance error for graph convolutions}
+Take a sampling scheme $V=\{v_i\in\mathbb S^2, i=0, ..., n\}$ of the sphere, a weighted undirected graph $G(V, E, \mathbf W)$, a signal $f: \mathbb S^2\to\mathbb R$ and its sampled representation $\mathbf f:\ f_i=f(v_i)$. Suppose that there exists a sampling operator $T_V: L^2(\mathbb S^2) \supset F\to \mathbb R^n,\  T_V(f) = \mathbf f$ defined on a suitable subspace $F$ of $L^2(\mathbb S^2)$ such that it is invertible, i.e., we can unambiguously reconstruct the function $f\in F$ from its sampled values $\mathbf f$. The existence of such subspace depends on the sampling scheme $V$, and its characterization is a common problem in signal processing \cite{Driscoll:1994:CFT:184069.184073}. Recall the definition (\ref{eq:rotation operator}) of the rotation operator $\Lambda(g), g\in SO(3)$. 
+
+We now want to understand how to set the edges and the weights of $G$ such that
+\begin{equation}\label{eq:equivariance}
+T \Lambda(g) T^{-1} \Omega_k T f = \Omega_k T \Lambda(g) f
+\end{equation}
+i.e., the graph convolution $\Omega_k$ and any rotation $\Lambda(g)$ commute.
+
+Verifying equation (\ref{eq:equivariance}) is really hard in practice, due to the fact that for almost all samplings schemes $V$ it is not known if there exists a space $F$ in which $T$ is invertible. A special case is the \textit{equiangular sampling} scheme described in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} where the sampling theorem \ref{theo:equiangular sampling theorem} holds \cite{Driscoll:1994:CFT:184069.184073}. With all the other sampling schemes, there are no sampling theorems available but there are implementations of approximated, discrete SHT to reconstruct a sampled signal $\mathbf f$, thus providing a way to approximate $T^{-1}$. Thanks to this we are able, for a given sampling, a given function $f$ and a given rotation $g$, to compute the \textit{normalized equivariance error} 
+\begin{equation}\label{eq:equivariance error}
+E_{G}(f, g) = \left(\frac{ \norm {T \Lambda(g) T^{-1} \Omega_k Tf - \Omega_k T \Lambda(g) f}_{L^2(\mathbb R^2)}}{\norm {Tf}_{L^2(\mathbb R^2)}}\right)^2
+\end{equation}
+where $T^{-1}$ is substituted with a discrete SHT in case $T$ is not invertible.
+A measure of how equivariant a graph is with respect to rotations will then be given by the \textit{mean equivariance error}
+\begin{equation}\label{eq:mean equivariance error}
+\overline E_G = \mathbb E_{f, g}\ 	E_G(f, g) 
+\end{equation}
+In practice the expected value is obtained by averaging over a finite number of random functions and random rotations. The mean equivariance error $\overline E_G$ gives us an indication of how close the graph $G$ is from being equivariant to rotations.
+
+Now we state an intuitive concept that explains how to construct rotation invariant graphs, i.e. graphs such that $\overline{E_G}$ is small.
+\begin{snugshade*}
+	The mean equivariance error $\overline{E_G}$ will be small if the scalar product $\mathbf f^T \mathbf v_{i(\ell, m)}$ well approximates $\hat {f}(\ell,m)$ i.e., the $L^2$ scalar product of the continuous signal \\
+	$\hat {f}(\ell,m)= \int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$.
+	
+	\textit{If $V$ is an equal area sampling scheme}, i.e. the area around each pixel $v_i$ is the same, $\overline{E_G}$ will be small if the graph Laplacian $\mathbf L$ is such that its eigenvectors $\mathbf v_i$ well approximate the eigenfunctions of the Laplace-Beltrami operator $\Delta_{\mathbb S^2}$ evaluated in the points of the sampling scheme, i.e., 
+	$$
+	\mathbf v_{i(\ell, m)} \approxeq Y_\ell^m(x_i)
+	$$
+\end{snugshade*}
+
+In this way we framed the problem of constructing a rotation invariant graph with the more general problem of coming up with a matrix $\mathbf L$ with some specific spectral properties. Graphs are only one of many ways of coming up with such matrix $\mathbf L$, and many other methods have been already studied in the literature. In this section we present a brief overview of some of these methods providing the general context in which graph filtering can be framed.
+
+Let $f$ be a sufficiently smooth function on a compact, closed infinitely differentiable manifold $\mathcal M$. The Laplacian eigenvalue problem on $\mathcal M$ is defined as 
+\begin{equation}\label{eq:continous eigenvalue problem}
+\triangle_{\mathcal M}\psi = -\lambda \psi
+\end{equation}
+Being the Laplace-Beltrami operator self-adjoint and semi-positive definite, there exists a basis $\mathcal B=\{\psi_i\}_i$of the space $L^2(\mathcal M)$ such that $\triangle_\mathcal M \psi_i = -\lambda_i\psi_i,\ \lambda_0\leq\lambda_1\leq...,\lambda_i\leq\lambda_{i+1}...\leq+\infty$. See \cite{rosenberg_1997} for an introduction to the Laplace-Beltrami operator on manifolds.
+
+There's been a lot of work in trying to calculate solutions to equation (\ref{eq:continous eigenvalue problem}), leading to different ways to approximate the Laplace-Beltrami operator through what we call a \textit{discrete Laplacian}. By discrete Laplacian we mean an operator $L$ that, once evaluated on a signal $f$ and on a vertex $x_i$ can be written as a matrix $\mathbf L$ in the following way:
+
+\begin{equation}\label{eq:discrete laplacian}
+L f\left(\mathbf{x}_{i}\right)=\frac{1}{d_{i}} \sum_{j} w_{i j}\left(f\left(\mathbf{x}_{i}\right)-f\left(\mathbf{x}_{j}\right)\right)
+\end{equation}
+
+Note that with unit \textit{masses} $d_i=1$ we recover the same definition of Graph Laplacian.
