@@ -71,7 +71,7 @@ $b$ & $t$ \\
 	\centering
 	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/FullHKGLonequiangularsampling.png}
 	\includegraphics[width=\textwidth]{../codes/02.HeatKernelGraphLaplacian/equiangular/equi_full_eigenvalues_16.png}
-	\caption{\label{fig:Equivariance error of the full HKGL}Equivariance error of the full HKGL on the equiangular sampling with bandwidth $b=8$ by spherical harmonic degree $\ell$, and its spectrum.}
+	\caption{\label{fig:Equivariance error of the full HKGL}Equivariance error of the full HKGL on the equiangular sampling by spherical harmonic degree $\ell$, and its spectrum for the bandwidth $b=8$ .}
 \end{figure}
 
 \subsubsection{A graph alternative to the HKGL for the equiangular sampling}\label{sec:Chapter3:Frossard}
@@ -235,23 +235,20 @@ The mean equivariance error using by spherical harmonic degree can be found in f
 
 \paragraph{Accuracy of the linear FEM spherical harmonics.} Thanks to the sampling theorem \ref{theo:equiangular sampling theorem}, we are able to compute the exact SHT (under the hypothesis of band limited signals) of the solutions to the eigenvalue problem (\ref{eq:algebraic generalized eigenvalue problem}) and we show in figures \ref{fig:FEMHealpix}, \ref{fig:FEMequiangular} the power spectrum of the eigenmodes for both HEALPix sampling and the equiangular sampling, as a measure of the goodness of the linear FEM approach to approximate the spherical harmonics.
 
-\begin{minipage}[t!]{.49\textwidth}
-	\raggedleft
-	\center
-	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM.png}\\
-	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM_diagonal.png}	\\
-	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	\\
-	\captionof{figure}{	\label{fig:FEMHealpix}Alignment of eigenspaces of the linear FEM Laplacian on HEALPix}
-\end{minipage}
-\hfill
-%
-\begin{minipage}[t!]{.49\textwidth}
-	\center
-	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM.png}
-	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM_diagonal.png}	
-	\includegraphics[width=\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/FEM_eigenvalues_16.png}	
-	\captionof{figure}{\label{fig:FEMequiangular}Alignment of eigenspaces of the linear FEM Laplacian on the equiangular sampling}
-\end{minipage}
+\begin{figure}[h!]	
+	\centering
+	\includegraphics[width=0.65\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM.png}\\
+	\includegraphics[width=0.65\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/linearFEM_diagonal.png}	\\
+	\includegraphics[width=0.65\linewidth]{../codes/03.FEM_laplacian/HEALPix/img/FEM_eigenvalues_16.png}	\\
+	\caption{	\label{fig:FEMHealpix}Alignment of eigenspaces of the linear FEM Laplacian on HEALPix, and its spectrum for $N_{side}=16$}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM.png}
+	\includegraphics[width=0.65\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/linearFEM_diagonal.png}	
+	\includegraphics[width=0.65\linewidth]{../codes/03.FEM_laplacian/equiangular/normal/img/FEM_eigenvalues_16.png}	
+	\caption{\label{fig:FEMequiangular}Alignment of eigenspaces of the linear FEM Laplacian on the equiangular sampling, and its spectrum for $bw=32$}
+\end{figure}
 
 \clearpage
 

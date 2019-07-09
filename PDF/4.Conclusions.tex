@@ -48,6 +48,22 @@ We conclude by showing how the different discrete Laplacians $\mathbf L$ illustr
 	\caption{\label{fig:tradeoff}Trade-off between computational time and equivariance error for the filter $\mathbf L$ for different discrete Laplacians on the equiangular sampling}
 \end{figure}
 
+\begin{table}[h!]
+	\centering
+	\footnotesize
+	\begin{tabular}{ c|c |c|c|c|c|c } 
+		& FEM & HKGL & Lumped & Symmetric & Thresholded & Khasanova  \\
+		&&&FEM&Lumped&HKGL&Frossard\\
+		&&&& FEM&&\\
+		\hline
+		Equivariance & 0.46 & 1.55 & 0.47 & 2.80& 1.50 & 0.64\\
+		error [\%]&&&&&&\\ \hline
+		Computational & 619 & 561 & 68 & 49 & 67 & 42 \\
+		 time [$\mu$s]&&&&&&
+	\end{tabular}
+	\caption{\label{table:res}Results of figure \ref{fig:tradeoff}}
+\end{table}
+
 \subsection{Final considerations and future work}
 In order not to confuse the notation between the FEM and the Graph approach we will be need a more precise notation than in the rest of this work. For this purpose, define a graph $G$, and its graph Laplacian by $L_G$. Define $V_G,\ \Lambda_G$ to be the solution of the eigenvalue problem
 $$
@@ -57,7 +73,7 @@ Define the FEM stiffness matrix $A,\ (A)_{ij} = \int\nabla\phi_i\nabla\phi_j$ an
 $$
 AV_{FEM} = BV_{FEM}\Lambda_{FEM}
 $$
-We saw that both in the graph and in the FEM filtering, filtering a sampled signal means approximating the Fourier transform $\hat{\mathbf f}$ through the multiplication of the signal $\mathbf f$ by the Fourier matrix - $V_G^T$ for the graph, $V_{FEM}^TB$ for the FEM - then applying a filter through a diagonal matrix $K$, and then applying the inverse Fourier transform - $V_G$ for the graph, $(V_{FEM}^TB)^{-1}$ for the FEM -. From these considerations follow that a polynomial filter $P_\kappa(\Lambda)$ is implemented in the graph domain by multiplying the signal $\mathbf f$ by a polynomial of the symmetric graph Laplacian $L_G$
+We saw that both in the graph and in the FEM approach, filtering a sampled signal means approximating the Fourier transform $\hat{\mathbf f}$ through the multiplication of the signal $\mathbf f$ by a Fourier matrix - $V_G^T$ for the graph, $V_{FEM}^TB$ for the FEM - then applying a filter through a diagonal matrix $K$, and then applying the inverse Fourier transform - $V_G$ for the graph, $(V_{FEM}^TB)^{-1}$ for the FEM -. From these considerations it follows that a polynomial filter $P_\kappa(\Lambda)$ is implemented in the graph domain by multiplying the signal $\mathbf f$ by a polynomial of the symmetric graph Laplacian $L_G$
 $$
 P_\kappa(L_G),
 $$
