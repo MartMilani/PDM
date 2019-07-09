@@ -161,11 +161,11 @@ It can be shown \cite{Strang} that even though the matrix $B^{-1}L$ is not symme
 \subsection{How to filter a signal with the linear FEM}
 Calculating the discrete Fourier transform with the linear FEM means projecting the Fourier transform into the subspace $V_h$:
 
-\begin{equation}\label{FEM fourier}
+\begin{equation}\label{eq:FEM fourier}
 	\hat f_{FEM} (\ell, m) = \int_{\eta \in \mathcal T_h} f_h(\eta) v_{i(\ell, m)}(\eta) d\eta = \mathbf v_{i(\ell, m)}^T B \mathbf f
 \end{equation}
 
-where $v_{i(\ell, m)}$ is the solution to the eigenvalue problem \ref{eq:algebraic generalized eigenvalue problem}, $f_h$ is the projection of $f$ on $V_h$, and $B$ is the mass matrix. It follows that the filtering of a discretized signal $\mathbf f$ in the spectral domain is done by the following matrix  $\Omega_K^{FEM}$:
+where $v_{i(\ell, m)}$ is the solution to the eigenvalue problem (\ref{eq:algebraic generalized eigenvalue problem}), $f_h$ is the projection of $f$ on $V_h$, and $B$ is the mass matrix. It follows that the filtering of a discretized signal $\mathbf f$ in the spectral domain is done by the following matrix  $\Omega_K^{FEM}$:
 
 \begin{equation}\label{eq:FEM filtering}
 	 \Omega_K^{FEM} := (BV^T)^{-1}KV^TB
@@ -178,7 +178,7 @@ where $V^TB$ is the FEM Fourier transform matrix, $K$ is the diagonal matrix tha
 	\caption{\label{fig:FEM diffusion}Equivariance error of the linear FEM diffusion on the equiangular sampling by spherical harmonic degree.}
 \end{figure}
 We can see that the FEM filtering works better than the state-of-the-art graph of Khasanova-Frossard, but the matrix $\Omega_K^{FEM}$ is full, and its computation requires the expensive inversion of the Fourier matrix $V^TB$, making it not efficient to use it in a CNN. 
-\subsubsection{FEM filtering as a graph filtering}
+\subsubsection{FEM filtering as a graph filtering}\label{sec:FEM filtering as a graph filtering}
 Due to the fact that 
 $
 V^TBV = I
@@ -191,9 +191,9 @@ $$
 \end{aligned}
 $$
 So, the FEM filter matrix $\Omega_K^{FEM}$ can be rewritten as 
-$$
- \Omega_K^{FEM}  = V K V^{-1}
-$$
+\begin{equation}\label{eq:FEM filter simple}
+	 \Omega_K^{FEM}  = V K V^{-1}
+\end{equation}
 and thus a polynomial filter
 $$
 k(\lambda)=P_\kappa(\lambda) = \sum_{k=0}^{\kappa-1} \theta_k \lambda^k
