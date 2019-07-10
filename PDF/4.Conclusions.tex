@@ -71,14 +71,23 @@ L V_G = V_G \Lambda_G.
 $$
 Define the FEM stiffness matrix $A,\ (A)_{ij} = \int\nabla\phi_i\nabla\phi_j$ and the FEM mass matrix $B,\ (B)_{ij} = \int\phi_i\phi_j$. Define $V_{FEM}$ and $\Lambda_{FEM}$ to be the solution to the generalized eigenvalue problem 
 $$
-AV_{FEM} = BV_{FEM}\Lambda_{FEM}
+AV_{FEM} = BV_{FEM}\Lambda_{FEM}.
 $$
-We saw that both in the graph and in the FEM approach, filtering a sampled signal means approximating the Fourier transform $\hat{\mathbf f}$ through the multiplication of the signal $\mathbf f$ by a Fourier matrix - $V_G^T$ for the graph, $V_{FEM}^TB$ for the FEM - then applying a filter through a diagonal matrix $K$, and then applying the inverse Fourier transform - $V_G$ for the graph, $(V_{FEM}^TB)^{-1}$ for the FEM -. From these considerations it follows that a polynomial filter $P_\kappa(\Lambda)$ is implemented in the graph domain by multiplying the signal $\mathbf f$ by a polynomial of the symmetric graph Laplacian $L_G$
+We saw that both in the graph and in the FEM approach, filtering a sampled signal means approximating the Fourier transform through the multiplication of the signal $\mathbf f$ by a Fourier matrix - $V_G^T$ for the graph, $V_{FEM}^TB$ for the FEM - then applying a filter through a diagonal matrix $K$, and then applying the inverse Fourier transform - $V_G$ for the graph, $(V_{FEM}^TB)^{-1}$ for the FEM -. From these considerations it follows that a polynomial filter $P_\kappa(\Lambda)$ is implemented in the graph domain by multiplying the signal $\mathbf f$ by a polynomial of the symmetric graph Laplacian $L_G$
 $$
 P_\kappa(L_G),
 $$
 and in the FEM domain (thanks to what explained in section \ref{sec:FEM filtering as a graph filtering}) by a polynomial of the matrix $B^{-1}A$
 $$P_\kappa(B^{-1}A).
 $$
-The graph approach constrains the Fourier matrix $V_G$ to be orthogonal, while the FEM approach leaves to its Fourier matrix $V_{FEM}^TB$ more degrees of freedom. The fact that the mass matrix $B$ is constructed to \textit{exactly} represent the dot product in the Galerkin subspace $V_h$ and that the matrix $V_{FEM}$ converges to the sampled spherical harmonics makes it possible for the FEM to have a much better representation and interpretation of its discrete Fourier transform. How to interpret the fact that the graph approach constrains the Fourier matrix $V_G$ to be orthogonal is still not clear and subject of future work. However, even given these orthogonality constraints it is possible to design graphs with state-of-the-art performances, like the Khasanova-Frossard graph. Notice that this graph was obtained solving the optimization problem (\ref{eq:minimization frossard}) formulated directly in the spatial (vertex) domain, without relying on the spectral interpretation of the graph filtering, that in the case of a non uniform sampling presents the problems discussed above and it is still not clear.
+
+Starting from the FEM Laplacian $B^{-1}A$ it is possible to construct a \textit{sparse} Laplacian $D^{-1}A$ that shows almost no difference in its equivariance error compared to the full FEM Laplacian. Levy \cite{levy} showed that, by explicitly solving the integrals $\int_\tau \phi_i \phi_j$, $\int_\tau \nabla \phi_i \cdot \nabla \phi_j$, 
+$$\begin{aligned}
+D_{ii} &= \frac{A_i}{3},\\
+A_{ij} &= \frac{1}{2}\left(\text{cot}(\beta_{ij}) + \text{cot}(\beta'_{ij})\right)
+\end{aligned}$$
+where $A_i$ is the sum of the area of all the triangles $\tau$ of the triangulation $\mathcal T_h$ sharing the $i$th vertex, proving that the lumped FEM Laplacian $D^{-1}A$ corresponds to the Laplacian of Desbrun et al. \cite{Desbrun1999} introduced in this work in section \ref{sec:Chapter3: other discrete laplacians}. In this way he connected the FEM approach to Laplacians obtained from Differential Geometry and Discrete Exterior Calculus \cite{vallet}, \cite{meyer}.
+
+The graph approach constrains the Fourier matrix $V_G$ to be orthogonal, while the FEM approach leaves to its Fourier matrix $V_{FEM}^TB$ more degrees of freedom. The fact that the mass matrix $B$ is constructed to \textit{exactly} represent the dot product in the Galerkin subspace $V_h$ and that the matrix $V_{FEM}$ converges to the sampled spherical harmonics makes it possible for the FEM to have a much better representation and interpretation of its discrete Fourier transform. How to interpret the fact that the graph approach constrains the Fourier matrix $V_G$ to be orthogonal is still not clear and subject of future work. However, even given these orthogonality constraints it is possible to design graphs with state-of-the-art performances, like the Khasanova-Frossard graph. Notice that this graph was obtained solving the optimization problem (\ref{eq:minimization frossard}) formulated directly in the spatial (vertex) domain, without relying on the spectral interpretation of the graph filtering, that in the case of a non uniform sampling presents the problems discussed above and it is still not clear. 
+
 

@@ -25,10 +25,10 @@ Before introducing the Galerkin method the last thing to do is to state the Lax-
 	For such \(f\) one has \(\|f\| \leq \frac{1}{\alpha}\norm L\) where \(\alpha>0\) is the coercive constant \\\(a(v, v) \geq \alpha\norm v^{2} \forall v \in X.\)
 \end{theorem} 
 \vspace{0.5cm}
-The Finite Element Method takes a PDE problem in strong form (\ref{eq:PDE}), reformulates it in the equivalent \textit{weak form} (\ref{eq:variational abstract problem}) through suitable definitions of $X, a(\cdot, \cdot), L$ and finally solves it through polynomial interpolation.
+The Finite Element Method takes a PDE problem in strong form (\ref{eq:strong form}), reformulates it in the equivalent \textit{weak form} (\ref{eq:variational abstract problem}) through suitable definitions of $X, a(\cdot, \cdot), L$ and finally solves it through polynomial interpolation.
 \subsubsection{Weak formulation of a PDE and Galerkin Method}
 
-Galerkin's method is a method to approximate the solution $f$ of an infinite dimensional problem of the form \ref{eq:variational abstract problem} with the solution $f_h$ of a finite dimensional problem. Our goal is now to explain how to write a differential problem like 
+Galerkin's method is a method to approximate the solution $f$ of an infinite dimensional problem of the form (\ref{eq:variational abstract problem}) with the solution $f_h$ of a finite dimensional problem. Our goal is now to explain how to write a differential problem like 
 \begin{align}\label{eq:strong form}
 \begin{split}
 &\text{Given a regular domain }\Omega\subset\mathbb R^2\text{ and } u\in C(\Omega)\text{, find }f\in C^2(\Omega) \text{ such that}\\

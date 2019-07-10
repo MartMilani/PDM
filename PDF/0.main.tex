@@ -129,15 +129,25 @@ A fundamental problem in signal processing is to design computationally efficien
 
 We study the spectral properties of such graph Laplacian matrix in the special case of \cite{DeepSphere} where the sampling $\mathcal P$ is the so called HEALPix sampling (acronym for \textbf Hierarchical \textbf Equal \textbf Area iso\textbf Latitude \textbf {Pix}elization) and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral properties than the one presented in \cite{DeepSphere}.
 
-We investigate other different methods of building the matrix $\mathbf L$ better suited to non uniform sampling measures. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on the sphere. We compare the FEM and the graph Laplacian for different samplings of the sphere. We finish by discussing the general problem of how to incorporate geometrical informations about the sphere in the graph, a purely topological object.
+We investigate other different methods of building the matrix $\mathbf L$ better suited to non uniform sampling measures. In particular, we studied the Finite Element Method approximation of the Laplace-Beltrami operator on the sphere. We compare the FEM and the graph Laplacian for different samplings of the sphere. We finish by showing how the Laplacian $L'$ proposed in this work improved the performances of DeepSphere in a well known classification task and by comparing all the different Discrete Laplacians introduced in this work.
 
 
 \end{abstract}
 \pagebreak
 
 \pagenumbering{roman}
-\section*{Acknowledgements}
+\begin{center}
+	\subsection*{ACKNOWLEDGEMENT}
+\end{center}
+I would first like to thank my thesis advisor Micha\"el Defferrard of the School of Electrical Engineering at EPF Lausanne. He was always there whenever I had problems or had any question. He let this work to be of my own, but he was always there whenever I needed his help. His enthusiasm and passion about research were contagious, and working with him was a real pleasure.
 
+I would like to thank Prof. Pierre Vandergheynst of the Institute of Electrical Engineering at EPF Lausanne and Prof. Piercesare Secchi of the Department of Mathematics at Politecnico di Milano, who with their help contributed significantly to this work. Thanks to Ph.D. Nathana\"el Perraudin of the Swiss Data Science Center at ETH Z\"urich for having co-supervised my work. His intuition helped me a lot and with the numerous meetings we had he gave to this work a very valuable contribution. Thanks to Prof. Fabio Nobile of the Depatment of Mathematics at EPF Lausanne, who helped me in choosing the right direction to take when I needed it.
+
+I would also like to thank Fr\'ed\'erik Gusset and Charles Gallay for all the interesting discussions we had in our office at the Signal Processing Laboratory at EPF Lausanne, and Luca Zampieri, for offering me a coffee whenever I needed it and for always motivating me with his incredible enthusiasm and hard working attitude.
+
+I then must express my deepest gratitude to my family. To my parents for having taught me to always work hard and for their unconditional support, and to my brother, for his love and for having always been by my side. This accomplishment would not have been possible without them. Thank you.
+
+Finally, it is a pleasure to thank all my friends, those who are near and those who are far. 
 \pagebreak
 
 \tableofcontents
@@ -165,7 +175,7 @@ We investigate other different methods of building the matrix $\mathbf L$ better
 
 
 \pagebreak
-\bibliography{references.bib} 
+{\small \bibliography{references.bib}} 
 \nocite{*}
 \pagebreak
 
