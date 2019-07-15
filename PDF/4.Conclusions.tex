@@ -11,8 +11,8 @@
 
 \subsection{Experimental validation: SHREC17}
 \label{sec:Chapter5:Experimental validation}
-Gusset et al. \cite{Gusset} implemented the graph proposed in this work in a GCNN and three other rotation equivariant neural networks on a popular classification problem \cite{SHREC17}. The four models tested were the following: the original version of DeepSphere, Deepsphere \textit{Optimal} - obtained implementing the thresholding procedure described in this work in section \ref{sec:Chapter2:How to build a good graph} - and the traditional SCNNs of Cohen et al. \cite{SCNN} introduced in section \ref{sec:Chapter1:SCNN} and of Esteves et al. \cite{Esteves}
-\paragraph{On the Equiangular sampling}. They compare with two different metrics  (accuracy, F1-score) the performances of these four rotation invariant models, while also comparing the speed of inference and of training of each model. Results are shown in table \ref{tab:SHREC17_class}.  It can be seen how \textit{DeepSphere Optimal} has \textit{always} the highest score between all the rotation equivariant models, no matter the evaluation metric. Furthermore, its performances in terms of speed of inference and training are second only to DeepSphere, remaining by far faster than the other two SCNNs. 
+Gusset \cite{Gusset} implemented the graph proposed in Chapter 2 in a GCNN and three other rotation equivariant neural networks on a popular classification problem \cite{SHREC17}. The four models tested were the following: the original version of DeepSphere, Deepsphere \textit{Optimal} - obtained implementing the thresholding procedure described in this work in section \ref{sec:Chapter2:How to build a good graph} - and the traditional SCNNs of Cohen et al. and of Esteves et al.  \cite{SCNN} \cite{Esteves}.
+\paragraph{On the Equiangular sampling.} Gusset compares with two different metrics  (accuracy, F1-score) the performances of these four rotation invariant models, while also comparing the speed of inference and of training of each model. Results are shown in table \ref{tab:SHREC17_class}.  It can be seen how \textit{DeepSphere Optimal} has \textit{always} the highest score between all the rotation equivariant models, no matter the evaluation metric. Furthermore, its performances in terms of speed of inference and training are second only to DeepSphere, remaining by far faster than the other two SCNNs. 
 \begin{table}[ht]
 	\centering
 	\begin{tabular}{l|c c r r r}
@@ -28,7 +28,7 @@ Gusset et al. \cite{Gusset} implemented the graph proposed in this work in a GCN
 	\label{tab:SHREC17_class}
 \end{table}
 \paragraph{On HEALPix }
-Gusset et al. repeated the same test on the same dataset on a HEALPix sampling with $N_{side}=32$. Results can be seen in table \ref{table:results}.
+Gusset repeated the same test on the same dataset, this time sampled using the HEALPix sampling scheme with $N_{side}=32$. Results can be seen in table \ref{table:results}.
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{ c|c|c } 
@@ -38,10 +38,10 @@ Gusset et al. repeated the same test on the same dataset on a HEALPix sampling w
 	\end{tabular}
 	\caption{\label{table:results}Results form Gusset et al. Accuracy on the HEALPix sampling}
 \end{table}
-Being the new graph of DeepSphere Optimal more equivariant to rotations, we expected to see an improvement in the accuracy, as we did in the equiangular case. The fact that this improvement was not observed on HEALPix means that, in this case, the original DeepSphere graph $W$ \textit{is already sufficiently equivariant to rotations}. By this we mean that for this task, being equivariant to rotations of the low frequency eigenmodes is sufficient to obtain good results, and that being rotation equivariant to the higher frequencies does not lead to any improvement.
+Being the new graph of DeepSphere Optimal more equivariant to rotations, we expected to see an improvement in the accuracy, as we did in the equiangular case. The fact that this improvement was not observed means that, with this sampling, the original DeepSphere graph $W$ \textit{is already sufficiently equivariant to rotations}.
 
 \subsection{Confront of different Discrete Laplacians on the equiangular sampling}
-We conclude by showing how the different discrete Laplacians $\mathbf L$ illustrated so far compare in terms of equivariance error and computational time of the filter $\mathcal F(\mathbf f) = \mathbf L\mathbf f$. We can see how the four sparse discrete Laplacians are one order of magnitude faster than the two full Laplacians. The FEM Laplacian is able to reduce the equivariance error of the HKGL, and it manages to keep it low - around $0.5\%$ - even when using the sparse, lumped approximation $D^{-1}A$ while reducing the computational time of one order of magnitude. $D^{-1}A$ performs really well, and gets close to the performances of the graph Laplacian of Khasanova and Frossard. 
+We conclude by showing how the different discrete Laplacians $\mathbf L$ illustrated so far compare in terms of equivariance error and computational time of the filter $\mathcal F(\mathbf f) = \mathbf L\mathbf f$. We can see how the four sparse discrete Laplacians are one order of magnitude faster than the two full Laplacians. The FEM Laplacian is able to reduce the equivariance error of the HKGL, and it manages to keep it low - around $0.5\%$ - even when using the sparse, lumped approximation $\mathbf D^{-1}\mathbf A$ while reducing the computational time of one order of magnitude. $\mathbf D^{-1}\mathbf A$ performs really well, and gets close to the performances of the graph Laplacian of Khasanova and Frossard. 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../codes/06.Equivariance_error/tradeoff.png}
@@ -65,29 +65,32 @@ We conclude by showing how the different discrete Laplacians $\mathbf L$ illustr
 \end{table}
 
 \subsection{Final considerations and future work}
-In order not to confuse the notation between the FEM and the Graph approach we will be need a more precise notation than in the rest of this work. For this purpose, define a graph $G$, and its graph Laplacian by $L_G$. Define $V_G,\ \Lambda_G$ to be the solution of the eigenvalue problem
+In order not to confuse the notation between the FEM and the Graph approach we will be need a more precise notation than in the rest of this work. For this purpose, define a graph $G$, and its graph Laplacian by $L_G$. Define $\mathbf V_G,\ \mathbf \Lambda_G$ to be the solution of the eigenvalue problem
 $$
-L V_G = V_G \Lambda_G.
+\mathbf L_G \mathbf V_G = \mathbf V_G\mathbf  \Lambda_G.
 $$
-Define the FEM stiffness matrix $A,\ (A)_{ij} = \int\nabla\phi_i\nabla\phi_j$ and the FEM mass matrix $B,\ (B)_{ij} = \int\phi_i\phi_j$. Define $V_{FEM}$ and $\Lambda_{FEM}$ to be the solution to the generalized eigenvalue problem 
+Define the FEM stiffness matrix $\mathbf A,\ (\mathbf A)_{ij} = \int\nabla\phi_i\nabla\phi_j$ and the FEM mass matrix $\mathbf B,\ (\mathbf B)_{ij} = \int\phi_i\phi_j$. Define $\mathbf V_{FEM}$ and $\mathbf \Lambda_{FEM}$ to be the solution to the generalized eigenvalue problem 
 $$
-AV_{FEM} = BV_{FEM}\Lambda_{FEM}.
+\mathbf A\mathbf V_{FEM} =\mathbf  B\mathbf V_{FEM}\mathbf \Lambda_{FEM}.
 $$
-We saw that both in the graph and in the FEM approach, filtering a sampled signal means approximating the Fourier transform through the multiplication of the signal $\mathbf f$ by a Fourier matrix - $V_G^T$ for the graph, $V_{FEM}^TB$ for the FEM - then applying a filter through a diagonal matrix $K$, and then applying the inverse Fourier transform - $V_G$ for the graph, $(V_{FEM}^TB)^{-1}$ for the FEM -. From these considerations it follows that a polynomial filter $P_\kappa(\Lambda)$ is implemented in the graph domain by multiplying the signal $\mathbf f$ by a polynomial of the symmetric graph Laplacian $L_G$
+We saw that both in the graph and in the FEM approach, filtering a sampled signal means approximating the Fourier transform through the multiplication of the signal $\mathbf f$ by a Fourier matrix - $\mathbf V_G^\intercal$ for the graph, $\mathbf V_{FEM}^\intercal\mathbf B$ for the FEM - then applying a filter through a diagonal matrix $\mathbf K$, and then applying the inverse Fourier transform - $\mathbf V_G$ for the graph, $(\mathbf V_{FEM}^\intercal\mathbf B)^{-1}$ for the FEM -. From these considerations it follows that a polynomial filter $P_\kappa(\mathbf \Lambda)$ is implemented in the graph domain by multiplying the signal $\mathbf f$ by a polynomial of the symmetric graph Laplacian $\mathbf L_G$
 $$
-P_\kappa(L_G),
+P_\kappa(\mathbf L_G),
 $$
-and in the FEM domain (thanks to what explained in section \ref{sec:FEM filtering as a graph filtering}) by a polynomial of the matrix $B^{-1}A$
-$$P_\kappa(B^{-1}A).
+and in the FEM domain (thanks to what explained in section \ref{sec:FEM filtering as a graph filtering}) by a polynomial of the matrix $\mathbf B^{-1}\mathbf A$
+$$P_\kappa(\mathbf B^{-1}\mathbf A).
 $$
 
-Starting from the FEM Laplacian $B^{-1}A$ it is possible to construct a \textit{sparse} Laplacian $D^{-1}A$ that shows almost no difference in its equivariance error compared to the full FEM Laplacian. Levy \cite{levy} showed that, by explicitly solving the integrals $\int_\tau \phi_i \phi_j$, $\int_\tau \nabla \phi_i \cdot \nabla \phi_j$, 
+Starting from the FEM Laplacian $\mathbf B^{-1}\mathbf A$ it is possible to construct a \textit{sparse} Laplacian $\mathbf D^{-1}\mathbf A$ that shows almost no difference in its equivariance error compared to the full FEM Laplacian. Levy \cite{levy} showed that, by explicitly solving the integrals $\int_\tau \phi_i \phi_j$, $\int_\tau \nabla \phi_i \cdot \nabla \phi_j$, 
 $$\begin{aligned}
-D_{ii} &= \frac{A_i}{3},\\
-A_{ij} &= \frac{1}{2}\left(\text{cot}(\beta_{ij}) + \text{cot}(\beta'_{ij})\right)
+\mathbf D_{ii} &= \frac{A_i}{3},\\
+\mathbf A_{ij} &= \frac{1}{2}\left(\text{cot}(\alpha_{ij}) + \text{cot}(\beta_{ij})\right)
 \end{aligned}$$
-where $A_i$ is the sum of the area of all the triangles $\tau$ of the triangulation $\mathcal T_h$ sharing the $i$th vertex, proving that the lumped FEM Laplacian $D^{-1}A$ corresponds to the Laplacian of Desbrun et al. \cite{Desbrun1999} introduced in this work in section \ref{sec:Chapter3: other discrete laplacians}. In this way he connected the FEM approach to Laplacians obtained from Differential Geometry and Discrete Exterior Calculus \cite{vallet}, \cite{meyer}.
+where $A_i$ is the sum of the area of all the triangles $\tau$ of the triangulation $\mathcal T_h$ sharing the $i$th vertex, proving that the lumped FEM Laplacian $\mathbf D^{-1}\mathbf A$ corresponds to the Laplacian of Desbrun et al. \cite{Desbrun1999} introduced in this work in section \ref{sec:Chapter3: other discrete laplacians}. In this way he connected the FEM approach to Laplacians obtained from Differential Geometry and Discrete Exterior Calculus \cite{vallet}, \cite{meyer}.
 
-The graph approach constrains the Fourier matrix $V_G$ to be orthogonal, while the FEM approach leaves to its Fourier matrix $V_{FEM}^TB$ more degrees of freedom. The fact that the mass matrix $B$ is constructed to \textit{exactly} represent the dot product in the Galerkin subspace $V_h$ and that the matrix $V_{FEM}$ converges to the sampled spherical harmonics makes it possible for the FEM to have a much better representation and interpretation of its discrete Fourier transform. How to interpret the fact that the graph approach constrains the Fourier matrix $V_G$ to be orthogonal is still not clear and subject of future work. However, even given these orthogonality constraints it is possible to design graphs with state-of-the-art performances, like the Khasanova-Frossard graph. Notice that this graph was obtained solving the optimization problem (\ref{eq:minimization frossard}) formulated directly in the spatial (vertex) domain, without relying on the spectral interpretation of the graph filtering, that in the case of a non uniform sampling presents the problems discussed above and it is still not clear. 
+\begin{snugshade*}
+	The  symmetric  graph Laplacian $\mathbf L_G$ constrains the graph Fourier matrix $\mathbf V_G^\intercal$ to be orthogonal, while the FEM Laplacian $\mathbf B^{-1}\mathbf A$ leaves to its Fourier matrix $\mathbf V_{FEM}^\intercal\mathbf B$ more degrees of freedom. The fact that the mass matrix $\mathbf B$ is constructed to \textit{exactly} represent the dot product in the Galerkin subspace $V_h$ and that the matrix $\mathbf V_{FEM}$ converges to the sampled spherical harmonics makes it possible for the FEM filtering to converge towards the continuous filtering even in cases of non uniform sampling measures \cite{Quarteroni:1639539}, while for symmetric Laplacians there is no convergence result available.
+\end{snugshade*}
 
+How to interpret the fact that the graph approach constrains the Fourier matrix $\mathbf V_G^\intercal$ to be orthogonal is still not clear and will be subject of future work. However, even given these orthogonality constraints it is sometimes possible to design graphs with state-of-the-art performances, like the Khasanova-Frossard graph for the equiangular sampling scheme. Notice that this graph was obtained solving the optimization problem (\ref{eq:minimization frossard}) formulated directly in the spatial (vertex) domain, without relying on the spectral interpretation of the graph filtering, that in the case of a non uniform sampling presents the problems discussed above and it is still not clear.
 

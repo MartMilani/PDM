@@ -97,7 +97,7 @@ where $\mathbf f, \mathbf u$ are the vectors of coordinates of $f_h, u_h$ with r
 \begin{remark}
 	 If the basis functions $\phi_i$ are orthonormal, then the mass matrix $B$ is the identity matrix. Furthermore, the scalar product in the space $V_h$ of two functions $u_h, v_h$ is equal to the dot product defined by the mass matrix $B$ in $\mathbb R^n$ of the coordinate vectors
 	\begin{equation}\label{eq:dot product}
-	\langle u_h, v_h\rangle = \mathbf u^T B \mathbf v
+	\langle u_h, v_h\rangle = \mathbf u^\intercal B \mathbf v
 	\end{equation}
 	The Galerkin method \ref{eq:Galerkin problem} is well posed by a straight-forward application of the Lax-Milgram theorem, and thus also the system \ref{eq:Galerkin algebraic} admits one and only one solution.
 \end{remark}

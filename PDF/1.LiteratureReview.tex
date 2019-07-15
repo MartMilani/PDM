@@ -19,19 +19,19 @@ $$C_I = \phi_n \circ \phi_{n-1}\circ ... \phi_2\circ\phi_1 (I)$$
  
 Convolutional Neural Networks (CNNs) are a subset of NNs whose layer structure has been specifically designed for image recognition and segmentation. For this purpose, they don't have all the degrees of freedom of a \textit{fully connected} neural network: each layer is constrained to learn only those transformations of the input that are \textit{equivariant} to translations of the input. This means that a translation of the input image will not result in a change of class. The layers $\phi_i$ of a CNN are \textit{convolutions} with some kernels $k_i$, that were learned during the training phase. Thanks to their design, training of CNNs is faster - thanks to the smaller number of parameters to be learned compared to a fully connected NN -, easier - since there's no need of artificially \textit{augmenting} the dataset with translated copies of the same image -, and leads to very accurate results \cite{SCNN}, \cite{Esteves}.
 
-Spherical convolutional neural networks (SCNNs) are CNNs that have been designed to deal with spherical data, whose layer design makes them equivariant to \textit{rotations} of the input.  Examples of tasks where data is naturally represented on a sphere are (i) climate science, where data is sampled on the surface of the Earth, (ii) cosmology, where observations are naturally projected on a sphere centered around the observer (see Figure \ref{fig:cosmicradiation}), and (iii) virtual reality, where the images are represented on a sphere centered around the player. Being able to come up with rotation equivariant architectures brings with it all the advantages that traditional CNNs have brought for traditional (euclidean) image classification tasks: training is faster, easier and results are very accurate. Each layer of a SCNN performs a \textit{spherical convolution} of the input feature map with a kernel $k_i$ learned during the training phase. One of the main issues with traditional SCNNs is the computational complexity of computing at each layer the Spherical Harmonic Transform (SHT, equation \ref{eq:SHT}) of the data to perform the convolution. To overcome this issue, Perraudin et al. \cite{DeepSphere} proposed a Graph Convolutional Neural Network (GCNN) that is almost equivariant to rotations, replacing the SHT with a more efficient Graph Convolution.
+Spherical convolutional neural networks (SCNNs) are CNNs that have been designed to deal with spherical data, whose layer design makes them equivariant to \textit{rotations} of the input.  Examples of tasks where data is naturally represented on a sphere are (i) climate science, where data is sampled on the surface of the Earth, (ii) cosmology, where observations are naturally projected on a sphere centered around the observer (see Figure \ref{fig:cosmicradiation}), and (iii) virtual reality, where the images are represented on a sphere centered around the player. Being able to come up with rotation equivariant architectures brings with it all the advantages that traditional CNNs have brought for traditional (euclidean) image classification tasks: training is faster, easier and results are very accurate. Each layer of a SCNN performs a \textit{spherical convolution} of the input feature map with a kernel $k_i$ learned during the training phase. One of the main issues with traditional SCNNs is the computational complexity of computing at each layer the Spherical Harmonic Transform of the data to perform the convolution. To overcome this issue, Perraudin et al. \cite{DeepSphere} proposed a Graph Convolutional Neural Network (GCNN) that is almost equivariant to rotations, replacing the SHT with a more efficient Graph Convolution.
 \begin{figure}
 	\centering
 	\caption{\label{fig:cosmicradiation} Cosmic microwave background map, the oldest electromagnetic radiation in the universe. Source: Wikipedia}
 	\includegraphics[width=0.4\textwidth]{figs/literaturereview/WMAP.png}
 \end{figure}
 
-This work is organized as follows: in Chapter 1 we start by presenting fundamental concepts of spectral theory on the sphere and we present classical ways of building rotation equivariant neural networks through the use of the classical SHT.  We present then some basics of Graph Spectral Theory that lay the foundations of Graph Convolutional Neural Networks.  In Chapter 2 we present the general framework of how to discretize the Laplace-Beltrami operator on a general manifold, concluding with the special case of the Heat Kernel Graph Laplacian (HKGL) approximation, together with some convergence results. We continue in Chapter 3 by introducing DeepSphere \cite{DeepSphere}, a Graph Spherical Convolutional Neural Networks that uses a graph Laplacian matrix $\mathbf L$ similar to the HKGL to perform graph convolutions that are almost equivariant to rotations. We study the spectral properties and the equivariance error of DeepSphere and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral and equivariance properties. We conclude this chapter by presenting some experimental results obtained by Gusset et al. \cite{Gusset} that tested such architectures on the SHREC17 dataset \cite{SHREC17} showing that the new graph $G'$ performs better in real applications too. In Chapter 4 we show better graph constructions than the HKGL on non uniform sampling measures. To conclude, we show a different approach to perform rotation invariant convolutions that uses the Finite Element Method (FEM) approximation of the Laplace-Beltrami operator on the the sphere. Chapter 5 concludes this work by comparing the FEM and the graph approach, discussing the general problem of how to incorporate geometrical informations about the sphere in the graph.
+This work is organized as follows: in Chapter 1 we start by presenting fundamental concepts of spectral theory on the sphere and we present classical ways of building rotation equivariant neural networks through the use of the classical SHT.  We present then some basics of Spectral Graph Theory that lay the foundations of Graph Convolutional Neural Networks.  In Chapter 2 we present the general framework of how to discretize the Laplace-Beltrami operator on a general manifold, concluding with the special case of the Heat Kernel Graph Laplacian (HKGL) approximation, together with some convergence results. We continue in Chapter 3 by introducing DeepSphere \cite{DeepSphere}, a Graph Spherical Convolutional Neural Network (GCNN) that uses a graph Laplacian matrix $\mathbf L$ similar to the HKGL to perform graph convolutions that are almost equivariant to rotations. We study the spectral properties and the equivariance error of DeepSphere and we show a way to build a graph $G'$ such that the corresponding graph Laplacian matrix $\mathbf L'$ shows better spectral and equivariance properties. In Chapter 4 we show better graph constructions than the HKGL on non uniform sampling measures. To conclude, we show a different approach to perform rotation invariant convolutions that uses the Finite Element Method (FEM) approximation of the Laplace-Beltrami operator on the the sphere. Chapter 5 concludes this work by presenting some experimental results obtained by Gusset et al. \cite{Gusset} that implemented the graph $G'$ on a GCNN and compared its performances to DeepSphere on a well known dataset \cite{SHREC17} showing that the new graph $G'$ performs better in real applications. We finish by comparing the FEM and the graph approach, discussing the general problem of how to incorporate geometrical informations about the sphere in the graph.
 
 \subsection{Fourier Transforms and Convolutions on the 2-Sphere}\label{sec:Fourier on the Sphere}
 The goal of this section is to present to the reader some fundamental results of spectral theory on the sphere that we will need in this work. We present a brief review of Banach and Hilbert spaces, spherical harmonics, Fourier transform and convolution on $\mathbb S^2$. We refer to Sections 2 and 3 of the work of Driscoll and Healy \cite{Driscoll:1994:CFT:184069.184073} for a more detailed and effective review of spectral theory on the Sphere.
 
-\paragraph{Banach and Hilbert spaces}
+\paragraph{Banach and Hilbert spaces.}
 A \textit{norm} $\norm\cdot:\ X\to\mathbb R$ on a vector space $X$ is a subadditive, positive definite function such that $\norm{x+y}\leq\norm x +\norm y,\ \forall x,y\in X$ (triangle inequality). A \textit{Cauchy sequence} $(x_n)\subset X$ is a sequence such that $\forall \epsilon>0\  \exists M>0: $ $\forall i,j>M$ $ \norm{x_i-x_j}<\epsilon$. A \textit{Banach space} $(X, \norm{\cdot})$ is a normed vector space on the scalar field $F$ that is \textit{complete}, meaning that $X$ is "big enough" such that for every Cauchy sequence $(x_n)\subset X$ there exist a $x\in X$ such that $x$ is the limit of $(x_n)$ in $X$ i.e. $\norm{x_n-x}\rightarrow 0$. A \textit{basis} of $(X, \norm\cdot)$ is a minimal set of linearly independent vectors $\mathcal B \subset X$ such that every element of $X$ can be written as linear combination of the elements of $\mathcal B$. A scalar product is a function $\langle\cdot,\cdot\rangle: X\times X \rightarrow \mathbb F$ that is linear in the first argument, positive definite and conjugate symmetric. Through a scalar product we can define the notion of angle $\theta$ between two elements $x, y \in X$ through the following formula: 
 $$
 \cos \theta = \frac{\langle x, y\rangle}{\norm x \norm y}
@@ -41,7 +41,7 @@ In particular we can define the notion of orthogonality: two elements  $x, y \in
 x = \sum_{i\in I} \langle x, b_i\rangle b_i
 \end{equation}
 If the set $I$ is countable the Hilbert space $(X, \norm\cdot)$ is called \textit{separable}. Having a countable orthonormal basis, and thus the possibility of representing each vector through its Fourier series enormously simplifies many problems.
-\paragraph{Spherical Harmonics}
+\paragraph{Spherical Harmonics.}
  Given the usual parametrization $x = x(\theta, \phi), \theta\in[0,\pi], \phi\in[0,2\pi]$ of the sphere
 \begin{align*}
 \mathbb{S}^{2}&=\left\{\omega=\left(\omega_{1}, \omega_{2}, \omega_{3}\right) \in \mathbb{R}^{3} :\|x\|_{\mathbb{R}^{3}}=\left(\omega_{1}^{2}+\omega_{2}^{2}+\omega_{3}^{2}\right)^{1 / 2}=1\right\}\\
@@ -77,20 +77,20 @@ where $P_{\ell}^{m}$ are the \textit{Legendre functions} as defined in \cite{Dri
 \end{remark}
 \vspace{0.5cm}
 
-\paragraph{Fourier transform}
+\paragraph{Fourier transform.}
 We can now expand each function $f\in L^2(\mathbb S^2)$ in the orthonormal coordinate system given by the spherical harmonics 
 \begin{align}\label{eq:inverse spherical fourier transform}
 	f(\omega) &= \sum_{\ell\in\mathbb N}\sum_{|m|\leq \ell}\hat f(\ell,m) Y_\ell^m(\omega)\\
 	\hat f(\ell,m) &=\int_{\omega\in\mathbb S^2}f(\omega)Y_\ell^m(\omega)d\omega \label{eq:SHT}
 \end{align}
-where the coefficients $\hat f(\ell,m)$ are the \textit{Fourier coefficients} of $f$. The computation of $\hat f(\ell, m)$ is called Spherical Harmonic Transform (SHT). Thanks to equation (\ref{eq:spherical harmonics}) we can decompose the computation of the SHT (\ref{eq:SHT}) in the two directions $(\theta, \phi)$. One reason for which the most popular samplings of the sphere have the pixels lie on isolatitude circles is that it is possible to use standard one-dimensional FFT algorithms to compute the longitudinal part of the transform \cite{HEALPix}.
+where the coefficients $\hat f(\ell,m)$ are the \textit{Fourier coefficients} of $f$. The computation of $\hat f(\ell, m)$ is called Spherical Harmonic Transform (SHT). Thanks to equation (\ref{eq:spherical harmonics}) we can decompose the computation of the SHT (\ref{eq:SHT}) in the two directions $(\theta, \phi)$. One reason for which the most popular sampling schemes of the sphere have the pixels lie on isolatitude circles is that it is possible to use standard one-dimensional FFT algorithms to compute the longitudinal part of the transform, making the computation of the SHT $\mathcal O(n^{3/2})$, where $n$ is the number of pixels \cite{HEALPix}.
 
-\paragraph{Convolutions}
+\paragraph{Convolutions.}
 Convolution on the sphere is profoundly different than convolution on the Euclidean plane $\mathbb R^2$. Since translations are isomorphic to $\mathbb R^2$, the convolution $f*g(x)$ of two functions $f, g \in L^2(\mathbb R^2)$ is itself a function on the plane:
 \begin{equation}\label{eq:plane convolution}
 	 \int_{\mathbb R^2} f(y)g(x-y)dy = f*g(x):\quad \mathbb R^2 \to\mathbb R
 \end{equation}
-On the sphere things work differently: translations are replaced by rotations, but due to the fact that $SO(3)$ is not isomorphic to $\mathbb S^2$ if we define the convolution on $\mathbb S^2$ as follows:
+On the sphere things work differently: translations are replaced by rotations, but due to the fact that $SO(3)$ is not isomorphic to $\mathbb S^2$, if we define the convolution on $\mathbb S^2$ as follows:
 \begin{equation} \label{eq:cohen convolution}
 f* k(g) := \int_{\eta \in \mathbb S^2} \Lambda(g)k( \eta) f(\eta) d\eta=\int_{\eta \in \mathbb S^2} k(g^{-1} \eta) f(\eta) d\eta\\ 
 \end{equation}
@@ -114,7 +114,7 @@ $$
 \vspace{0.5cm}
 
 \subsection{Spherical Convolutional Neural Networks}\label{sec:Chapter1:SCNN}
-Cohen et al. \cite{SCNN} proposed a NN where the first layer performs a convolution on the sphere of the input spherical signal with a spherical kernel as defined by equation (\ref{eq:cohen convolution}). The output feature map - a signal on $SO(3)$ - is processed by the deeper layers that perform other convolutions in $SO(3)$. All these convolutions are performed in the spectral domain as in theorem \ref{theo:convolution}, meaning that every signal has to be Fourier-transformed first, at each forward and backward step of the training phase of the NN. This approach, even with the use of Generalized FFT algorithms for $\mathbb S^2$ and $SO(3)$, remains both computationally expensive and memory expensive, due to the need of storing kernels defined on the much bigger space $SO(3)$. In section \ref{sec:Chapter5:Experimental validation} we report in table (\ref{tab:SHREC17_class}) the results of Gusset et al. \cite{Gusset}, that compared both the training and inference time of Cohen's SCNN, showing how slow this architecture is compared to other rotation equivariant NNs.
+Cohen et al. \cite{SCNN} proposed a NN where the first layer performs a convolution on the sphere as defined by equation (\ref{eq:cohen convolution}). The output feature map - a signal on $SO(3)$ - is processed by the deeper layers that perform other convolutions in $SO(3)$. All these convolutions are performed in the spectral domain as in theorem \ref{theo:convolution}, meaning that every signal has to be Fourier-transformed first, at each forward and backward step of the training phase of the NN. This approach, even with the use of Generalized FFT algorithms for $\mathbb S^2$ and $SO(3)$, remains both computationally expensive ($\mathcal O(n^{3/2})$) and memory expensive, due to the need of storing kernels defined on the much bigger space $SO(3)$. In section \ref{sec:Chapter5:Experimental validation} we report in table (\ref{tab:SHREC17_class}) the results of Gusset et al. \cite{Gusset}, that compared both the training and inference time of Cohen's SCNN, showing how slow this architecture is compared to other rotation equivariant NNs.
 \subsection{Spectral Graph Theory} \label{sec:Chapter1: Spectral Graph Theory}
 \paragraph{Graphs.}
 For the purposes of this work, a \textit{weighted undirected graph} $G(V, E, \mathbf W)$ is defined by a vertex set $V$, an edge set $E$, where the edges are unordered pairs of vertices, and the matrix $\mathbf W$ whose entries $w_{ij}$ represent the weight of the edge $(v_i, v_j)$. $G$ is a \textit{simple} graph, if $w_{ij}$ assume only values in $\{0, 1\}$. Undirected graphs are common mathematical objects used to model simple, symmetric relationships between things. The edge $e_{ij} = (v_i, v_j) \in E$ is the mathematical object that translates the fact that the vertices $v_i, v_j$ are in a relationship, and the weight $w_{ij}$ measures how strong this relationship is. Common examples of graphs include friendship graphs, where people are the vertices and the edges represent friendship, or electric network graphs, where vertices represent electronic components and edges represent wires.
@@ -129,31 +129,31 @@ If $\mathbf D$ is the diagonal matrix $\mathbf D_{ii} = \sum_j w_{ij}$, one can 
 \end{equation}
 In a simple friendship graph $G$, one can define a vector $\mathbf f$ such that each entry $ f_i$ is the age of the person associated with the vertex $v_i$, and could try to measure how much people tend to be friends with people of the same age. In other words, how smooth the signal $\mathbf f$ is on the graph $G$. A good measure for the smoothness of a signal on a graph is given by the \textit{Dirichlet energy} of the signal $\mathbf f$, i.e., the quadratic form associated with the normalized Laplace operator $\mathbf L'$:
 \begin{equation}\label{eq:quadratic form}
-	\mathbf f^T \mathbf L' \mathbf f = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \frac{\boldsymbol{W}_{j k}}{\sqrt{d_{j} {d}_{k}}}\left({f}_{j}-{f}_{k}\right)^{2}
+	\mathbf f^\intercal \mathbf L' \mathbf f = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \frac{\boldsymbol{W}_{j k}}{\sqrt{d_{j} {d}_{k}}}\left({f}_{j}-{f}_{k}\right)^{2}
 \end{equation}
 The reason why the Dirichlet energy is a good measure of the smoothness of $\mathbf f$ is easier to understand in the case of a simple graph, where it reduces to the sum
 \begin{equation}\label{eq:simple dirichlet energy}
-	\mathbf f^T \mathbf L' \mathbf f = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \left({f}_{j}-{f}_{k}\right)^{2}.
+	\mathbf f^\intercal \mathbf L' \mathbf f = \sum_{\left(v_{j}, v_{k}\right) \in {E}} \left({f}_{j}-{f}_{k}\right)^{2}.
 \end{equation}
  that will grow for each edge $(v_i, v_j)$ connecting people with very different age. Although the Dirichlet energy (\ref{eq:quadratic form}) works also for the combinatorial graph Laplacian $\mathbf L$, in practice it is preferred to use the symmetric normalized Laplacian when the degree distribution is wide. Another way of looking at equation (\ref{eq:simple dirichlet energy}) is as the following: the differences ${f}_j-{f}_k$ can be seen as the \textit{gradient} $\nabla \mathbf{f}$ that is a signal on the edges $(v_j, v_k)$ and equation (\ref{eq:simple dirichlet energy}) as the quadratic norm of such gradient $\norm {\nabla \mathbf{f}}^2$.
 \paragraph{Graph Fourier transform}
 Since the graph Laplacian is a symmetric matrix, we can write its eigen decomposition \cite{Strang}
 $$
-\mathbf L = \mathbf V\mathbf \Lambda\mathbf V^T
+\mathbf L = \mathbf V\mathbf \Lambda\mathbf V^\intercal
 $$
- where $\mathbf V$ is the orthonormal basis of $\mathbb R^n$ of eigenvectors, and $\Lambda$ the real diagonal matrix of the eigenvalues $\Lambda = \text{diag}(\lambda_i\in \mathbb R)$. Similarly to the continuous domain, where the Fourier transform of a signal $f$ is defined as the projection of $f$ on the orthonormal eigenbasis of the Laplace-Beltrami operator $\Delta$, on a graph we can define a graph Fourier transform $\mathcal F_G: \mathbb R^n\to\mathbb R^n$ of a discrete signal $\mathbf f\in\mathbb R^n$ as the projection of $\mathbf f$ on the eigenvectors of the graph Laplacian $\mathbf L$:
+ where $\mathbf V$ is the orthonormal basis of $\mathbb R^n$ of eigenvectors, and $\mathbf \Lambda$ the real diagonal matrix of the eigenvalues $\mathbf \Lambda = \text{diag}(\lambda_i\in \mathbb R)$. Similarly to the continuous domain, where the Fourier transform of a signal $f$ is defined as the projection of $f$ on the orthonormal eigenbasis of the Laplace-Beltrami operator $\Delta$, on a graph we can define a graph Fourier transform $\mathcal F_G: \mathbb R^n\to\mathbb R^n$ of a discrete signal $\mathbf f\in\mathbb R^n$ as the projection of $\mathbf f$ on the eigenvectors of the graph Laplacian $\mathbf L$:
 \begin{equation}\label{eq:graph fourier}
-\mathcal F_G(\mathbf f) := \mathbf V^T\mathbf f = \hat{\mathbf f}
+\mathcal F_G(\mathbf f) := \mathbf V^\intercal\mathbf f = \hat{\mathbf f}
 \end{equation}
 The inverse graph Fourier transform $\mathcal F^{-1}_G$ is thus 
 \begin{equation}\label{eq:graph fourier inverse}
-\mathcal F^{-1}_G(\hat{\mathbf f}) := \mathbf V \hat{\mathbf f} = \mathbf V\mathbf V^T\mathbf f = {\mathbf f}
+\mathcal F^{-1}_G(\hat{\mathbf f}) := \mathbf V \hat{\mathbf f} = \mathbf V\mathbf V^\intercal\mathbf f = {\mathbf f}
 \end{equation}
 In the continuous case, the eigenvalues of the Laplace-Beltrami operator are associated with a notion of \textit{frequency} of the corresponding eigenfunction. In a graph we have a similar notion: define the Rayleigh quotient of a vector $\mathbf v \in \mathbb R^n$ to be
 \begin{equation}\label{eq:Rayleigh}
-	\mathcal R(\mathbf v) = \frac{\mathbf v^T\mathbf L \mathbf v}{\mathbf v^T\mathbf v}
+	\mathcal R(\mathbf v) = \frac{\mathbf v^\intercal\mathbf L \mathbf v}{\mathbf v^\intercal\mathbf v}
 \end{equation}
-The well known \cite{Strang} Courant-Fischer characterization of eigenvalues and eigenvectors of symmetric matrices (\ref{eq:courantfisher}) can be interpreted in light of what we wrote about the interpretation of the Dirichlet energy (\ref{eq:quadratic form}) $\mathbf v^T \mathbf L \mathbf v$ as a measure of the smoothness of $\mathbf v$. The eigenvalue $\lambda_i$ is the measure of smoothness of the eigenvector $\mathbf v_i$, that is the smoothest vector perpendicular to the lower-degree eigenvectors $\mathbf v_1, ... \mathbf v_{i-1}$.
+The well known \cite{Strang} Courant-Fischer characterization of eigenvalues and eigenvectors of symmetric matrices (\ref{eq:courantfisher}) can be interpreted in light of what we wrote about the interpretation of the Dirichlet energy (\ref{eq:quadratic form}) $\mathbf v^\intercal \mathbf L \mathbf v$ as a measure of the smoothness of $\mathbf v$. The eigenvalue $\lambda_i$ is the measure of smoothness of the eigenvector $\mathbf v_i$, that is the smoothest vector perpendicular to the lower-degree eigenvectors $\mathbf v_1, ... \mathbf v_{i-1}$.
 \begin{equation}\label{eq:courantfisher}
 	\begin{aligned} 
 	&\lambda_1 = \min_{\mathbf v\neq 0} \mathcal R(v)\\
@@ -174,15 +174,15 @@ The well known \cite{Strang} Courant-Fischer characterization of eigenvalues and
 \end{figure}
 
 \paragraph{Convolution and filtering on graphs}
- As the plane $\mathbb R^2$ is symmetric with respect to any translation and the sphere $\mathbb S^2$ is symmetric with respect to any rotation, the respective definitions of convolution (\ref{eq:plane convolution}), (\ref{eq:convolution}) are equivariant to the respective symmetry groups. Since there are no such global symmetries in a general graph $G$, definitions (\ref{eq:plane convolution}), (\ref{eq:convolution}) of convolutions on the spatial domain can not be extended naturally on graphs. However, both on $\mathbb R^2$ and on $\mathbb S^2$, the convolution of a signal $f$ with a kernel $k$ can be performed in the spectral domain by multiplying the transformed signal $\hat f$ times the transformed kernel $\hat k$: 
+ As the plane $\mathbb R^2$ is symmetric with respect to any translation, and the sphere $\mathbb S^2$ is symmetric with respect to any rotation, the respective definitions of convolution are equivariant respectively to these two symmetry groups. Since there are no such global symmetries in a general graph $G$, definitions (\ref{eq:plane convolution}), (\ref{eq:convolution}) can not be extended naturally on graphs. However, both on $\mathbb R^2$ and on $\mathbb S^2$, the convolution of a signal $f$ with a kernel $k$ can be performed in the spectral domain by multiplying the transformed signal $\hat f$ times the transformed kernel $\hat k$: 
 \begin{equation}\label{eq:convolution normal}
 f*k = \mathcal F^{-1}(\hat f \cdot \hat k)
 \end{equation}
 In a similar way we can define a notion of convolution also in the graph spectral domain. We use the following definition \cite{Vandergheynst} of the convolution of a signal $\mathbf f$ times a kernel $\mathbf K$:
 \begin{equation}\label{eq:graph convolution}
-	\Omega_\mathbf K\mathbf f = \mathcal{F}^{-1}_G(\mathbf K \hat {\mathbf f})= \mathbf V\mathbf K  \mathbf V^T {\mathbf f}
+	\Omega_\mathbf K\mathbf f = \mathcal{F}^{-1}_G(\mathbf K \hat {\mathbf f})= \mathbf V\mathbf K  \mathbf V^\intercal {\mathbf f}
 \end{equation}
-where $\mathbf K$ is a \textit{diagonal} \textit{matrix} $K_{ii} = k_i$. Graphs convolutions are different from the ones we are used to define in Euclidean domains (\ref{eq:plane convolution}), since the graph kernels $\mathbf K$ are diagonal matrices that can not be thought as the Fourier transform of a corresponding kernel defined in the spatial (vertex) domain. The diagonal elements $k_{i}$ can be thought as functions of the corresponding eigenvalues 
+where $\mathbf K$ is a \textit{diagonal} \textit{matrix} $K_{ii} = k_i$. Graphs convolutions are different from the ones we are used to define in Euclidean domains, since the graph kernels $\mathbf K$ are diagonal matrices that can not be thought as the Fourier transform of a corresponding kernel defined in the spatial (vertex) domain. The diagonal elements $k_{i}$ can be thought as functions of the corresponding eigenvalues 
 $$
 k_{i}= k(\lambda_i)
 $$
@@ -197,7 +197,7 @@ T \Lambda(g) T^{-1} \Omega_k T f = \Omega_k T \Lambda(g) f
 \end{equation}
 i.e., the graph convolution $\Omega_k$ and any rotation $\Lambda(g)$ commute.
 
-Verifying equation (\ref{eq:equivariance}) is really hard in practice, due to the fact that for almost all samplings schemes $V$ it is not known if there exists a space $F$ in which $T$ is invertible. A special case is the \textit{equiangular sampling} scheme described in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} where the sampling theorem \ref{theo:equiangular sampling theorem} holds \cite{Driscoll:1994:CFT:184069.184073}. With all the other sampling schemes, there are no sampling theorems available but there are implementations of approximated, discrete SHT to reconstruct a sampled signal $\mathbf f$, thus providing a way to approximate $T^{-1}$. Thanks to this we are able, for a given sampling, a given function $f$ and a given rotation $g$, to compute the \textit{normalized equivariance error} 
+Verifying equation (\ref{eq:equivariance}) is really hard in practice, due to the fact that for almost all samplings schemes $V$ it is not known if there exists a space $F$ in which $T$ is invertible. A special case is the \textit{equiangular sampling} scheme described in section \ref{sec:Chapter3: Heat Kernel Graph Laplacian on the Equiangular Sampling} where the sampling theorem \ref{theo:equiangular sampling theorem} holds \cite{Driscoll:1994:CFT:184069.184073}. With all the other sampling schemes, there are no sampling theorems available, but there are implementations of discrete SHT to reconstruct a sampled signal $\mathbf f$, thus providing a way to approximate $T^{-1}$. Thanks to this we are able, for a given sampling, a given function $f$, a given rotation $g$, and a given kernel $k$, to compute the \textit{normalized equivariance error} 
 \begin{equation}\label{eq:equivariance error}
 E_{G}(f, g) = \left(\frac{ \norm {T \Lambda(g) T^{-1} \Omega_k Tf - \Omega_k T \Lambda(g) f}_{L^2(\mathbb R^2)}}{\norm {Tf}_{L^2(\mathbb R^2)}}\right)^2
 \end{equation}
@@ -206,11 +206,9 @@ A measure of how equivariant a graph is with respect to rotations will then be g
 \begin{equation}\label{eq:mean equivariance error}
 \overline E_G = \mathbb E_{f, g}\ 	E_G(f, g) 
 \end{equation}
-In practice the expected value is obtained by averaging over a finite number of random functions and random rotations. The mean equivariance error $\overline E_G$ gives us an indication of how close the graph $G$ is from being equivariant to rotations.
-
-Now we state an intuitive concept that explains how to construct rotation invariant graphs, i.e. graphs such that $\overline{E_G}$ is small.
+In practice the expected value is obtained by averaging over a finite number of random functions and random rotations. The mean equivariance error $\overline E_G$ gives us an indication of how close the graph $G$ is from being equivariant to rotations. Now we state an intuitive concept that explains how to construct rotation invariant graphs, i.e. graphs such that $\overline{E_G}$ is small.
 \begin{snugshade*}
-	The mean equivariance error $\overline{E_G}$ will be small if the scalar product $\mathbf f^T \mathbf v_{i(\ell, m)}$ well approximates $\hat {f}(\ell,m)$ i.e., the $L^2$ scalar product of the continuous signal \\
+	The mean equivariance error $\overline{E_G}$ will be small if the scalar product $\mathbf f^\intercal \mathbf v_{i(\ell, m)}$ well approximates $\hat {f}(\ell,m)$ i.e., the $L^2$ scalar product of the continuous signal \\
 	$\hat {f}(\ell,m)= \int_{\eta \in \mathbb S^2}f(\eta)Y_\ell^m(\eta)d\mu(\eta)$.
 	
 	\textit{If $V$ is an equal area sampling scheme}, i.e. the area around each pixel $v_i$ is the same, $\overline{E_G}$ will be small if the graph Laplacian $\mathbf L$ is such that its eigenvectors $\mathbf v_i$ well approximate the eigenfunctions of the Laplace-Beltrami operator $\Delta_{\mathbb S^2}$ evaluated in the points of the sampling scheme, i.e., 
@@ -219,18 +217,4 @@ Now we state an intuitive concept that explains how to construct rotation invari
 	$$
 \end{snugshade*}
 
-In this way we framed the problem of constructing a rotation invariant graph with the more general problem of coming up with a matrix $\mathbf L$ with some specific spectral properties. Graphs are only one of many ways of coming up with such matrix $\mathbf L$, and many other methods have been already studied in the literature. In this section we present a brief overview of some of these methods providing the general context in which graph filtering can be framed.
-
-Let $f$ be a sufficiently smooth function on a compact, closed infinitely differentiable manifold $\mathcal M$. The Laplacian eigenvalue problem on $\mathcal M$ is defined as 
-\begin{equation}\label{eq:continous eigenvalue problem}
-\triangle_{\mathcal M}\psi = -\lambda \psi
-\end{equation}
-Being the Laplace-Beltrami operator self-adjoint and semi-positive definite, there exists a basis $\mathcal B=\{\psi_i\}_i$of the space $L^2(\mathcal M)$ such that $\triangle_\mathcal M \psi_i = -\lambda_i\psi_i,\ \lambda_0\leq\lambda_1\leq...,\lambda_i\leq\lambda_{i+1}...\leq+\infty$. See \cite{rosenberg_1997} for an introduction to the Laplace-Beltrami operator on manifolds.
-
-There's been a lot of work in trying to calculate solutions to equation (\ref{eq:continous eigenvalue problem}), leading to different ways to approximate the Laplace-Beltrami operator through what we call a \textit{discrete Laplacian}. By discrete Laplacian we mean an operator $L$ that, once evaluated on a signal $f$ and on a vertex $x_i$ can be written as a matrix $\mathbf L$ in the following way:
-
-\begin{equation}\label{eq:discrete laplacian}
-L f\left(\mathbf{x}_{i}\right)=\frac{1}{d_{i}} \sum_{j} w_{i j}\left(f\left(\mathbf{x}_{i}\right)-f\left(\mathbf{x}_{j}\right)\right)
-\end{equation}
-
-Note that with unit \textit{masses} $d_i=1$ we recover the same definition of Graph Laplacian.
+In this way we framed the problem of constructing a rotation invariant graph with the more general problem of coming up with a matrix $\mathbf L$ with some specific spectral properties. Graphs are only one of many ways of coming up with such matrix $\mathbf L$, and many other methods have been already studied in the literature. In the next Chapter we present a brief overview of some of these methods providing the general context in which graph filtering can be framed.
