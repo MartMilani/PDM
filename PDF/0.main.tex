@@ -82,6 +82,12 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem*{example}{Example}
+\usepackage{afterpage}
+
+\newcommand\blankpage{
+\null
+\thispagestyle{empty}
+\newpage}
 
 % Custom Defines
 \usepackage[comma,numbers,sort&compress]{natbib}
@@ -113,7 +119,9 @@
 % ========== TITLE PAGE ===================================================
 \input{titlepage.tex}
 %\onehalfspacing
-
+  
+\afterpage{\blankpage}
+\clearpage{}
 % ========== HEADER =======================================================
 %\pagestyle{headings} 
 \pagenumbering{arabic} \setcounter{page}{1}
@@ -121,6 +129,7 @@
 \lhead{\textbf{Martino Milani}}
 \chead{Master Thesis}
 \renewcommand{\headrulewidth}{0.4pt}
+
 
 
 \begin{abstract}
@@ -133,8 +142,9 @@ We investigate other methods of building the matrix $\mathbf L$ better suited to
 
 
 \end{abstract}
-\pagebreak
 
+\afterpage{\blankpage}
+\clearpage{}
 \pagenumbering{roman}
 \begin{center}
 	\subsection*{ACKNOWLEDGEMENT}
@@ -148,7 +158,13 @@ I would also like to thank Fr\'ed\'erik Gusset and Charles Gallay for all the in
 I then must express my deepest gratitude to my family. To my parents for having taught me to always work hard and for their unconditional support, and to my brother, for his love and for having always been by my side. This accomplishment would not have been possible without them. Thank you.
 
 Finally, it is a pleasure to thank all my friends, those who are near and those who are far. 
+
+
 \pagebreak
+\null
+\newpage
+\pagebreak
+
 
 \tableofcontents
 
