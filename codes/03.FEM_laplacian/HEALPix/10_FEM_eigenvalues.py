@@ -1,4 +1,11 @@
+"""author: Martino Milani
+martino.milani@alumni.epfl.ch
 
+This file reads the mesh files created in the corresponding notebook, and through the use of FEniCS (dolfin) 
+0) it defines the FEM formulation of the Laplace-Beltrami eigenvalue problem on the sphere
+1) it assembles the corresponding stiffness and mass matrix 
+2) it solves it (so we can check that everything is correct)
+3) it saves the mass and stiffness matrix that we will need in the next steps"""
 from __future__ import print_function
 import matplotlib
 matplotlib.use('tkAgg')
@@ -19,6 +26,7 @@ if not has_slepc():
     print("DOLFIN has not been configured with SLEPc. Exiting.")
     exit()
 
+    
 spectral_content = dict()
 nsides = [4, 8, 16]
 for nside in nsides:
@@ -36,12 +44,13 @@ for nside in nsides:
     v = TestFunction(V)
     a = dot(grad(u), grad(v))*dx
     b = dot(u, v)*dx
-    # Assemble stiffness form
+    # Assemble stiffness and mass matrix
     A = PETScMatrix()
     B = PETScMatrix()
     assemble(a, tensor=A)
     assemble(b, tensor=B)
-
+    
+    # saving the stiffness and the mass matrix
     A_mat = as_backend_type(A).mat()
     A_sparray = csr_matrix(A_mat.getValuesCSR()[::-1], shape=A_mat.size)
     scipy.sparse.save_npz('10_matrices/stiffness_matrix_{}.npz'.format(nside), A_sparray)
@@ -60,7 +69,7 @@ for nside in nsides:
     print("Computing eigenvalues. This can take a minute.")
     eigensolver.solve(N)
     
-    
+    # just saving the results
     print('Done. Saving results...')
     file = File("10_eigenvectors/eigenvectors_{}.pvd".format(nside))
 
